@@ -4,6 +4,7 @@ from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple
 
 from BaseClasses import Entrance, Item, ItemClassification, MultiWorld, Region, Tutorial, \
     LocationProgressType
+from Options import Choice
 from worlds.AutoWorld import WebWorld, World
 from .Items import item_table, ItemData, nothing_item_id, event_table, ApeEscapeItem
 from .Locations import location_table, base_location_id
@@ -89,15 +90,15 @@ class ApeEscapeWorld(World):
         flyer = self.create_item("Sky Flyer")
         car = self.create_item("R.C. Car")
         punch = self.create_item("Magic Punch")
-        key = self.create_item("World Key")
         victory = self.create_item("Victory")
 
         self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
-        #self.multiworld.itempool += [key]
+
+        self.multiworld.itempool += [self.create_item("World Key") for i in range(0, 6)]
 
         self.multiworld.get_location("9-1 Specter", self.player).place_locked_item(victory)
 
-        remaining = 36#(len(location_table) - len(self.multiworld.itempool))-25
+        remaining = 360#(len(location_table) - len(self.multiworld.itempool))-25
         self.multiworld.itempool += [self.create_item_filler("nothing") for i in range(0, remaining)]
 
     def fill_slot_data(self):
