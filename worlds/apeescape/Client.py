@@ -31,6 +31,7 @@ class ApeEscapeClient(BizHawkClient):
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
+
         return True
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
@@ -38,7 +39,11 @@ class ApeEscapeClient(BizHawkClient):
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         try:
-            x = 3
+            await bizhawk.write(ctx.bizhawk_ctx, [
+                (0x0DFDCC, (0xFF).to_bytes(1, "little"), "MainRAM")
+            ])
+            level = ((await bizhawk.read(ctx.bizhawk_ctx, [(0x0F51C4, 1, "MainRAM")]))[0])
+            print(level)
 
         except bizhawk.RequestFailedError:
             # Exit handler and return to main loop to reconnect

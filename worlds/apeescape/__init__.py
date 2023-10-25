@@ -10,6 +10,7 @@ from .Items import item_table, ItemData, nothing_item_id, event_table, ApeEscape
 from .Locations import location_table, base_location_id
 from .Regions import create_regions
 from .Rules import set_rules
+from .Client import ApeEscapeClient
 
 from worlds.LauncherComponents import Component, components, SuffixIdentifier
 
