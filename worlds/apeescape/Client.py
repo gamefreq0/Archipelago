@@ -33,6 +33,7 @@ class ApeEscapeClient(BizHawkClient):
 
     def __init__(self) -> None:
         super().__init__()
+        self.game = "Ape Escape"
         self.local_checked_locations = set()
         self.local_set_events = {}
         self.local_found_key_items = {}
@@ -50,6 +51,9 @@ class ApeEscapeClient(BizHawkClient):
             await bizhawk.write(ctx.bizhawk_ctx, [
                 (self.trainingroomaddr, (0xFF).to_bytes(1, "little"), "MainRAM")
             ])
+
+            gadgets_to_give = ctx.items_received
+
 
             readresult = ((await bizhawk.read(ctx.bizhawk_ctx,[
                 (self.monkeystatesaddr, 1, "MainRAM"),
@@ -84,10 +88,13 @@ class ApeEscapeClient(BizHawkClient):
                     (self.monkeystatesaddr+19, 1, "MainRAM")
                     ])))
                 monkeys_to_send = set()
+                decrement = 0
                 for x in range(20):
                     val = int.from_bytes(readmonkeys[x], byteorder='little')
                     if val == 2:
-                        monkeys_to_send.add(x+self.offset)
+                        monkeys_to_send.add(x+self.offset-decrement)
+                    elif val == 0:
+                        decrement = decrement + 1
                 if monkeys_to_send is not None:
                     await ctx.send_msgs([{
                         "cmd": "LocationsChecks",
