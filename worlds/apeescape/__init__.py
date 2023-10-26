@@ -46,7 +46,7 @@ class ApeEscapeWorld(World):
     """
     Funni monke game
     """
-    game: ClassVar[str] = "Ape Escape"
+    game = "Ape Escape"
     web: ClassVar[WebWorld] = ApeEscapeWeb()
 
     item_name_to_id = item_table
