@@ -61,6 +61,7 @@ class ApeEscapeWorld(World):
 
     def __init__(self, world: MultiWorld, player: int):
         super().__init__(world, player)
+        self.game = "Ape Escape"
 
     def create_regions(self):
         create_regions(self.multiworld, self.player)

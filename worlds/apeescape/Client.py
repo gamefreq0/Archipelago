@@ -30,17 +30,137 @@ class ApeEscapeClient(BizHawkClient):
     leveladdr = 0x0F4476
     levelsavebankaddr = 0x0DFC98
     monkeystatesaddr = 0x0DFE00
+    gamestateaddr = 0x0F4470 #0B in level, 0A loading, 09 Menu
+    levelunlockaddr = 0x0DFC70
+
+    monkeyaddrs = {
+        1: {
+            1: 0x0DFE00,
+            2: 0x0DFE02,
+            3: 0x0DFE01,
+            4: 0x0DFE03
+        },
+        2: {
+            1: 0x0DFE00,
+            2: 0x0DFE01,
+            3: 0x0DFE03,
+            4: 0x0DFE04,
+            5: 0x0DFE05,
+            6: 0x0DFE02
+        },
+        3: {
+            1: 0x0DFE00,
+            2: 0x0DFE01,
+            7: 0x0DFE03,
+            3: 0x0DFE02
+        },
+        4: { #3 sub area
+            4: 0x0DFE19,
+            5: 0x0DFE18
+        },
+        5: { #3 sub area
+            6: 0x0DFE30
+        },
+        6: {
+            1: 0x0DFE00,
+            2: 0x0DFE01,
+            3: 0x0DFE02
+        },
+        7: { #6 sub area
+            12: 0x0DFE18,
+            13: 0x0DFE1A,
+            14: 0x0DFE19
+        },
+        8: { #6 sub area
+            6: 0x0DFE32,
+            4: 0x0DFE30,
+            5: 0x0DFE31
+        },
+        9: { #6 sub area
+            7: 0x0DFE49,
+            8: 0x0DFE48,
+            9: 0x0DFE4A
+        },
+        10: { #6 sub area
+            10: 0x0DFE61,
+            11: 0x0DFE60
+        },
+        11: {
+            1: 0x0DFE04,
+            2: 0x0DFE00,
+            3: 0x0DFE03,
+            6: 0x0DFE01,
+            11: 0x0DFE02
+        },
+        12: { #sub area of 11
+            4: 0x0DFE18,
+            5: 0x0DFE19
+        },
+        13: { #sub area of 11
+            7: 0x0DFE32,
+            10: 0x0DFE30,
+            12: 0x0DFE31
+        },
+        14: { #sub area of 11
+            8: 0x0DFE48,
+            9: 0x0DFE49,
+            13: 0x0DFE4A
+        },
+        15: {
+            5: 0x0DFE01,
+            7: 0x0DFE00
+        },
+        16: { #sub area of 15
+            1: 0x0DFE18
+        },
+        17: { #sub area of 15
+            2: 0x0DFE30,
+            3: 0x0DFE32,
+            6: 0x0DFE31
+        },
+        18: { #sub area of 16
+            4: 0x0DFE48,
+            8: 0x0DFE49
+        },
+        20: {
+            1: 0x0DFE00,
+            2: 0x0DFE01,
+            3: 0x0DFE02,
+            4: 0x0DFE03
+        },
+        21: { #sub area of 20
+            5: 0x0DFE18,
+            6: 0x0DFE1A,
+            7: 0x0DFE1B,
+            8: 0x0DFE19
+        },
+        22: {
+            1: 0x0DFE00,
+            2: 0x0DFE01,
+            7: 0x0DFE02, #doesn't match ign
+            4: 0x0DFE03
+        },
+        23: { #sub area 22
+            5: 0x0DFE18,
+            3: 0x0DFE19, #doesn't match ign
+            6: 0x0DFE1B,
+            8: 0x0DFE1A
+        }
+    }
+
 
     def __init__(self) -> None:
         super().__init__()
         self.game = "Ape Escape"
+
         self.local_checked_locations = set()
         self.local_set_events = {}
         self.local_found_key_items = {}
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
-
+        ctx.game = self.game
+        ctx.items_handling = 0b011
         return True
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
@@ -92,13 +212,54 @@ class ApeEscapeClient(BizHawkClient):
                 for x in range(20):
                     val = int.from_bytes(readmonkeys[x], byteorder='little')
                     if val == 2:
-                        monkeys_to_send.add(x+self.offset-decrement)
+                        monkeys_to_send.add(x+self.offset-decrement+1)
                     elif val == 0:
                         decrement = decrement + 1
                 if monkeys_to_send is not None:
+                    levelbase = 0
+                    if level == 1:
+                        levelbase = 0
+                    elif level == 2:
+                        levelbase = 4
+                    elif level == 3:
+                        levelbase = 10
+                    elif level == 6:
+                        levelbase = 17
+                    elif level == 11:
+                        levelbase = 31
+                    elif level == 15:
+                        levelbase = 44
+                    elif level == 20:
+                        levelbase = 52
+                    elif level == 22:
+                        levelbase = 60
+                    elif level == 24:
+                        levelbase = 68
+                    elif level == 29:
+                        levelbase = 79
+                    elif level == 30:
+                        levelbase = 85
+                    elif level == 33:
+                        levelbase = 94
+                    elif level == 37:
+                        levelbase = 103
+                    elif level == 40:
+                        levelbase = 115
+                    elif level == 45:
+                        levelbase = 125
+                    elif level == 53:
+                        levelbase = 145
+                    elif level == 56:
+                        levelbase = 158
+                    elif level == 63:
+                        levelbase = 168
+                    elif level == 69:
+                        levelbase = 180
+
+
                     await ctx.send_msgs([{
-                        "cmd": "LocationsChecks",
-                        "locations": list(monkeys_to_send)
+                        "cmd": "LocationChecks",
+                        "locations": list(x+levelbase for x in monkeys_to_send)
                     }])
 
 
