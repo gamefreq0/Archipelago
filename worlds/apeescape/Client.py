@@ -602,6 +602,13 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "LocationChecks",
                         "locations": list(x + levelbase for x in monkeys_to_send)
                     }])
+            elif gamestate == 0xC and level == 86:
+                victory = set()
+                victory.add(205+self.offset)
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in victory)
+                }])
 
             self.levelglobal = level
 
