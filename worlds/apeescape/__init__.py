@@ -88,7 +88,7 @@ class ApeEscapeWorld(World):
 
         radar = self.create_item("Monkey Radar")
         shooter = self.create_item("Slingback Shooter")
-        hoop = self.create_item("Dash Hoop")
+        hoop = self.create_item("Super Hoop")
         flyer = self.create_item("Sky Flyer")
         car = self.create_item("R.C. Car")
         punch = self.create_item("Magic Punch")
@@ -97,6 +97,24 @@ class ApeEscapeWorld(World):
         self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
 
         self.multiworld.itempool += [self.create_item("World Key") for i in range(0, 6)]
+
+        #DEBUG
+        #key1 = self.create_item("World Key")
+        #key2 = self.create_item("World Key")
+        #key3 = self.create_item("World Key")
+        #key4 = self.create_item("World Key")
+        #key5 = self.create_item("World Key")
+        #key6 = self.create_item("World Key")
+
+
+        #self.multiworld.get_location("1-1 Fossil Field Monkey 1", self.player).place_locked_item(key1)
+        #self.multiworld.get_location("1-1 Fossil Field Monkey 2", self.player).place_locked_item(key2)
+        #self.multiworld.get_location("1-1 Fossil Field Monkey 3", self.player).place_locked_item(key3)
+        #self.multiworld.get_location("1-2 Primordial Ooze Monkey 1", self.player).place_locked_item(key4)
+        #self.multiworld.get_location("1-2 Primordial Ooze Monkey 2", self.player).place_locked_item(key5)
+        #self.multiworld.get_location("1-2 Primordial Ooze Monkey 3", self.player).place_locked_item(key6)
+
+
 
         self.multiworld.get_location("9-1 Specter", self.player).place_locked_item(victory)
 

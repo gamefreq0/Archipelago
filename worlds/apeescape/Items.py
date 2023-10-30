@@ -23,17 +23,20 @@ nothing_item_id = base_apeescape_item_id
 # location of room and position data)
 item_table = {
     #Gadgets
-    "Monkey Radar": 0xB,
-    "Slingback Shooter": 0xC,
-    "Dash Hoop": 0xD,
-    "Sky Flyer": 0xA,
-    "R.C. Car": 0x11,
-    "Magic Punch": 0x12,
+    #"Stun Club": 0x1,
+    #"Time Net": 0x2,
+    "Monkey Radar": 0x4,
+    "Slingback Shooter": 0x8,
+    "Super Hoop": 0x10,
+    "Magic Punch": 0x20,
+    "Sky Flyer": 0x40,
+    "R.C. Car": 0x80,
+
 
     #Keys
-    "World Key": 0x13,
+    "World Key": 0x100,
 
-    "Victory": 0x14,
+    "Victory": 0x200,
 
     "nothing": 0x0
 }
