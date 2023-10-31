@@ -13,10 +13,10 @@ class ApeEscapeLocation(Location):
 
 location_table = {
     #1-1 Fossil Field
-    "1-1 Fossil Field Monkey 1": 1,
-    "1-1 Fossil Field Monkey 2": 2,
-    "1-1 Fossil Field Monkey 3": 3,
-    "1-1 Fossil Field Monkey 4": 4,
+    "1-1 Fossil Field Monkey 1 - Noonan": 1,
+    "1-1 Fossil Field Monkey 2 - Jorjy": 2,
+    "1-1 Fossil Field Monkey 3 - Nati": 3,
+    "1-1 Fossil Field Monkey 4 - Tray C": 4,
     #1-2 Primordial Ooze
     "1-2 Primordial Ooze Monkey 1": 5,
     "1-2 Primordial Ooze Monkey 2": 6,
