@@ -39,5 +39,6 @@ def set_rules(world, player: int):
     connect_regions(world, player, "w9", "9-1", lambda state: True)
 
     connect_regions(world, player, "1-1", "1-1 Ledge", lambda state: state.has("Sky Flyer", player, 1))
+    connect_regions(world, player, "1-3", "1-3 Tri", lambda state: state.has("Slingback Shooter", player, 1))
 
     world.completion_condition[player] = lambda state: state.has("Victory", player, 1)
