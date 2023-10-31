@@ -16,7 +16,6 @@ def set_rules(world, player: int):
     connect_regions(world, player, "w7", "w8", lambda state: state.has("World Key", player, 5))
     connect_regions(world, player, "w8", "w9", lambda state: state.has("World Key", player, 6))
 
-
     connect_regions(world, player, "w1", "1-1", lambda state: True)
     connect_regions(world, player, "w1", "1-2", lambda state: True)
     connect_regions(world, player, "w1", "1-3", lambda state: True)
@@ -39,6 +38,23 @@ def set_rules(world, player: int):
     connect_regions(world, player, "w9", "9-1", lambda state: True)
 
     connect_regions(world, player, "1-1", "1-1 Ledge", lambda state: state.has("Sky Flyer", player, 1))
+
     connect_regions(world, player, "1-3", "1-3 Tri", lambda state: state.has("Slingback Shooter", player, 1))
+
+    connect_regions(world, player, "2-1", "2-1 Mush", lambda state: state.has("Sky Flyer", player, 1))
+    connect_regions(world, player, "2-1", "2-1 Hang", lambda state:
+        state.has("Slingback Shooter", player, 1)
+        or state.has("Sky Flyer", player, 1))
+    connect_regions(world, player, "2-1", "2-1 UFO", lambda state: state.has("Slingback Shooter", player, 1))
+
+    connect_regions(world, player, "2-2", "2-2 Fast", lambda state: state.has("Super Hoop", player, 1))
+    connect_regions(world, player, "2-2", "2-2 Fan", lambda state:
+        state.has("Super Hoop", player, 1)
+        or state.has("Slingback Shooter", player, 1)
+        or state.has("Magic Punch", player, 1))
+    connect_regions(world, player, "2-2", "2-2 Vine", lambda state: state.has("Slingback Shooter", player, 1))
+    connect_regions(world, player, "2-2", "2-2 Base", lambda state:
+        state.has("Super Hoop", player, 1)
+        or state.has("Slingback Shooter", player, 1))
 
     world.completion_condition[player] = lambda state: state.has("Victory", player, 1)
