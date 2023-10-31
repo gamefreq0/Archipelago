@@ -57,4 +57,15 @@ def set_rules(world, player: int):
         state.has("Super Hoop", player, 1)
         or state.has("Slingback Shooter", player, 1))
 
+    connect_regions(world, player, "2-3", "2-3 SF", lambda state:
+        state.has("Slingback Shooter", player, 1)
+        or state.has("Sky Flyer", player, 1))
+    connect_regions(world, player, "2-3", "2-3 SP", lambda state:
+    state.has("Slingback Shooter", player, 1)
+    or state.has("Magic Punch", player, 1))
+    connect_regions(world, player, "2-3", "2-3 SPC", lambda state:
+    (state.has("Slingback Shooter", player, 1)
+    or state.has("Sky Flyer", player, 1))
+    and state.has("R.C. Car", player, 1))
+
     world.completion_condition[player] = lambda state: state.has("Victory", player, 1)

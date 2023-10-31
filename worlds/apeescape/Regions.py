@@ -84,7 +84,23 @@ def create_regions(world: MultiWorld, player: int):
 
     l23 = Region("2-3", player, world)
     l23.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l23) for loc_name
-                      in get_range(45, 52)]
+                      in get_range(49, 49)]
+
+    l231 = Region("2-3 SF", player, world)
+    l231.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l231) for loc_name
+                      in get_range(45, 45)]
+    l231.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l231) for loc_name
+                       in get_range(51, 51)]
+
+    l232 = Region("2-3 SP", player, world)
+    l232.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l232) for loc_name
+                       in get_range(46, 48)]
+    l232.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l232) for loc_name
+                       in get_range(50, 50)]
+
+    l233 = Region("2-3 SPC", player, world)
+    l233.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l233) for loc_name
+                       in get_range(52, 52)]
 
     l41 = Region("4-1", player, world)
     l41.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l41) for loc_name
@@ -143,14 +159,14 @@ def create_regions(world: MultiWorld, player: int):
                               l11, l12, l13, l21, l22, l23, l41, l42, l43,
                               l51, l52, l53, l71, l72, l73, l81, l82, l83, l91,
                               l111,l131,
-                              l211,l212,l213,l221,l222,l223,l224])
+                              l211,l212,l213,l221,l222,l223,l224,l231,l232,l233])
 
     world.regions.extend([menu,
                           w1, w2, w3, w4, w5, w6, w7, w8, w9,
                           l11, l12, l13, l21, l22, l23, l41, l42, l43,
                           l51, l52, l53, l71, l72, l73, l81, l82, l83, l91,
                           l111, l131,
-                          l211, l212, l213, l221, l222, l223, l224])
+                          l211,l212,l213,l221,l222,l223,l224,l231,l232,l233])
 
 
 
