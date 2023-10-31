@@ -18,12 +18,12 @@ location_table = {
     "1-1 Fossil Field Monkey 3 - Nati": 3,
     "1-1 Fossil Field Monkey 4 - Tray C": 4,
     #1-2 Primordial Ooze
-    "1-2 Primordial Ooze Monkey 1": 5,
-    "1-2 Primordial Ooze Monkey 2": 6,
-    "1-2 Primordial Ooze Monkey 3": 7,
-    "1-2 Primordial Ooze Monkey 4": 8,
-    "1-2 Primordial Ooze Monkey 5": 9,
-    "1-2 Primordial Ooze Monkey 6": 10,
+    "1-2 Primordial Ooze Monkey 1 - Shay": 5,
+    "1-2 Primordial Ooze Monkey 2 - Dr. Monk": 6,
+    "1-2 Primordial Ooze Monkey 3 - Grunt": 7,
+    "1-2 Primordial Ooze Monkey 4 - Ah-choo": 8,
+    "1-2 Primordial Ooze Monkey 5 - Gornif": 9,
+    "1-2 Primordial Ooze Monkey 6 - Tyrone": 10,
     #1-3 Molten Lava
     "1-3 Molten Lava Monkey 1": 11,
     "1-3 Molten Lava Monkey 2": 12,
