@@ -436,9 +436,9 @@ class ApeEscapeClient(BizHawkClient):
                 (self.levelunlockaddr + 13, 1, "MainRAM")
             ])))
 
-            if int.from_bytes(bosses[0]) == 1:
+            if int.from_bytes(bosses[0], byteorder="little") == 1:
                 self.boss1flag = 1
-            if int.from_bytes(bosses[1]) == 1:
+            if int.from_bytes(bosses[1], byteorder="little") == 1:
                 self.boss2flag = 1
 
 
