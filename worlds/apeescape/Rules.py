@@ -68,7 +68,7 @@ def set_rules(world, player: int):
         or state.has("Sky Flyer", player, 1))
         and state.has("R.C. Car", player, 1))
 
-    connect_regions(world, player, "4-1", "4-1 S", lambda state: state.has("Slingback Shooter", player, 1))
+    connect_regions(world, player, "4-1", "4-1 F", lambda state: state.has("Sky Flyer", player, 1))
     connect_regions(world, player, "4-1", "4-1 SF", lambda state:
         state.has("Slingback Shooter", player, 1)
         and state.has("Sky Flyer", player, 1))
