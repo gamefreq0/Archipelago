@@ -353,6 +353,12 @@ class ApeEscapeClient(BizHawkClient):
         72: {
             185: 0x0DFE00
         },
+        73: {
+
+        },
+        74: {
+
+        },
         75: {
             186: 0x0DFE48
         },
