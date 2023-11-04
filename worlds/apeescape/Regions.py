@@ -205,7 +205,7 @@ def create_regions(world: MultiWorld, player: int):
                               l111,l131,
                               l211,l212,l213,l221,l222,l223,l224,l231,l232,l233,
                               l411,l412,l421,l431,l432,
-                              l511])
+                              l511, l522])
 
     world.regions.extend([menu,
                           w1, w2, w3, w4, w5, w6, w7, w8, w9,
@@ -214,7 +214,7 @@ def create_regions(world: MultiWorld, player: int):
                           l111, l131,
                           l211,l212,l213,l221,l222,l223,l224,l231,l232,l233,
                           l411,l412,l421,l431,l432,
-                          l511])
+                          l511, l522])
 
 
 
