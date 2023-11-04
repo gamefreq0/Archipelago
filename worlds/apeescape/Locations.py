@@ -101,12 +101,12 @@ location_table = {
     "4-3 Dexters Island Monkey 10 - Horke": 78,
     "4-3 Dexters Island Monkey 11 - Quirck": 79,
     #5-1 Snowy Mammoth
-    "5-1 Snowy Mammoth Monkey 1": 80,
-    "5-1 Snowy Mammoth Monkey 2": 81,
-    "5-1 Snowy Mammoth Monkey 3": 82,
-    "5-1 Snowy Mammoth Monkey 4": 83,
-    "5-1 Snowy Mammoth Monkey 5": 84,
-    "5-1 Snowy Mammoth Monkey 6": 85,
+    "5-1 Snowy Mammoth Monkey 1 - Popcicle": 80,
+    "5-1 Snowy Mammoth Monkey 2 - Iced": 81,
+    "5-1 Snowy Mammoth Monkey 3 - Denggoy": 82,
+    "5-1 Snowy Mammoth Monkey 4 - Skeens": 83,
+    "5-1 Snowy Mammoth Monkey 5 - Rickets": 84,
+    "5-1 Snowy Mammoth Monkey 6 - Chilly": 85,
     #5-2 Frosty Retreat
     "5-2 Frosty Retreat Monkey 1": 86,
     "5-2 Frosty Retreat Monkey 2": 87,
