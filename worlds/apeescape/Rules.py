@@ -26,7 +26,7 @@ def set_rules(world, player: int):
     connect_regions(world, player, "w4", "4-2", lambda state: True)
     connect_regions(world, player, "w4", "4-3", lambda state: True)
     connect_regions(world, player, "w5", "5-1", lambda state: True)
-    connect_regions(world, player, "w5", "5-2", lambda state: True)
+    connect_regions(world, player, "w5", "5-2", lambda state: state.has("Sky Flyer", player, 1))
     connect_regions(world, player, "w5", "5-3", lambda state: True)
     connect_regions(world, player, "w7", "7-1", lambda state: True)
     connect_regions(world, player, "w7", "7-2", lambda state: True)

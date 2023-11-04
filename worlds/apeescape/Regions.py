@@ -158,7 +158,13 @@ def create_regions(world: MultiWorld, player: int):
 
     l52 = Region("5-2", player, world)
     l52.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l52) for loc_name
-                      in get_range(86, 94)]
+                      in get_range(86, 90)]
+    l52.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l52) for loc_name
+                      in get_range(92, 94)]
+
+    l522 = Region("5-2 S", player, world)
+    l522.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l522) for loc_name
+                      in get_range(91, 91)]
 
     l53 = Region("5-3", player, world)
     l53.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l53) for loc_name
