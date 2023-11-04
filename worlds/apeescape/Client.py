@@ -397,6 +397,9 @@ class ApeEscapeClient(BizHawkClient):
             203: 0x0DFE60,
             204: 0x0DFE61
         },
+        83: {
+
+        },
         84: {
             198: 0x0DFE90,
             199: 0x0DFE91,
@@ -404,6 +407,9 @@ class ApeEscapeClient(BizHawkClient):
         },
         85: {
             191: 0x0DFEA8
+        },
+        86: {
+            
         }
     }
 
