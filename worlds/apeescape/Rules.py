@@ -84,5 +84,7 @@ def set_rules(world, player: int):
 
     connect_regions(world, player, "5-2", "5-2 S", lambda state: state.has("Slingback Shooter", player, 1))
 
+    connect_regions(world, player, "5-3", "5-3 F", lambda state: state.has("Sky Flyer", player, 1))
+
 
     world.completion_condition[player] = lambda state: state.has("Victory", player, 1)
