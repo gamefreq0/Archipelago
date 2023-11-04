@@ -449,6 +449,7 @@ class ApeEscapeClient(BizHawkClient):
                 if (item.item-self.offset) >= 0x1 and (item.item-self.offset) <= 0x80:
                     if gadgetstate | (item.item-self.offset) != gadgetstate:
                         gadgetstate = gadgetstate | (item.item-self.offset)
+                        gadgetstate = gadgetstate | 3
                 elif item.item-self.offset == 0x100:
                     self.worldkeycount = self.worldkeycount + 1
 
