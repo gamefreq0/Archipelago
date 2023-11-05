@@ -116,7 +116,7 @@ class ApeEscapeWorld(World):
 
 
 
-        self.multiworld.get_location("9-1 Specter", self.player).place_locked_item(victory)
+        self.multiworld.get_location("9-1 Monkey Madness - Specter", self.player).place_locked_item(victory)
 
         remaining = 360#(len(location_table) - len(self.multiworld.itempool))-25
         self.multiworld.itempool += [self.create_item_filler("nothing") for i in range(0, remaining)]

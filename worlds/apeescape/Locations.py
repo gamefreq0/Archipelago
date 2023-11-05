@@ -1,6 +1,8 @@
 from BaseClasses import Location
 import typing
 
+from worlds.apeescape.Strings import AELocation
+
 base_location_id = 128000000
 
 
@@ -13,25 +15,25 @@ class ApeEscapeLocation(Location):
 
 location_table = {
     #1-1 Fossil Field
-    "1-1 Fossil Field Monkey 1 - Noonan": 1,
-    "1-1 Fossil Field Monkey 2 - Jorjy": 2,
-    "1-1 Fossil Field Monkey 3 - Nati": 3,
-    "1-1 Fossil Field Monkey 4 - Tray C": 4,
+    AELocation.Noonan.value: 1,
+    AELocation.Jorjy.value: 2,
+    AELocation.Nati.value: 3,
+    AELocation.TrayC.value: 4,
     #1-2 Primordial Ooze
-    "1-2 Primordial Ooze Monkey 1 - Shay": 5,
-    "1-2 Primordial Ooze Monkey 2 - Dr. Monk": 6,
-    "1-2 Primordial Ooze Monkey 3 - Grunt": 7,
-    "1-2 Primordial Ooze Monkey 4 - Ah-choo": 8,
-    "1-2 Primordial Ooze Monkey 5 - Gornif": 9,
-    "1-2 Primordial Ooze Monkey 6 - Tyrone": 10,
+    AELocation.Shay.value: 5,
+    AELocation.DrMonk.value: 6,
+    AELocation.Grunt.value: 7,
+    AELocation.Ahchoo.value: 8,
+    AELocation.Gornif.value: 9,
+    AELocation.Tyrone.value: 10,
     #1-3 Molten Lava
-    "1-3 Molten Lava Monkey 1 - Scotty": 11,
-    "1-3 Molten Lava Monkey 2 - Coco": 12,
-    "1-3 Molten Lava Monkey 3 - J. Thomas": 13,
-    "1-3 Molten Lava Monkey 4 - Mattie": 14,
-    "1-3 Molten Lava Monkey 5 - Barney": 15,
-    "1-3 Molten Lava Monkey 6 - Rocky": 16,
-    "1-3 Molten Lava Monkey 7 - Moggan": 17,
+    AELocation.Scotty.value: 11,
+    AELocation.Coco.value: 12,
+    AELocation.JThomas.value: 13,
+    AELocation.Mattie.value: 14,
+    AELocation.Barney.value: 15,
+    AELocation.Rocky.value: 16,
+    AELocation.Moggan.value: 17,
     #2-1 Thick Jungle
     "2-1 Thick Jungle Monkey 1 - Marquez": 18,
     "2-1 Thick Jungle Monkey 2 - Livinston": 19,
