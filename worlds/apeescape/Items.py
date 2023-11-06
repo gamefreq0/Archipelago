@@ -1,5 +1,6 @@
 from typing import Optional
 from BaseClasses import ItemClassification, Item
+from .Strings import AEItem
 
 base_apeescape_item_id = 128000000
 
@@ -23,22 +24,21 @@ nothing_item_id = base_apeescape_item_id
 # location of room and position data)
 item_table = {
     #Gadgets
-    #"Stun Club": 0x1,
-    #"Time Net": 0x2,
-    "Monkey Radar": 0x4,
-    "Slingback Shooter": 0x8,
-    "Super Hoop": 0x10,
-    "Magic Punch": 0x20,
-    "Sky Flyer": 0x40,
-    "R.C. Car": 0x80,
+    AEItem.Club.value: 0x1,
+    AEItem.Net.value: 0x2,
+    AEItem.Radar.value: 0x4,
+    AEItem.Sling.value: 0x8,
+    AEItem.Hoop.value: 0x10,
+    AEItem.Punch.value: 0x20,
+    AEItem.Flyer.value: 0x40,
+    AEItem.Car.value: 0x80,
 
+    AEItem.WaterNet.value: 0x400,
 
     #Keys
-    "World Key": 0x100,
-
-    "Victory": 0x200,
-
-    "nothing": 0x0
+    AEItem.Key.value: 0x100,
+    AEItem.Victory.value: 0x200,
+    AEItem.Nothing.value: 0x0
 }
 
 event_table = {

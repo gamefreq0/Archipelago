@@ -19,3 +19,38 @@ class AELocation(Enum):
     Barney = "1-3 Molten Lava Monkey 5 - Barney"
     Rocky = "1-3 Molten Lava Monkey 6 - Rocky"
     Moggan = "1-3 Molten Lava Monkey 7 - Moggan"
+
+class AERoom(Enum):
+    W1L1Main = "1-1 Main"
+    W1L1MainTrayC = "1-1 Main Tray C"
+    W1L2Main = "1-2 Main"
+    W1L2MainGrunt = "1-2 Main Grunt"
+    W1L2MainGornif = "1-2 Main Gornif"
+    W1L3Entry = "1-3 Entry"
+    W1l3Volcano = "1-3 Volcano"
+    W1L3Triceratops = "1-3 Triceratops Room"
+
+class AEWorld(Enum):
+    W1 = "World 1"
+    W2 = "World 2"
+    W3 = "World 3"
+    W4 = "World 4"
+    W5 = "World 5"
+    W6 = "World 6"
+    W7 = "World 7"
+    W8 = "World 8"
+    W9 = "World 9"
+
+class AEItem(Enum):
+    Club = "Stun Club"
+    Net = "Time Net"
+    Radar = "Monkey Radar"
+    Sling = "Slingback Shooter"
+    Hoop = "Super Hoop"
+    Punch = "Magic Punch"
+    Flyer = "Sky Flyer"
+    Car = "R.C. Car"
+    Key = "World Key"
+    Victory = "Victory"
+    Nothing = "Nothing"
+    WaterNet = "Water Net"

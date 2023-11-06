@@ -11,6 +11,7 @@ from .Locations import location_table, base_location_id
 from .Regions import create_regions
 from .Rules import set_rules
 from .Client import ApeEscapeClient
+from .Strings import AEItem, AELocation
 
 from worlds.LauncherComponents import Component, components, SuffixIdentifier
 
@@ -86,17 +87,19 @@ class ApeEscapeWorld(World):
 
     def create_items(self):
 
-        radar = self.create_item("Monkey Radar")
-        shooter = self.create_item("Slingback Shooter")
-        hoop = self.create_item("Super Hoop")
-        flyer = self.create_item("Sky Flyer")
-        car = self.create_item("R.C. Car")
-        punch = self.create_item("Magic Punch")
-        victory = self.create_item("Victory")
+        radar = self.create_item(AEItem.Radar.value)
+        shooter = self.create_item(AEItem.Sling.value)
+        hoop = self.create_item(AEItem.Hoop.value)
+        flyer = self.create_item(AEItem.Flyer.value)
+        car = self.create_item(AEItem.Car.value)
+        punch = self.create_item(AEItem.Punch.value)
+        victory = self.create_item(AEItem.Victory.value)
 
-        self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
+        waternet = self.create_item(AEItem.WaterNet.value)
 
-        self.multiworld.itempool += [self.create_item("World Key") for i in range(0, 6)]
+        self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch, waternet]
+
+        self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
 
         #DEBUG
         #key1 = self.create_item("World Key")
@@ -107,19 +110,19 @@ class ApeEscapeWorld(World):
         #key6 = self.create_item("World Key")
 
 
-        #self.multiworld.get_location("1-1 Fossil Field Monkey 1", self.player).place_locked_item(key1)
-        #self.multiworld.get_location("1-1 Fossil Field Monkey 2", self.player).place_locked_item(key2)
-        #self.multiworld.get_location("1-1 Fossil Field Monkey 3", self.player).place_locked_item(key3)
-        #self.multiworld.get_location("1-2 Primordial Ooze Monkey 1", self.player).place_locked_item(key4)
-        #self.multiworld.get_location("1-2 Primordial Ooze Monkey 2", self.player).place_locked_item(key5)
-        #self.multiworld.get_location("1-2 Primordial Ooze Monkey 3", self.player).place_locked_item(key6)
+        #self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(key1)
+        #self.multiworld.get_location(AELocation.Jorjy.value, self.player).place_locked_item(key2)
+        #self.multiworld.get_location(AELocation.Nati.value, self.player).place_locked_item(key3)
+        #self.multiworld.get_location(AELocation.Shay.value, self.player).place_locked_item(key4)
+        #self.multiworld.get_location(AELocation.DrMonk.value, self.player).place_locked_item(key5)
+        #self.multiworld.get_location(AELocation.Ahchoo.value, self.player).place_locked_item(key6)
 
 
 
         self.multiworld.get_location("9-1 Monkey Madness - Specter", self.player).place_locked_item(victory)
 
-        remaining = 360#(len(location_table) - len(self.multiworld.itempool))-25
-        self.multiworld.itempool += [self.create_item_filler("nothing") for i in range(0, remaining)]
+        remaining = 191#(len(location_table) - len(self.multiworld.itempool))-25
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, remaining)]
 
     def fill_slot_data(self):
         return {}

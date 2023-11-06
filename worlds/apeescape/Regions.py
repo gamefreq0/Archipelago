@@ -1,5 +1,6 @@
 from BaseClasses import MultiWorld, Region, Entrance
 from .Locations import location_table, ApeEscapeLocation
+from .Strings import AEWorld, AERoom
 
 def create_regions(world: MultiWorld, player: int):
 
@@ -7,38 +8,50 @@ def create_regions(world: MultiWorld, player: int):
     menu = Region("Menu", player, world)
 
     #worlds
-    w1 = Region("w1", player, world)
-    w2 = Region("w2", player, world)
-    w3 = Region("w3", player, world)
-    w4 = Region("w4", player, world)
-    w5 = Region("w5", player, world)
-    w6 = Region("w6", player, world)
-    w7 = Region("w7", player, world)
-    w8 = Region("w8", player, world)
-    w9 = Region("w9", player, world)
+    w1 = Region(AEWorld.W1.value, player, world)
+    w2 = Region(AEWorld.W2.value, player, world)
+    w3 = Region(AEWorld.W3.value, player, world)
+    w4 = Region(AEWorld.W4.value, player, world)
+    w5 = Region(AEWorld.W5.value, player, world)
+    w6 = Region(AEWorld.W6.value, player, world)
+    w7 = Region(AEWorld.W7.value, player, world)
+    w8 = Region(AEWorld.W8.value, player, world)
+    w9 = Region(AEWorld.W9.value, player, world)
 
-    #levels
-    l11 = Region("1-1", player, world)
+    #1-1
+    l11 = Region(AERoom.W1L1Main.value, player, world)
     l11.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l11) for loc_name
-                      in get_range(1,3)]
+                      in get_array([1,2,3])]
 
-    l111 = Region("1-1 Ledge", player, world)
+    l111 = Region(AERoom.W1L1MainTrayC.value, player, world)
     l111.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l111) for loc_name
-                      in get_range(4, 4)]
+                      in get_array([4])]
 
-    l12 = Region("1-2", player, world)
+    #1-2
+    l12 = Region(AERoom.W1L2Main.value, player, world)
     l12.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l12) for loc_name
-                      in get_range(5,10)]
+                      in get_array([5,6,8,10])]
 
-    l13 = Region("1-3", player, world)
-    l13.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l13) for loc_name
-                      in get_range(11,15)]
-    l13.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l13) for loc_name
-                      in get_range(17, 17)]
+    l121 = Region(AERoom.W1L2MainGrunt.value, player, world)
+    l121.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l121) for loc_name
+                      in get_array([7])]
 
-    l131 = Region("1-3 Tri", player, world)
+    l122 = Region(AERoom.W1L2MainGornif.value, player, world)
+    l122.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l122) for loc_name
+                       in get_array([9])]
+
+    #1-3
+    l13 = Region(AERoom.W1L3Entry.value, player, world)
+    l13.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l13) for loc_name
+                      in get_array([11,12,13,17])]
+
+    l131 = Region(AERoom.W1l3Volcano.value, player, world)
     l131.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l131) for loc_name
-                      in get_range(16, 16)]
+                      in get_array([14,15])]
+
+    l132 = Region(AERoom.W1L3Triceratops.value, player, world)
+    l132.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l132) for loc_name
+                       in get_array([16])]
 
     l21 = Region("2-1", player, world)
     l21.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l21) for loc_name
@@ -218,7 +231,7 @@ def create_regions(world: MultiWorld, player: int):
                               w1,w2,w3,w4,w5,w6,w7,w8,w9,
                               l11, l12, l13, l21, l22, l23, l41, l42, l43,
                               l51, l52, l53, l71, l72, l73, l81, l82, l83, l91,
-                              l111,l131,
+                              l111,l121,l122,l131,l132,
                               l211,l212,l213,l221,l222,l223,l224,l231,l232,l233,
                               l411,l412,l421,l431,l432,
                               l511, l522, l531,
@@ -228,7 +241,7 @@ def create_regions(world: MultiWorld, player: int):
                           w1, w2, w3, w4, w5, w6, w7, w8, w9,
                           l11, l12, l13, l21, l22, l23, l41, l42, l43,
                           l51, l52, l53, l71, l72, l73, l81, l82, l83, l91,
-                          l111, l131,
+                          l111,l121,l122,l131,l132,
                           l211,l212,l213,l221,l222,l223,l224,l231,l232,l233,
                           l411,l412,l421,l431,l432,
                           l511, l522, l531,
@@ -254,4 +267,12 @@ def get_range(i, j):
     for key, val in location_table.items():
         if int(val) >= i and int(val) <= j:
             res[key] = val
+    return res
+
+def get_array(array):
+    res = dict()
+    for i in array:
+        for key, val in location_table.items():
+            if int(val) == i + 128000000:
+                res[key] = val
     return res
