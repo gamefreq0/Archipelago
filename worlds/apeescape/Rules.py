@@ -20,17 +20,34 @@ def set_rules(world, player: int):
 
     #1-1
     connect_regions(world, player, AEWorld.W1.value, AERoom.W1L1Main.value, lambda state: True)
-    connect_regions(world, player, AERoom.W1L1Main.value, AERoom.W1L1MainTrayC.value, lambda state: state.has(AEItem.Flyer.value, player, 1))
+
+    connect_regions(world, player, AERoom.W1L1Main.value, AERoom.W1L1Noonan.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L1Main.value, AERoom.W1L1Jorjy.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L1Main.value, AERoom.W1L1Nati.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L1Main.value, AERoom.W1L1TrayC.value, lambda state: state.has(AEItem.Flyer.value, player, 1))
 
     #1-2
     connect_regions(world, player, AEWorld.W1.value, AERoom.W1L2Main.value, lambda state: True)
-    connect_regions(world, player, AERoom.W1L2Main.value, AERoom.W1L2MainGrunt.value, lambda state: state.has(AEItem.WaterNet.value, player, 1) or state.has(AEItem.Flyer.value, player, 1))
-    connect_regions(world, player, AERoom.W1L2Main.value, AERoom.W1L2MainGornif.value, lambda state: state.has(AEItem.WaterNet.value, player, 1))
+
+    connect_regions(world, player, AERoom.W1L2Main.value, AERoom.W1L2Shay.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L2Main.value, AERoom.W1L2DrMonk.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L2Main.value, AERoom.W1L2Grunt.value, lambda state: CanSwim(state, player) or state.has(AEItem.Flyer.value, player, 1))
+    connect_regions(world, player, AERoom.W1L2Main.value, AERoom.W1L2Ahchoo.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L2Main.value, AERoom.W1L2Gornif.value, lambda state: CanSwim(state, player))
+    connect_regions(world, player, AERoom.W1L2Main.value, AERoom.W1L2Tyrone.value, lambda state: NoRequirement())
 
     #1-3
     connect_regions(world, player, AEWorld.W1.value, AERoom.W1L3Entry.value, lambda state: True)
-    connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.W1l3Volcano.value, lambda state: True)
-    connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.W1L3Triceratops.value, lambda state: state.has(AEItem.Sling.value, player, 1))
+    connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.W1L3Volcano.value, lambda state: True)
+    connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.W1L3Triceratops.value, lambda state: True)
+
+    connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.W1L3Scotty.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.W1L3Coco.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.W1L3JThomas.value, lambda state: CanHitMultiple(state, player))
+    connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.W1L3Moggan.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L3Volcano.value, AERoom.W1L3Barney.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L3Volcano.value, AERoom.W1L3Mattie.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W1L3Triceratops.value, AERoom.W1L3Rocky.value, lambda state: state.has(AEItem.Sling.value, player, 1) and CanHitMultiple(state, player))
 
 
 
@@ -126,3 +143,12 @@ def HasMobility(state, player):
 
 def RCMonkey (state, player):
     return state.has(AEItem.Car.value, player, 1)
+
+def CanSwim(state, player):
+    return state.has(AEItem.WaterNet.value, player, 1)
+
+def CanDive(state, player):
+    return state.has(AEItem.WaterNet.value, player, 1)
+
+def CanWaterCatch(state, player):
+    return state.has(AEItem.WaterNet.value, player, 1)
