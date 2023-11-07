@@ -103,6 +103,8 @@ class ApeEscapeWorld(World):
 
         self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
 
+        self.multiworld.push_precollected(waternet)
+        self.multiworld.push_precollected(club)
         #DEBUG
         #key1 = self.create_item("World Key")
         #key2 = self.create_item("World Key")
