@@ -82,68 +82,132 @@ def create_regions(world: MultiWorld, player: int):
                           in get_array([17])]
 
     #2-1
-    l21 = Region("2-1", player, world)
-    l21.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l21) for loc_name
-                      in get_range(18, 26)]
+    l211 = Region(AERoom.W2L1Entry.value, player, world)
+    l212 = Region(AERoom.W2L1Mushroom.value, player, world)
+    l213 = Region(AERoom.W2L1Fish.value, player, world)
+    l214 = Region(AERoom.W2L1Tent.value, player, world)
+    l215 = Region(AERoom.W2L1Boulder.value, player, world)
+    marquez = Region(AERoom.W2L1Marquez.value, player, world)
+    marquez.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], marquez) for loc_name
+                         in get_array([18])]
+    livinston = Region(AERoom.W2L1Livinston.value, player, world)
+    livinston.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], livinston) for loc_name
+                         in get_array([19])]
+    george = Region(AERoom.W2L1George.value, player, world)
+    george.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], george) for loc_name
+                         in get_array([20])]
+    gonzo = Region(AERoom.W2L1Gonzo.value, player, world)
+    gonzo.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], gonzo) for loc_name
+                         in get_array([21])]
+    zanzibar = Region(AERoom.W2L1Zanzibar.value, player, world)
+    zanzibar.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], zanzibar) for loc_name
+                         in get_array([22])]
+    alphonse = Region(AERoom.W2L1Alphonse.value, player, world)
+    alphonse.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], alphonse) for loc_name
+                         in get_array([23])]
+    maki = Region(AERoom.W2L1Maki.value, player, world)
+    maki.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], maki) for loc_name
+                         in get_array([24])]
+    herb = Region(AERoom.W2L1Herb.value, player, world)
+    herb.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], herb) for loc_name
+                         in get_array([25])]
+    dilweed = Region(AERoom.W2L1Dilweed.value, player, world)
+    dilweed.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], dilweed) for loc_name
+                         in get_array([26])]
+    stoddy = Region(AERoom.W2L1Stoddy.value, player, world)
+    stoddy.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], stoddy) for loc_name
+                         in get_array([27])]
+    mitong = Region(AERoom.W2L1Mitong.value, player, world)
+    mitong.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mitong) for loc_name
+                         in get_array([28])]
+    nasus = Region(AERoom.W2L1Nasus.value, player, world)
+    nasus.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], nasus) for loc_name
+                         in get_array([29])]
+    elehcim = Region(AERoom.W2L1Elehcim.value, player, world)
+    elehcim.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], elehcim) for loc_name
+                         in get_array([30])]
+    selur = Region(AERoom.W2L1Selur.value, player, world)
+    selur.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], selur) for loc_name
+                        in get_array([31])]
 
-    l211 = Region("2-1 Mush", player, world)
-    l211.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l211) for loc_name
-                      in get_range(29, 31)]
+    #2-2
+    l221 = Region(AERoom.W2L2Outside.value, player, world)
+    l222 = Region(AERoom.W2L2Fan.value, player, world)
+    l223 = Region(AERoom.W2L2Obelisk.value, player, world)
+    l224 = Region(AERoom.W2L2Water.value, player, world)
 
-    l212 = Region("2-1 Hang", player, world)
-    l212.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l212) for loc_name
-                       in get_range(27, 27)]
+    mooshy = Region(AERoom.W2L2Mooshy.value, player, world)
+    mooshy.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mooshy) for loc_name in
+                         get_array([32])]
+    kyle = Region(AERoom.W2L2Kyle.value, player, world)
+    kyle.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], kyle) for loc_name in
+                       get_array([33])]
+    cratman = Region(AERoom.W2L2Cratman.value, player, world)
+    cratman.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], cratman) for loc_name in
+                          get_array([34])]
+    nuzzy = Region(AERoom.W2L2Nuzzy.value, player, world)
+    nuzzy.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], nuzzy) for loc_name in
+                        get_array([35])]
+    mav = Region(AERoom.W2L2Mav.value, player, world)
+    mav.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mav) for loc_name in
+                      get_array([36])]
+    stan = Region(AERoom.W2L2Stan.value, player, world)
+    stan.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], stan) for loc_name in
+                       get_array([37])]
+    bernt = Region(AERoom.W2L2Bernt.value, player, world)
+    bernt.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bernt) for loc_name in
+                       get_array([38])]
+    runt = Region(AERoom.W2L2Runt.value, player, world)
+    runt.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], runt) for loc_name in
+                        get_array([39])]
+    hoolah = Region(AERoom.W2L2Hoolah.value, player, world)
+    hoolah.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], hoolah) for loc_name in
+                       get_array([40])]
+    papou = Region(AERoom.W2L2Papou.value, player, world)
+    papou.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], papou) for loc_name in
+                         get_array([41])]
+    kenny = Region(AERoom.W2L2Kenny.value, player, world)
+    kenny.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], kenny) for loc_name in
+                        get_array([42])]
+    trance = Region(AERoom.W2L2Trance.value, player, world)
+    trance.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], trance) for loc_name in
+                        get_array([43])]
+    chino = Region(AERoom.W2L2Chino.value, player, world)
+    chino.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], chino) for loc_name in
+                         get_array([44])]
 
-    l213 = Region("2-1 UFO", player, world)
-    l213.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l213) for loc_name
-                       in get_range(28, 28)]
+    #2-3
+    l231 = Region(AERoom.W2L3Outside.value, player, world)
+    l232 = Region(AERoom.W2L3Side.value, player, world)
+    l233 = Region(AERoom.W2L3Main.value, player, world)
+    l234 = Region(AERoom.W2L3Pillar.value, player, world)
 
-    l22 = Region("2-2", player, world)
-    l22.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l22) for loc_name
-                      in get_range(33, 34)]
-    l22.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l22) for loc_name
-                      in get_range(36, 37)]
-    l22.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l22) for loc_name
-                      in get_range(40, 43)]
+    troopa = Region(AERoom.W2L3Troopa.value, player, world)
+    troopa.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], troopa) for loc_name in
+                        get_array([45])]
+    spanky = Region(AERoom.W2L3Spanky.value, player, world)
+    spanky.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], spanky) for loc_name in
+                         get_array([46])]
+    stymie = Region(AERoom.W2L3Stymie.value, player, world)
+    stymie.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], stymie) for loc_name in
+                         get_array([47])]
+    pally = Region(AERoom.W2L3Pally.value, player, world)
+    pally.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], pally) for loc_name in
+                         get_array([48])]
+    freeto = Region(AERoom.W2L3Freeto.value, player, world)
+    freeto.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], freeto) for loc_name in
+                        get_array([49])]
+    jesta = Region(AERoom.W2L3Jesta.value, player, world)
+    jesta.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jesta) for loc_name in
+                         get_array([50])]
+    bazzle = Region(AERoom.W2L3Bazzle.value, player, world)
+    bazzle.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bazzle) for loc_name in
+                        get_array([51])]
+    crash = Region(AERoom.W2L3Crash.value, player, world)
+    crash.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], crash) for loc_name in
+                         get_array([52])]
 
-    l221 = Region("2-2 Fast", player, world)
-    l221.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l221) for loc_name
-                      in get_range(32, 32)]
-
-    l222 = Region("2-2 Fan", player, world)
-    l222.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l222) for loc_name
-                       in get_range(35, 35)]
-
-    l223 = Region("2-2 Vine", player, world)
-    l223.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l223) for loc_name
-                       in get_range(38, 38)]
-
-    l224 = Region("2-2 Base", player, world)
-    l224.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l224) for loc_name
-                       in get_range(39, 39)]
-    l224.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l224) for loc_name
-                       in get_range(44, 44)]
-
-    l23 = Region("2-3", player, world)
-    l23.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l23) for loc_name
-                      in get_range(49, 49)]
-
-    l231 = Region("2-3 SF", player, world)
-    l231.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l231) for loc_name
-                      in get_range(45, 45)]
-    l231.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l231) for loc_name
-                       in get_range(51, 51)]
-
-    l232 = Region("2-3 SP", player, world)
-    l232.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l232) for loc_name
-                       in get_range(46, 48)]
-    l232.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l232) for loc_name
-                       in get_range(50, 50)]
-
-    l233 = Region("2-3 SPC", player, world)
-    l233.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l233) for loc_name
-                       in get_range(52, 52)]
-
+    #4-1
     l41 = Region("4-1", player, world)
     l41.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l41) for loc_name
                       in get_range(53, 57)]
@@ -261,7 +325,10 @@ def create_regions(world: MultiWorld, player: int):
                               l11, noonan, jorjy, nati, trayc,
                               l12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
                               l131, l132, l133, scotty, coco, jthomas, mattie, barney, rocky, moggan,
-                              l21, l22, l23, l41, l42, l43,
+                              l211, l212, l213, l214, l215, marquez, livinston, george, maki, herb, dilweed, mitong, stoddy, nasus, selur, elehcim, gonzo, alphonse, zanzibar,
+                              l221, l222, l223, l224, kyle, stan, kenny, cratman, mooshy, nuzzy, mav, papou, trance, bernt, runt, hoolah, chino,
+                              l231, l232, l233, l234, bazzle, freeto, troopa, stymie, spanky, jesta, pally, crash,
+                              l41, l42, l43,
                               l51, l52, l53, l71, l72, l73, l81, l82, l83, l91,
                               l131,l132,
                               l211,l212,l213,l221,l222,l223,l224,l231,l232,l233,
@@ -274,7 +341,12 @@ def create_regions(world: MultiWorld, player: int):
                           l11, noonan, jorjy, nati, trayc,
                           l12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
                           l131, l132, l133, scotty, coco, jthomas, mattie, barney, rocky, moggan,
-                          l21, l22, l23, l41, l42, l43,
+                          l211, l212, l213, l214, l215, marquez, livinston, george, maki, herb, dilweed, mitong, stoddy,
+                          nasus, selur, elehcim, gonzo, alphonse, zanzibar,
+                          l221, l222, l223, l224, kyle, stan, kenny, cratman, mooshy, nuzzy, mav, papou, trance, bernt,
+                          runt, hoolah, chino,
+                          l231, l232, l233, l234, bazzle, freeto, troopa, stymie, spanky, jesta, pally, crash,
+                          l41, l42, l43,
                           l51, l52, l53, l71, l72, l73, l81, l82, l83, l91,
                           l131, l132,
                           l211, l212, l213, l221, l222, l223, l224, l231, l232, l233,

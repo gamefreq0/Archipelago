@@ -49,6 +49,7 @@ class ApeEscapeWorld(World):
     """
     game = "Ape Escape"
     web: ClassVar[WebWorld] = ApeEscapeWeb()
+    topology_present = True
 
     item_name_to_id = item_table
 
@@ -96,8 +97,9 @@ class ApeEscapeWorld(World):
         victory = self.create_item(AEItem.Victory.value)
 
         waternet = self.create_item(AEItem.WaterNet.value)
+        club = self.create_item(AEItem.Club.value)
 
-        self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch, waternet]
+        self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch, waternet, club]
 
         self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
 
