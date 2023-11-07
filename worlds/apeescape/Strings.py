@@ -440,6 +440,13 @@ class AERoom(Enum):
     W4L3Slide = "4-3 Slide Room"
     W4L3Gallery = "4-3 Gallery/Boulder"
     W4L3Tentacle = "4-3 Tentacle Room"
+    W5L1Main = "5-1 Main"
+    W8L3Outside = "8-3 Outside"
+    W8L3Water = "8-3 Water Basement"
+    W8L3Lobby = "8-3 Lobby"
+    W8L3Tank = "8-3 Tank Room"
+    W8L3Fan = "8-3 Fan Room"
+
 
 class AEWorld(Enum):
     W1 = "World 1"

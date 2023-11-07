@@ -307,15 +307,17 @@ def create_regions(world: MultiWorld, player: int):
                         get_array([79])]
 
     #5-1
-    l51 = Region("5-1", player, world)
-    l51.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l51) for loc_name
-                      in get_range(80, 83)]
-    l51.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l51) for loc_name
-                      in get_range(85, 85)]
+    l51 = Region(AERoom.W5L1Main.value, player, world)
 
-    l511 = Region("5-1 S", player, world)
-    l511.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l511) for loc_name
-                      in get_range(84, 84)]
+    popcicle = Region(AERoom.W5L1Popcicle.value, player, world)
+    popcicle.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], popcicle) for loc_name in
+                         get_array([80])]
+    iced = Region(AERoom.W5L1Iced.value, player, world)
+    iced.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], iced) for loc_name in
+                           get_array([81])]
+    denggoy = Region(AERoom.W5L1Denggoy.value, player, world)
+    denggoy.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], denggoy) for loc_name in
+                       get_array([82])]
 
     l52 = Region("5-2", player, world)
     l52.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l52) for loc_name
