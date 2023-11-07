@@ -107,9 +107,52 @@ def set_rules(world, player: int):
     connect_regions(world, player, AERoom.W2L3Pillar.value, AERoom.W2L3Crash.value, lambda state: CR_Inside(state, player) and state.has(AEItem.Car.value, player, 1))
 
     #4-1
-    connect_regions(world, player, AEWorld.W4.value, "4-1", lambda state: True)
-    connect_regions(world, player, AEWorld.W4.value, "4-2", lambda state: True)
-    connect_regions(world, player, AEWorld.W4.value, "4-3", lambda state: True)
+    connect_regions(world, player, AEWorld.W4.value, AERoom.W4L1FirstRoom.value, lambda state: True)
+    connect_regions(world, player, AERoom.W4L1FirstRoom.value, AERoom.W4L1SecondRoom.value, lambda state: True)
+
+    connect_regions(world, player, AERoom.W4L1FirstRoom.value, AERoom.W4L1CoolBlue.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W4L1FirstRoom.value, AERoom.W4L1Sandy.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W4L1FirstRoom.value, AERoom.W4L1ShellE.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W4L1FirstRoom.value, AERoom.W4L1Gidget.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W4L1SecondRoom.value, AERoom.W4L1Shaka.value, lambda state: NoRequirement())
+    connect_regions(world, player, AERoom.W4L1SecondRoom.value, AERoom.W4L1Puka.value, lambda state: CanHitMultiple(state, player) or state.has(AEItem.Flyer.value, player, 1))
+    connect_regions(world, player, AERoom.W4L1SecondRoom.value, AERoom.W4L1MaxMahalo.value, lambda state: state.has(AEItem.Sling.value, player, 1) and state.has(AEItem.Flyer.value, player, 1))
+    connect_regions(world, player, AERoom.W4L1SecondRoom.value, AERoom.W4L1Moko.value, lambda state: state.has(AEItem.Flyer.value, player, 1))
+
+    #4-2
+    connect_regions(world, player, AEWorld.W4.value, AERoom.W4L2FirstRoom.value, lambda state: True)
+    connect_regions(world, player, AERoom.W4L2FirstRoom.value, AERoom.W4L2SecondRoom.value, lambda state: True)
+
+    connect_regions(world, player, AERoom.W4L2FirstRoom.value, AERoom.W4L2Chip.value, lambda state: CanSwim(state, player) and CanWaterCatch(state, player))
+    connect_regions(world, player, AERoom.W4L2FirstRoom.value, AERoom.W4L2Oreo.value, lambda state: (state.has(AEItem.Hoop.value, player, 1) and CanHitMultiple(state, player) and CanSwim(state, player)) or HasMobility(state, player))
+    connect_regions(world, player, AERoom.W4L2FirstRoom.value, AERoom.W4L2Puddles.value, lambda state: CanDive(state, player))
+    connect_regions(world, player, AERoom.W4L2FirstRoom.value, AERoom.W4L2Kalama.value, lambda state: (state.has(AEItem.Hoop.value, player, 1) and CanHitMultiple(state, player) and CanSwim(state, player)) or HasMobility(state, player))
+    connect_regions(world, player, AERoom.W4L2SecondRoom.value, AERoom.W4L2Iz.value, lambda state: CanSwim(state, player))
+    connect_regions(world, player, AERoom.W4L2SecondRoom.value, AERoom.W4L2BongBong.value, lambda state: CanSwim(state, player))
+    connect_regions(world, player, AERoom.W4L2SecondRoom.value, AERoom.W4L2Jux.value, lambda state: CanSwim(state, player))
+    connect_regions(world, player, AERoom.W4L2SecondRoom.value, AERoom.W4L2Pickles.value, lambda state: CanSwim(state, player) and CanHitMultiple(state, player))
+
+    #4-3
+    connect_regions(world, player, AEWorld.W4.value, AERoom.W4L3Outside.value, lambda state: True)
+    connect_regions(world, player, AERoom.W4L3Outside.value, AERoom.W4L3Stomach.value, lambda state: True)
+    connect_regions(world, player, AERoom.W4L3Stomach.value, AERoom.W4L3Slide.value, lambda state: True)
+    connect_regions(world, player, AERoom.W4L3Stomach.value, AERoom.W4L3Gallery.value, lambda state: True)
+    connect_regions(world, player, AERoom.W4L3Gallery.value, AERoom.W4L3Tentacle.value, lambda state: True)
+
+    connect_regions(world, player, AERoom.W4L3Outside.value, AERoom.W4L3TonTon.value, lambda state: CanHitOnce(state, player))
+    connect_regions(world, player, AERoom.W4L3Outside.value, AERoom.W4L3Stuw.value, lambda state: CanSwim(state, player) or CanHitOnce(state, player))
+    connect_regions(world, player, AERoom.W4L3Stomach.value, AERoom.W4L3Mars.value, lambda state: CanHitOnce(state, player) and state.has(AEItem.Car.value, player, 1))
+    connect_regions(world, player, AERoom.W4L3Stomach.value, AERoom.W4L3Murky.value, lambda state: CanHitOnce(state, player))
+    connect_regions(world, player, AERoom.W4L3Stomach.value, AERoom.W4L3Horke.value, lambda state: CanHitOnce(state, player) and (CanSwim(state, player) or state.has(AEItem.Flyer.value, player, 1)))
+    connect_regions(world, player, AERoom.W4L3Gallery.value, AERoom.W4L3Howeerd.value, lambda state: DI_SecondHalf(state, player) and state.has(AEItem.Sling.value, player, 1))
+    connect_regions(world, player, AERoom.W4L3Gallery.value, AERoom.W4L3Robbin.value, lambda state: DI_SecondHalf(state, player) and state.has(AEItem.Sling.value, player, 1))
+    connect_regions(world, player, AERoom.W4L3Gallery.value, AERoom.W4L3Jakkee.value, lambda state: DI_SecondHalf(state, player) and DI_Boulders(state, player))
+    connect_regions(world, player, AERoom.W4L3Gallery.value, AERoom.W4L3Frederic.value, lambda state: DI_SecondHalf(state, player) and DI_Boulders(state, player))
+    connect_regions(world, player, AERoom.W4L3Gallery.value, AERoom.W4L3Baba.value, lambda state: DI_SecondHalf(state, player) and DI_Boulders(state, player))
+    connect_regions(world, player, AERoom.W4L3Tentacle.value, AERoom.W4L3Quirck.value, lambda state: DI_SecondHalf(state, player) and DI_Boulders(state, player))
+
+
+    #5-1
     connect_regions(world, player, AEWorld.W5.value, "5-1", lambda state: True)
     connect_regions(world, player, AEWorld.W5.value, "5-2", lambda state: state.has("Sky Flyer", player, 1))
     connect_regions(world, player, AEWorld.W5.value, "5-3", lambda state: True)
@@ -121,18 +164,6 @@ def set_rules(world, player: int):
     connect_regions(world, player, AEWorld.W8.value, "8-3", lambda state: True)
 
     connect_regions(world, player, AEWorld.W9.value, "9-1", lambda state: True)
-
-    connect_regions(world, player, "4-1", "4-1 F", lambda state: state.has("Sky Flyer", player, 1))
-    connect_regions(world, player, "4-1", "4-1 SF", lambda state:
-        state.has("Slingback Shooter", player, 1)
-        and state.has("Sky Flyer", player, 1))
-
-    connect_regions(world, player, "4-2", "4-2 HF", lambda state:
-        state.has("Super Hoop", player, 1)
-        or state.has("Sky Flyer", player, 1))
-
-    connect_regions(world, player, "4-3", "4-3 S", lambda state: state.has("Slingback Shooter", player, 1))
-    connect_regions(world, player, "4-3", "4-3 C", lambda state: state.has("R.C. Car", player, 1))
 
     connect_regions(world, player, "5-1", "5-1 S", lambda state: state.has("Slingback Shooter", player, 1))
 

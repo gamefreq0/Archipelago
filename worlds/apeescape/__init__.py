@@ -28,19 +28,10 @@ class ApeEscapeWeb(WebWorld):
         "English",
         "setup_en.md",
         "setup/en",
-        ["JusticePS"]
+        ["CDRomatron"]
     )
 
-    setup_fr = Tutorial(
-        "Guide de configuration Multimonde",
-        "Un guide pour configurer Adventure MultiWorld",
-        "Français",
-        "setup_fr.md",
-        "setup/fr",
-        ["TheLynk"]
-    )
-
-    tutorials = [setup, setup_fr]
+    tutorials = [setup]
 
 
 class ApeEscapeWorld(World):
@@ -123,7 +114,7 @@ class ApeEscapeWorld(World):
 
 
 
-        self.multiworld.get_location("9-1 Monkey Madness - Specter", self.player).place_locked_item(victory)
+        self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
 
         remaining = 191#(len(location_table) - len(self.multiworld.itempool))-25
         self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, remaining)]
