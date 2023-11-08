@@ -43,17 +43,17 @@ class ApeEscapeClient(BizHawkClient):
     monkeyaddrs = {
         1: { #1-1
             1: 0x0DFE00,
-            2: 0x0DFE02,
-            3: 0x0DFE01,
+            3: 0x0DFE02,
+            2: 0x0DFE01,
             4: 0x0DFE03
         },
         2: { #1-2
             5: 0x0DFE00,
             6: 0x0DFE01,
             7: 0x0DFE03,
-            8: 0x0DFE04,
+            10: 0x0DFE04,
             9: 0x0DFE05,
-            10: 0x0DFE02
+            8: 0x0DFE02
         },
         3: { #1-3
             11: 0x0DFE00,
@@ -80,8 +80,8 @@ class ApeEscapeClient(BizHawkClient):
         },
         8: { #6 sub area
             23: 0x0DFE32,
-            22: 0x0DFE30,
-            21: 0x0DFE31
+            21: 0x0DFE30,
+            22: 0x0DFE31
         },
         9: { #6 sub area
             24: 0x0DFE49,
@@ -121,9 +121,9 @@ class ApeEscapeClient(BizHawkClient):
             45: 0x0DFE18
         },
         17: { #sub area of 15
-            46: 0x0DFE30,
-            47: 0x0DFE32,
-            50: 0x0DFE31
+            47: 0x0DFE30,
+            50: 0x0DFE32,
+            46: 0x0DFE31
         },
         18: { #sub area of 16
             48: 0x0DFE48,
@@ -144,12 +144,12 @@ class ApeEscapeClient(BizHawkClient):
         22: { #4-2
             61: 0x0DFE00,
             62: 0x0DFE01,
-            67: 0x0DFE02, #doesn't match ign
+            63: 0x0DFE02, #doesn't match ign
             64: 0x0DFE03
         },
         23: { #sub area 22
             65: 0x0DFE18,
-            63: 0x0DFE19, #doesn't match ign
+            67: 0x0DFE19, #doesn't match ign
             66: 0x0DFE1B,
             68: 0x0DFE1A
         },
@@ -178,10 +178,10 @@ class ApeEscapeClient(BizHawkClient):
         29: { #5-1
             80: 0x0DFE00,
             81: 0x0DFE01,
-            82: 0x0DFE02,
-            83: 0x0DFE04,
-            84: 0x0DFE05,
-            85: 0x0DFE03
+            83: 0x0DFE02,
+            84: 0x0DFE04,
+            85: 0x0DFE05,
+            82: 0x0DFE03
         },
         30: { #5-2
             86: 0x0DFE00,
