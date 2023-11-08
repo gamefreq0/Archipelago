@@ -552,7 +552,7 @@ class ApeEscapeClient(BizHawkClient):
                 ])
 
             await bizhawk.write(ctx.bizhawk_ctx, [
-                (self.gadgetaddr, (gadgetstate).to_bytes(1, "little"), "MainRAM")
+                (self.gadgetaddr, (gadgetstate|3).to_bytes(1, "little"), "MainRAM")
             ])
 
 
