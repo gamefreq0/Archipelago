@@ -574,6 +574,10 @@ class ApeEscapeClient(BizHawkClient):
                     "cmd": "LocationChecks",
                     "locations": list(x for x in victory)
                 }])
+                await ctx.send_msgs([{
+                    "cmd": "StatusUpdate",
+                    "status": ClientStatus.CLIENT_GOAL
+                }])
             elif (gamestate == 0x09 and (level != 88 and level != 255)) or gamestate == 0x0C: #quitting level
                 monkeyaddrs = self.monkeyaddrs[level]
                 key_list = list(monkeyaddrs.keys())
