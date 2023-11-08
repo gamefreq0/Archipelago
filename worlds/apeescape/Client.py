@@ -150,8 +150,8 @@ class ApeEscapeClient(BizHawkClient):
         23: { #sub area 22
             65: 0x0DFE18,
             67: 0x0DFE19, #doesn't match ign
-            66: 0x0DFE1B,
-            68: 0x0DFE1A
+            68: 0x0DFE1B,
+            66: 0x0DFE1A
         },
         24: { #4-3
             69: 0x0DFE01,
