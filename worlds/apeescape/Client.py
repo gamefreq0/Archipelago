@@ -567,7 +567,14 @@ class ApeEscapeClient(BizHawkClient):
             gamestate = int.from_bytes(readresult[0], byteorder='little')
             level = int.from_bytes(readresult[1], byteorder='little')
 
-            if (gamestate == 0x09 and (level != 88 and level != 255)) or gamestate == 0x0C: #quitting level
+            if (gamestate == 0xC or gamestate == 0xD) and level == 86:
+                victory = set()
+                victory.add(205+self.offset)
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in victory)
+                }])
+            elif (gamestate == 0x09 and (level != 88 and level != 255)) or gamestate == 0x0C: #quitting level
                 monkeyaddrs = self.monkeyaddrs[level]
                 key_list = list(monkeyaddrs.keys())
                 val_list = list(monkeyaddrs.values())
@@ -627,13 +634,7 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "LocationChecks",
                         "locations": list(x + levelbase for x in monkeys_to_send)
                     }])
-            elif (gamestate == 0xC or gamestate == 0xD) and level == 86:
-                victory = set()
-                victory.add(205+self.offset)
-                await ctx.send_msgs([{
-                    "cmd": "LocationChecks",
-                    "locations": list(x for x in victory)
-                }])
+
 
             self.levelglobal = level
 
