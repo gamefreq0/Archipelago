@@ -685,6 +685,9 @@ def create_regions(world: MultiWorld, player: int):
     l9113 = Region(AERoom.W9L1Head.value, player, world)
     l9114 = Region(AERoom.W9L1Side.value, player, world)
     l9115 = Region(AERoom.W9L1Boss.value, player, world)
+    l9115.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l9115) for loc_name in
+                         get_array([205])]
+
     goopo = Region(AERoom.W9L1Goopo.value, player, world)
     goopo.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], goopo) for loc_name in
                          get_array([181])]
@@ -760,28 +763,29 @@ def create_regions(world: MultiWorld, player: int):
 
 
 
-    world.initialize_regions([menu,
-                              w1, w2, w3, w4, w5, w6, w7, w8, w9,
-                              l11, noonan, jorjy, nati, trayc,
-                              l12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
-                              l131, l132, l133, scotty, coco, jthomas, mattie, barney, rocky, moggan,
-                              l211, l212, l213, l214, l215, marquez, livinston, george, maki, herb, dilweed, mitong, stoddy, nasus, selur, elehcim, gonzo, alphonse, zanzibar,
-                              l221, l222, l223, l224, kyle, stan, kenny, cratman, mooshy, nuzzy, mav, papou, trance, bernt, runt, hoolah, chino,
-                              l231, l232, l233, l234, bazzle, freeto, troopa, stymie, spanky, jesta, pally, crash,
-                              l411, l412, coolblue, sandy, shelle, gidget, shaka, maxmahalo, moko, puka,
-                              l421, l422, chip, oreo, puddles, kalama, iz, bongbong, jux, pickles,
-                              l431, l432, l433, l434, l435, tonton, stuw, mars, murky, horke, howeerd, robbin, jakkee, frederic, baba, quirck,
-                              l51, popcicle, iced, rickets, skeens, denggoy, chilly,
-                              l521, l522, l523, storm, qube, ranix, sharpe, sticky, droog, gash, kundra, shadow,
-                              l531, l532, l533, punky, ameego, yoky, jory, crank, claxter, looza, roti, dissa,
-                              l711, l712, l713, taku, rocka, maralea, wog, mayi, owyang, long, elly, chunky, voti, queltin, phaldo,
-                              l72,
-                              l73,
-                              l81,
-                              l82,
-                              l83,
-                              l911, l912, l913, l914, l915, l916, l917, l918, l919, l9110, l9111, l9112, l9113, l9114, l9115,
-                              goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe, gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg])
+    # world.initialize_regions([menu,
+    #                           w1, w2, w3, w4, w5, w6, w7, w8, w9,
+    #                           l11, noonan, jorjy, nati, trayc,
+    #                           l12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
+    #                           l131, l132, l133, scotty, coco, jthomas, mattie, barney, rocky, moggan,
+    #                           l211, l212, l213, l214, l215, marquez, livinston, george, maki, herb, dilweed, mitong, stoddy, nasus, selur, elehcim, gonzo, alphonse, zanzibar,
+    #                           l221, l222, l223, l224, kyle, stan, kenny, cratman, mooshy, nuzzy, mav, papou, trance, bernt, runt, hoolah, chino,
+    #                           l231, l232, l233, l234, bazzle, freeto, troopa, stymie, spanky, jesta, pally, crash,
+    #                           l411, l412, coolblue, sandy, shelle, gidget, shaka, maxmahalo, moko, puka,
+    #                           l421, l422, chip, oreo, puddles, kalama, iz, bongbong, jux, pickles,
+    #                           l431, l432, l433, l434, l435, tonton, stuw, mars, murky, horke, howeerd, robbin, jakkee, frederic, baba, quirck,
+    #                           l51, popcicle, iced, rickets, skeens, denggoy, chilly,
+    #                           l521, l522, l523, storm, qube, ranix, sharpe, sticky, droog, gash, kundra, shadow,
+    #                           l531, l532, l533, punky, ameego, yoky, jory, crank, claxter, looza, roti, dissa,
+    #                           l711, l712, l713, taku, rocka, maralea, wog, mayi, owyang, long, elly, chunky, voti, queltin, phaldo,
+    #                           l721, l722, l723, l724, l725, minky, zobbro, xeeto, moops, zanabi, doxs, buddah, fooey, kong, phool,
+    #                           l731, l732, l733, l734, l735, l736, l737,
+    #                           robart, igor, naners, neeners, charles, gustav, wilhelm, emmanuel, sircutty, calligan, castalist, deveneom, astur, kilserack, ringo, densil, figero, fej, joey, donqui,
+    #                           l811, l812, l813, kaine, jaxx, gehry, alcatraz, tino, qbee, mcmanic, dywan, ckhutch, winky, bluv, camper, huener,
+    #                           l821, l822, l823, l824, l825, l826, bigshow, dreos, reznor, urkel, vanillas, radd, shimbo, hurt, strung, khamo,
+    #                           l831, l832, l833, l834, l835, l836, fredo, charlee, mach3, tortuss, manic, ruptdis, eighty7, danio, roosta, tellis, whack, frostee,
+    #                           l911, l912, l913, l914, l915, l916, l917, l918, l919, l9110, l9111, l9112, l9113, l9114, l9115,
+    #                           goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe, gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg])
 
     world.regions.extend([menu,
                           w1, w2, w3, w4, w5, w6, w7, w8, w9,
@@ -797,12 +801,26 @@ def create_regions(world: MultiWorld, player: int):
                           l421, l422, chip, oreo, puddles, kalama, iz, bongbong, jux, pickles,
                           l431, l432, l433, l434, l435, tonton, stuw, mars, murky, horke, howeerd, robbin, jakkee,
                           frederic, baba, quirck,
-                          l51, l52, l53, l71, l72, l73, l81, l82, l83, l91,
-                          l131, l132,
-                          l211, l212, l213, l221, l222, l223, l224, l231, l232, l233,
-                          l411, l412, l421, l431, l432,
-                          l511, l522, l531,
-                          l711, l712])
+                          l51, popcicle, iced, rickets, skeens, denggoy, chilly,
+                          l521, l522, l523, storm, qube, ranix, sharpe, sticky, droog, gash, kundra, shadow,
+                          l531, l532, l533, punky, ameego, yoky, jory, crank, claxter, looza, roti, dissa,
+                          l711, l712, l713, taku, rocka, maralea, wog, mayi, owyang, long, elly, chunky, voti, queltin,
+                          phaldo,
+                          l721, l722, l723, l724, l725, minky, zobbro, xeeto, moops, zanabi, doxs, buddah, fooey, kong,
+                          phool,
+                          l731, l732, l733, l734, l735, l736, l737,
+                          robart, igor, naners, neeners, charles, gustav, wilhelm, emmanuel, sircutty, calligan, castalist,
+                          deveneom, astur, kilserack, ringo, densil, figero, fej, joey, donqui,
+                          l811, l812, l813, kaine, jaxx, gehry, alcatraz, tino, qbee, mcmanic, dywan, ckhutch, winky,
+                          bluv, camper, huener,
+                          l821, l822, l823, l824, l825, l826, bigshow, dreos, reznor, urkel, vanillas, radd, shimbo,
+                          hurt, strung, khamo,
+                          l831, l832, l833, l834, l835, l836, fredo, charlee, mach3, tortuss, manic, ruptdis, eighty7,
+                          danio, roosta, tellis, whack, frostee,
+                          l911, l912, l913, l914, l915, l916, l917, l918, l919, l9110, l9111, l9112, l9113, l9114,
+                          l9115,
+                          goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe,
+                          gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg])
 
 
 
