@@ -90,7 +90,7 @@ class ApeEscapeWorld(World):
         waternet = self.create_item(AEItem.WaterNet.value)
         club = self.create_item(AEItem.Club.value)
 
-        self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch, waternet, club]
+        self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
 
         self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
 
@@ -116,7 +116,7 @@ class ApeEscapeWorld(World):
 
         self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
 
-        remaining = 191#(len(location_table) - len(self.multiworld.itempool))-25
+        remaining = 192#(len(location_table) - len(self.multiworld.itempool))-25
         self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, remaining)]
 
     def fill_slot_data(self):
