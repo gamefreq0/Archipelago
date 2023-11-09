@@ -453,7 +453,7 @@ def Jake_Open(state, player):
     return MM_Natalie(state, player) and MM_Professor(state, player)
 
 def MM_Jake(state, player):
-    return CanHitMultiple(state, player) and Jake_Open(state, player)
+    return (HasClub(state, player) or HasPunch(state, player)) and Jake_Open(state, player)
 
 def MM_SHA(state, player):
     return MM_Natalie(state, player) and MM_Professor(state, player) and MM_Jake(state, player)
