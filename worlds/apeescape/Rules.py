@@ -473,20 +473,26 @@ def MM_FinalBoss(state, player):
 def HasClub(state, player):
     return state.has(AEItem.Club.value, player, 1)
 
-def HasPunch(state, player):
-    return state.has(AEItem.Punch.value, player, 1)
+def HasNet(state, player):
+    return state.has(AEItem.Net.value, player, 1)
+	
+def HasRadar(state, player):
+    return state.has(AEItem.Radar.value, player, 1)
 
 def HasSling(state, player):
     return state.has(AEItem.Sling.value, player, 1)
 
-def HasFlyer(state, player):
-    return state.has(AEItem.Flyer.value, player, 1)
-
 def HasHoop(state, player):
     return state.has(AEItem.Hoop.value, player, 1)
+	
+def HasFlyer(state, player):
+    return state.has(AEItem.Flyer.value, player, 1)
 
 def HasRC(state, player):
     return state.has(AEItem.Car.value, player, 1)
 
+def HasPunch(state, player):
+    return state.has(AEItem.Punch.value, player, 1)
+	
 def HasWaterNet(state, player):
     return state.has(AEItem.WaterNet.value, player, 1)
