@@ -181,8 +181,8 @@ class ApeEscapeClient(BizHawkClient):
         29: { #5-1
             80: 0x0DFE00,
             81: 0x0DFE01,
-            83: 0x0DFE02,
-            84: 0x0DFE04,
+            84: 0x0DFE02,
+            83: 0x0DFE04,
             85: 0x0DFE05,
             82: 0x0DFE03
         },
@@ -198,8 +198,8 @@ class ApeEscapeClient(BizHawkClient):
         },
         32: {
             88: 0x0DFE30,
-            89: 0x0DFE32,
-            90: 0x0DFE31
+            90: 0x0DFE32,
+            89: 0x0DFE31
         },
         33: { #5-3
             95: 0x0DFE00,
@@ -213,8 +213,8 @@ class ApeEscapeClient(BizHawkClient):
             103: 0x0DFE1A
         },
         35: {
-            97: 0x0DFE31,
-            98: 0x0DFE30
+            98: 0x0DFE31,
+            97: 0x0DFE30
         },
         36: {
 
@@ -227,8 +227,8 @@ class ApeEscapeClient(BizHawkClient):
         },
         38: {
             108: 0x0DFE1A,
-            109: 0x0DFE19,
-            110: 0x0DFE18,
+            110: 0x0DFE19,
+            109: 0x0DFE18,
             114: 0x0DFE1B,
             115: 0x0DFE1C
         },
@@ -247,11 +247,11 @@ class ApeEscapeClient(BizHawkClient):
             120: 0x0DFE1A
         },
         42: {
-            121: 0x0DFE30
+            123: 0x0DFE30
         },
         43: {
             122: 0x0DFE49,
-            123: 0x0DFE48,
+            121: 0x0DFE48,
             124: 0x0DFE60,
             125: 0x0DFE61
         },
@@ -261,69 +261,69 @@ class ApeEscapeClient(BizHawkClient):
         45: { #7-3
             126: 0x0DFE02,
             127: 0x0DFE00,
-            131: 0x0DFE03,
+            128: 0x0DFE03,#
             137: 0x0DFE04,
             136: 0x0DFE01
         },
         46: {
-            132: 0x0DFE18,
-            133: 0x0DFE1B,
-            134: 0x0DFE1A,
+            129: 0x0DFE18,#
+            131: 0x0DFE1B,#
+            130: 0x0DFE1A,#
             135: 0x0DFE19
         },
         47: {
-            141: 0x0DFE30,
-            142: 0x0DFE31,
-            143: 0x0DFE32
+            133: 0x0DFE30,#
+            134: 0x0DFE31,#
+            135: 0x0DFE32#
         },
         48: {
 
         },
         49: {
-            144: 0x0DFE61,
-            145: 0x0DFE60
+            139: 0x0DFE61,#
+            138: 0x0DFE60#
         },
         50: {
-            138: 0x0DFE78,
-            139: 0x0DFE79,
-            140: 0x0DFE7A
+            140: 0x0DFE78,#
+            141: 0x0DFE79,#
+            142: 0x0DFE7A#
         },
         51: {
-            128: 0x0DFE92,
-            129: 0x0DFE91,
-            130: 0x0DFE90
+            145: 0x0DFE92,#
+            144: 0x0DFE91,#
+            143: 0x0DFE90#
         },
         52: {
 
         },
         53: { #8-1
             146: 0x0DFE00,
-            147: 0x0DFE03,
-            149: 0x0DFE01,
+            149: 0x0DFE03,
+            147: 0x0DFE01,
             148: 0x0DFE02
         },
         54: {
-            152: 0x0DFE19,
-            151: 0x0DFE18,
+            151: 0x0DFE19,
+            152: 0x0DFE18,
             150: 0x0DFE1A
         },
         55: {
             155: 0x0DFE32,
-            154: 0x0DFE30,
+            153: 0x0DFE30,
             156: 0x0DFE33,
             157: 0x0DFE34,
-            153: 0x0DFE31,
+            154: 0x0DFE31,
             158: 0x0DFE35
         },
         56: { #8-2
-            160: 0x0DFE00,
-            159: 0x0DFE01
+            159: 0x0DFE00,
+            160: 0x0DFE01
         },
         57: {
-            162: 0x0DFE18
+            161: 0x0DFE18
         },
         58: {
-            161: 0x0DFE30
+            162: 0x0DFE30
         },
         59: {
             164: 0x0DFE49,
@@ -344,23 +344,23 @@ class ApeEscapeClient(BizHawkClient):
             169: 0x0DFE00
         },
         64: {
-            173: 0x0DFE19,
-            172: 0x0DFE18
+            171: 0x0DFE19,
+            170: 0x0DFE18
         },
         65: {
-            170: 0x0DFE30,
-            171: 0x0DFE31
+            172: 0x0DFE30,
+            173: 0x0DFE31
         },
         66: {
-            175: 0x0DFE48,
-            174: 0x0DFE49,
+            174: 0x0DFE48,
+            175: 0x0DFE49,
             176: 0x0DFE4A
         },
         67: {
             177: 0x0DFE60,
-            178: 0x0DFE62,
-            179: 0x0DFE63,
-            180: 0x0DFE61
+            179: 0x0DFE62,#
+            180: 0x0DFE63,#
+            178: 0x0DFE61#
         },
         68: {
 
@@ -375,7 +375,7 @@ class ApeEscapeClient(BizHawkClient):
 
         },
         72: {
-            185: 0x0DFE00
+            181: 0x0DFE00#
         },
         73: {
 
@@ -384,18 +384,18 @@ class ApeEscapeClient(BizHawkClient):
 
         },
         75: {
-            186: 0x0DFE48
+            182: 0x0DFE48
         },
         76: {
-            187: 0x0DFE60,
-            188: 0x0DFE61,
-            189: 0x0DFE62
+            183: 0x0DFE60,#?
+            184: 0x0DFE61,#
+            185: 0x0DFE62#?
         },
         77: {
-            181: 0x0DFE01,
-            182: 0x0DFE00,
-            183: 0x0DFE02,
-            184: 0x0DFE03
+            187: 0x0DFE01,#
+            186: 0x0DFE00,
+            188: 0x0DFE02,#
+            189: 0x0DFE03#
         },
         78: {
             190: 0x0DFE00
