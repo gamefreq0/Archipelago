@@ -99,10 +99,10 @@ def set_rules(world, player: int):
 
     connect_regions(world, player, AERoom.W2L3Outside.value, AERoom.W2L3Bazzle.value, lambda state: HasSling(state, player) or HasFlyer(state, player))
     connect_regions(world, player, AERoom.W2L3Outside.value, AERoom.W2L3Freeto.value, lambda state: NoRequirement())
-    connect_regions(world, player, AERoom.W2L3Side.value, AERoom.W2L3Troopa.value, lambda state: (HasSling(state, player) or (HasFlyer(state, player) and CanHitOnce(state, player)))
+    connect_regions(world, player, AERoom.W2L3Side.value, AERoom.W2L3Troopa.value, lambda state: (HasSling(state, player) or (HasFlyer(state, player) and CanHitOnce(state, player))))
     connect_regions(world, player, AERoom.W2L3Main.value, AERoom.W2L3Stymie.value, lambda state: CR_Inside(state, player))
     connect_regions(world, player, AERoom.W2L3Main.value, AERoom.W2L3Spanky.value, lambda state: CR_Inside(state, player) and CanSwim(state, player) and (HasFlyer(state, player) or CanHitMultiple(state, player)))
-    connect_regions(world, player, AERoom.W2L3Main.value, AERoom.W2L3Jesta.value, lambda state: CR_Inside(state, player) and (CanHitMultiple(state, player) or (CanSwim(state, player) and HasFlyer(state, player)))
+    connect_regions(world, player, AERoom.W2L3Main.value, AERoom.W2L3Jesta.value, lambda state: CR_Inside(state, player) and (CanHitMultiple(state, player) or (CanSwim(state, player) and HasFlyer(state, player))))
     connect_regions(world, player, AERoom.W2L3Pillar.value, AERoom.W2L3Pally.value, lambda state: CR_Inside(state, player))
     connect_regions(world, player, AERoom.W2L3Pillar.value, AERoom.W2L3Crash.value, lambda state: CR_Inside(state, player) and RCMonkey(state, player))
 
