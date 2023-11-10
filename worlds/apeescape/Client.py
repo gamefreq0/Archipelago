@@ -129,6 +129,9 @@ class ApeEscapeClient(BizHawkClient):
             48: 0x0DFE48,
             52: 0x0DFE49
         },
+        19: {
+
+        },
         20: { #4-1
             53: 0x0DFE00,
             54: 0x0DFE01,
@@ -187,16 +190,16 @@ class ApeEscapeClient(BizHawkClient):
             86: 0x0DFE00,
             87: 0x0DFE01
         },
-        32: {
-            88: 0x0DFE30,
-            89: 0x0DFE32,
-            90: 0x0DFE31
-        },
         31: {
             91: 0x0DFE18,
             92: 0x0DFE1A,
             93: 0x0DFE19,
             94: 0x0DFE1B
+        },
+        32: {
+            88: 0x0DFE30,
+            89: 0x0DFE32,
+            90: 0x0DFE31
         },
         33: { #5-3
             95: 0x0DFE00,
@@ -204,14 +207,17 @@ class ApeEscapeClient(BizHawkClient):
             99: 0x0DFE02,
             100: 0x0DFE03
         },
-        35: {
-            97: 0x0DFE31,
-            98: 0x0DFE30
-        },
         34: {
             101: 0x0DFE18,
             102: 0x0DFE19,
             103: 0x0DFE1A
+        },
+        35: {
+            97: 0x0DFE31,
+            98: 0x0DFE30
+        },
+        36: {
+
         },
         37: { #7-1
             104: 0x0DFE00,
@@ -249,6 +255,9 @@ class ApeEscapeClient(BizHawkClient):
             124: 0x0DFE60,
             125: 0x0DFE61
         },
+        44: {
+
+        },
         45: { #7-3
             126: 0x0DFE02,
             127: 0x0DFE00,
@@ -267,6 +276,9 @@ class ApeEscapeClient(BizHawkClient):
             142: 0x0DFE31,
             143: 0x0DFE32
         },
+        48: {
+
+        },
         49: {
             144: 0x0DFE61,
             145: 0x0DFE60
@@ -280,6 +292,9 @@ class ApeEscapeClient(BizHawkClient):
             128: 0x0DFE92,
             129: 0x0DFE91,
             130: 0x0DFE90
+        },
+        52: {
+
         },
         53: { #8-1
             146: 0x0DFE00,
@@ -315,6 +330,9 @@ class ApeEscapeClient(BizHawkClient):
             167: 0x0DFE4A,
             168: 0x0DFE48
         },
+        60: {
+
+        },
         61: {
             165: 0x0DFE79,
             166: 0x0DFE78
@@ -343,6 +361,9 @@ class ApeEscapeClient(BizHawkClient):
             178: 0x0DFE62,
             179: 0x0DFE63,
             180: 0x0DFE61
+        },
+        68: {
+
         },
         69: {
 
