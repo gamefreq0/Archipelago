@@ -12,6 +12,8 @@ from .Regions import create_regions
 from .Rules import set_rules
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
+from .Options import apeescape_option_definitions, DebugOption, GoalOption
+from Options import AssembleOptions
 
 from worlds.LauncherComponents import Component, components, SuffixIdentifier
 
@@ -42,6 +44,8 @@ class ApeEscapeWorld(World):
     web: ClassVar[WebWorld] = ApeEscapeWeb()
     topology_present = True
 
+    option_definitions: ClassVar[Dict[str, AssembleOptions]] = apeescape_option_definitions
+
     item_name_to_id = item_table
 
     for key, value in item_name_to_id.items():
@@ -55,6 +59,8 @@ class ApeEscapeWorld(World):
     def __init__(self, world: MultiWorld, player: int):
         super().__init__(world, player)
         self.game = "Ape Escape"
+        self.debug: Optional[int] = 0
+        self.goal: Optional[int] = 0
 
     def create_regions(self):
         create_regions(self.multiworld, self.player)
@@ -90,7 +96,7 @@ class ApeEscapeWorld(World):
         waternet = self.create_item(AEItem.WaterNet.value)
         club = self.create_item(AEItem.Club.value)
 
-        self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
+        self.multiworld.itempool += [shooter, hoop, flyer, car, punch]
 
         self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
 
@@ -105,7 +111,7 @@ class ApeEscapeWorld(World):
         #key6 = self.create_item("World Key")
 
 
-        #self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(key1)
+        self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(radar)
         #self.multiworld.get_location(AELocation.Jorjy.value, self.player).place_locked_item(key2)
         #self.multiworld.get_location(AELocation.Nati.value, self.player).place_locked_item(key3)
         #self.multiworld.get_location(AELocation.Shay.value, self.player).place_locked_item(key4)
@@ -116,7 +122,7 @@ class ApeEscapeWorld(World):
 
         self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
 
-        remaining = 192#(len(location_table) - len(self.multiworld.itempool))-25
+        remaining = (len(location_table) - len(self.multiworld.itempool))
         self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, remaining)]
 
     def fill_slot_data(self):
