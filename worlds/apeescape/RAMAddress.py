@@ -622,10 +622,10 @@ class RAM():
     }
 
     levelStatus = {
-        "Locked": 0x0,
-        "Complete": 0x1,
-        "Hundo": 0x2,
-        "Open": 0x30
+        "Locked": 0x00,
+        "Complete": 0x01,
+        "Hundo": 0x02,
+        "Open": 0x03
     }
 
     gameState = {
