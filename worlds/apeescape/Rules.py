@@ -102,7 +102,7 @@ def set_rules(world, player: int):
     connect_regions(world, player, AERoom.W2L3Side.value, AERoom.W2L3Troopa.value, lambda state: (HasSling(state, player) or (HasFlyer(state, player) and CanHitOnce(state, player))))
     connect_regions(world, player, AERoom.W2L3Main.value, AERoom.W2L3Stymie.value, lambda state: CR_Inside(state, player))
     connect_regions(world, player, AERoom.W2L3Main.value, AERoom.W2L3Spanky.value, lambda state: CR_Inside(state, player) and CanSwim(state, player) and (HasFlyer(state, player) or CanHitMultiple(state, player)))
-    connect_regions(world, player, AERoom.W2L3Main.value, AERoom.W2L3Jesta.value, lambda state: CR_Inside(state, player) and (CanHitMultiple(state, player) or (CanSwim(state, player) and HasFlyer(state, player))))
+    connect_regions(world, player, AERoom.W2L3Main.value, AERoom.W2L3Jesta.value, lambda state: CR_Inside(state, player) and (CanHitMultiple(state, player) or (CanSwim(state, player) and HasMobility(state, player))))
     connect_regions(world, player, AERoom.W2L3Pillar.value, AERoom.W2L3Pally.value, lambda state: CR_Inside(state, player))
     connect_regions(world, player, AERoom.W2L3Pillar.value, AERoom.W2L3Crash.value, lambda state: CR_Inside(state, player) and RCMonkey(state, player))
 
@@ -150,7 +150,6 @@ def set_rules(world, player: int):
     connect_regions(world, player, AERoom.W4L3Gallery.value, AERoom.W4L3Frederic.value, lambda state: DI_SecondHalf(state, player) and DI_Boulders(state, player))
     connect_regions(world, player, AERoom.W4L3Gallery.value, AERoom.W4L3Baba.value, lambda state: DI_SecondHalf(state, player) and DI_Boulders(state, player))
     connect_regions(world, player, AERoom.W4L3Tentacle.value, AERoom.W4L3Quirck.value, lambda state: DI_SecondHalf(state, player) and DI_Boulders(state, player))
-
 
     #5-1
     connect_regions(world, player, AEWorld.W5.value, AERoom.W5L1Main.value, lambda state: True)
@@ -255,6 +254,7 @@ def set_rules(world, player: int):
     connect_regions(world, player, AERoom.W7L3Elevator.value, AERoom.W7L3Figero.value, lambda state: CC_5Monkeys(state, player))
     connect_regions(world, player, AERoom.W7L3Bell.value, AERoom.W7L3Fej.value, lambda state: CC_5Monkeys(state, player))
     connect_regions(world, player, AERoom.W7L3Bell.value, AERoom.W7L3Joey.value, lambda state: HasMobility(state, player))
+    connect_regions(world, player, AERoom.W7L3Bell.value, AERoom.W7L3Donqui.value, lambda state: NoRequirement())
 
     #8-1
     connect_regions(world, player, AEWorld.W8.value, AERoom.W8L1Outside.value, lambda state: True)
