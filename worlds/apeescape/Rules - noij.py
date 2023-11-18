@@ -205,7 +205,7 @@ def set_rules(world, player: int):
     connect_regions(world, player, AERoom.W7L1Temple.value, AERoom.W7L1Long.value, lambda state: NoRequirement())
     connect_regions(world, player, AERoom.W7L1Temple.value, AERoom.W7L1Elly.value, lambda state: HasFlyer(state, player))
     connect_regions(world, player, AERoom.W7L1Temple.value, AERoom.W7L1Chunky.value, lambda state: HasFlyer(state, player))
-    connect_regions(world, player, AERoom.W7L1Well.value, AERoom.W7L1Voti.value, lambda state: HasSling(state, player) or (HasHoop(state, player) and HasFlyer(state, player)))
+    connect_regions(world, player, AERoom.W7L1Well.value, AERoom.W7L1Voti.value, lambda state: (HasSling(state, player) or (HasHoop(state, player)) and HasFlyer(state, player))
     connect_regions(world, player, AERoom.W7L1Well.value, AERoom.W7L1QuelTin.value, lambda state: NoRequirement())
     connect_regions(world, player, AERoom.W7L1Well.value, AERoom.W7L1Phaldo.value, lambda state: NoRequirement())
 
