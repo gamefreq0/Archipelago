@@ -12,6 +12,7 @@ from .Regions import create_regions
 from .Rules import set_rules
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
+from .RAMAddress import RAM
 from .Options import apeescape_option_definitions, DebugOption, GoalOption
 from Options import AssembleOptions
 

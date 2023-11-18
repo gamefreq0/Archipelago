@@ -4,10 +4,6 @@ from Options import StartInventoryPool, PerGameCommonOptions, Choice, Option
 
 from typing import Dict
 
-
-class ApeEscapeOptions(PerGameCommonOptions):
-    start_inventory = StartInventoryPool
-
 class DebugOption(Choice):
     """Choose current Debug Settings
 
