@@ -62,7 +62,7 @@ def set_rules(world, player: int):
     connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Gonzo.value, lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
     connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Zanzibar.value, lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
     connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Alphonse.value, lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
-    connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.W2L1Maki.value, lambda state: TJ_FishEntry(state, player) and (HasSling(state, player) or (HasHoop(state, player) and HasFlyer(state, player))))
+    connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.W2L1Maki.value, lambda state: TJ_FishEntry(state, player) and (HasSling(state, player) or HasFlyer(state, player)))
     connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.W2L1Herb.value, lambda state: TJ_FishEntry(state, player))
     connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.W2L1Dilweed.value, lambda state: (TJ_FishEntry(state, player) and CanHitMultiple(state, player)) or (TJ_UFOEntry(state, player) and TJ_UFOCliff(state, player)))
     connect_regions(world, player, AERoom.W2L1Tent.value, AERoom.W2L1Stoddy.value, lambda state: (TJ_FishEntry(state, player) and CanHitMultiple(state, player)) or (TJ_UFOEntry(state, player) and TJ_UFOCliff(state, player)))
