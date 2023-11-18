@@ -600,3 +600,91 @@ class RAM():
 
         }
     }
+
+    items = {
+        "Club": 0x1,
+        "Net": 0x2,
+        "Radar": 0x4,
+        "Sling": 0x8,
+        "Hoop": 0x10,
+        "Punch": 0x20,
+        "Flyer": 0x40,
+        "Car": 0x80,
+        "Key": 0x100,
+        "Victory": 0x200,
+        "Nothing": 0x0
+    }
+
+    caughtStatus = {
+        "Unloaded": 0x0,
+        "Uncaught": 0x4,
+        "Caught": 0x2
+    }
+
+    levelStatus = {
+        "Locked": 0x0,
+        "Complete": 0x1,
+        "Hundo": 0x2,
+        "Open": 0x30
+    }
+
+    gameState = {
+        "Sony": 0x0,
+        "Menu": 0x3,
+        "Cutscene": 0x8,
+        "LevelSelect": 0x9,
+        "LevelIntro": 0xA,
+        "InLevel": 0xB,
+        "Cleared": 0xC,
+        "TimeStation": 0xD,
+        "Save/Load": 0xE,
+        "GameOver": 0xF,
+        "NewGadget": 0x11,
+        "LevelIntroTT": 0x12,
+        "InLevelTT": 0x13,
+        "ClearedTT": 0x14,
+        "Memory": 0x15,
+        "JakeIntro": 0x17,
+        "Jake": 0x18,
+        "JakeCleared": 0x19,
+        "Cutscene2": 0x1A,
+        "Book": 0x1C,
+        "Credits1": 0x1D,
+        "Credits2": 0x1E,
+        "PostCredits": 0x23
+    }
+
+    levelAddresses = {
+        11: 0xdfc71,
+        12: 0xdfc72,
+        13: 0xdfc73,
+        21: 0xdfc74,
+        22: 0xdfc75,
+        23: 0xdfc76,
+        31: 0xdfc77,
+        41: 0xdfc78,
+        42: 0xdfc79,
+        43: 0xdfc7A,
+        51: 0xdfc7B,
+        52: 0xdfc7C,
+        53: 0xdfc7D,
+        61: 0xdfc7E,
+        71: 0xdfc7F,
+        72: 0xdfc80,
+        73: 0xdfc81,
+        81: 0xdfc82,
+        82: 0xdfc85,
+        83: 0xdfc86,
+        91: 0xdfc88,
+        92: 0xdfc8e
+
+    }
+
+    unlockedGadgetsAddress = 0x0F51C4
+    trainingRoomProgressAddress = 0x0DFDCC
+    currentRoomIdAddress = 0x0F4476
+    gameStateAddress = 0x0F4470
+    unlockedLevelAdress = 0x0DFC70
+    requiredApesAddress = 0x0F44D8
+    hundoApesAdress = 0x0F44D6
+

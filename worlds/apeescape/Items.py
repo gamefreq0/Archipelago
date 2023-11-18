@@ -1,6 +1,7 @@
 from typing import Optional
 from BaseClasses import ItemClassification, Item
 from .Strings import AEItem
+from .RAMAddress import RAM
 
 base_apeescape_item_id = 128000000
 
@@ -24,21 +25,21 @@ nothing_item_id = base_apeescape_item_id
 # location of room and position data)
 item_table = {
     #Gadgets
-    AEItem.Club.value: 0x1,
-    AEItem.Net.value: 0x2,
-    AEItem.Radar.value: 0x4,
-    AEItem.Sling.value: 0x8,
-    AEItem.Hoop.value: 0x10,
-    AEItem.Punch.value: 0x20,
-    AEItem.Flyer.value: 0x40,
-    AEItem.Car.value: 0x80,
+    AEItem.Club.value: RAM.items["Club"],
+    AEItem.Net.value: RAM.items["Net"],
+    AEItem.Radar.value: RAM.items["Radar"],
+    AEItem.Sling.value: RAM.items["Sling"],
+    AEItem.Hoop.value: RAM.items["Hoop"],
+    AEItem.Punch.value: RAM.items["Punch"],
+    AEItem.Flyer.value: RAM.items["Flyer"],
+    AEItem.Car.value: RAM.items["Car"],
 
     AEItem.WaterNet.value: 0x400,
 
     #Keys
-    AEItem.Key.value: 0x100,
-    AEItem.Victory.value: 0x200,
-    AEItem.Nothing.value: 0x0
+    AEItem.Key.value: RAM.items["Key"],
+    AEItem.Victory.value: RAM.items["Victory"],
+    AEItem.Nothing.value: RAM.items["Nothing"]
 }
 
 event_table = {

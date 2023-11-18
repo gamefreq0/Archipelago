@@ -26,26 +26,12 @@ class ApeEscapeClient(BizHawkClient):
     goal_flag: int
 
     offset = 128000000
-
-    gadgetaddr = 0x0F51C4
-    trainingroomaddr = 0x0DFDCC
-    leveladdr = 0x0F4476
-    gamestateaddr = 0x0F4470 #0B in level, 0A loading, 09 Menu, 0C stage clear
-    levelunlockaddr = 0x0DFC70
     levelglobal = 0
     worldkeycount = 0
     boss1flag = 0
     boss2flag = 0
     boss3flag = 0
     boss4flag = 0
-
-    requiredmonkeyaddr = 0x0F44D8
-    hundomonkeyaddr = 0x0F44D6
-
-    monkeyaddrs = RAM.monkeyListLocal
-
-
-
 
     def __init__(self) -> None:
         super().__init__()
@@ -60,7 +46,7 @@ class ApeEscapeClient(BizHawkClient):
         ctx.game = self.game
         ctx.items_handling = 0b011
         self.levelglobal = int.from_bytes(((await bizhawk.read(ctx.bizhawk_ctx, [
-            (self.leveladdr, 1, "MainRAM")
+            (RAM.unlockedLevelAdress, 1, "MainRAM")
         ])))[0],byteorder='little')
 
         return True
@@ -71,16 +57,16 @@ class ApeEscapeClient(BizHawkClient):
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         try:
             hundocount = ((await bizhawk.read(ctx.bizhawk_ctx,[
-                (self.hundomonkeyaddr, 1, "MainRAM")
+                (RAM.hundoApesAdress, 1, "MainRAM")
                 ])))[0]
 
             await bizhawk.write(ctx.bizhawk_ctx, [
-                (self.trainingroomaddr, (0xFF).to_bytes(1, "little"), "MainRAM"),
-                (self.requiredmonkeyaddr, hundocount, "MainRAM")
+                (RAM.trainingRoomProgressAddress, (0xFF).to_bytes(1, "little"), "MainRAM"),
+                (RAM.requiredApesAddress, hundocount, "MainRAM")
             ])
 
             gadgetstate = int.from_bytes(((await bizhawk.read(ctx.bizhawk_ctx, [
-                (self.gadgetaddr, 1, "MainRAM")
+                (RAM.unlockedGadgetsAddress, 1, "MainRAM")
             ])))[0], byteorder="little")
 
 
@@ -89,8 +75,8 @@ class ApeEscapeClient(BizHawkClient):
             self.boss2flag = 0
 
             bosses = ((await bizhawk.read(ctx.bizhawk_ctx, [
-                (self.levelunlockaddr + 6, 1, "MainRAM"),
-                (self.levelunlockaddr + 13, 1, "MainRAM")
+                (RAM.unlockedLevelAdress + 6, 1, "MainRAM"),
+                (RAM.unlockedLevelAdress + 13, 1, "MainRAM")
             ])))
 
             if int.from_bytes(bosses[0], byteorder="little") == 1:
@@ -109,83 +95,83 @@ class ApeEscapeClient(BizHawkClient):
 
             if self.worldkeycount == 0:
                 await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x030303).to_bytes(3, "little"), "MainRAM") #w1
+                    (RAM.unlockedLevelAdress, (0x030303).to_bytes(3, "little"), "MainRAM") #w1
                 ])
             elif self.worldkeycount == 1:
                 await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
-                    (self.levelunlockaddr+3, (0x030303).to_bytes(3, "little"), "MainRAM") #w2
+                    (RAM.unlockedLevelAdress, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
+                    (RAM.unlockedLevelAdress+3, (0x030303).to_bytes(3, "little"), "MainRAM") #w2
                 ])
             #elif self.worldkeycount >= 2 and self.boss1flag == 0:
             #    #do a check that boss 1 complete
             #    await bizhawk.write(ctx.bizhawk_ctx, [
-            #        (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        #(self.levelunlockaddr + 6, (0x03).to_bytes(1, "little"), "MainRAM")
+            #        (RAM.unlockedLevelAdress, (0x010101).to_bytes(3, "little"), "MainRAM"),
+            #        (RAM.unlockedLevelAdress + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
+            #        #(RAM.unlockedLevelAdress + 6, (0x03).to_bytes(1, "little"), "MainRAM")
             #    ])
             elif self.worldkeycount == 2:
                 #do a check that boss 1 complete
                 await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"), #w2
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"), #w3
-                    (self.levelunlockaddr + 7, (0x030303).to_bytes(3, "little"), "MainRAM") #w4
+                    (RAM.unlockedLevelAdress, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
+                    (RAM.unlockedLevelAdress + 3, (0x010101).to_bytes(3, "little"), "MainRAM"), #w2
+                    (RAM.unlockedLevelAdress + 6, (0x01).to_bytes(1, "little"), "MainRAM"), #w3
+                    (RAM.unlockedLevelAdress + 7, (0x030303).to_bytes(3, "little"), "MainRAM") #w4
                 ])
             elif self.worldkeycount == 3:
                 await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"), #w2
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"), #w3
-                    (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"), #w4
-                    (self.levelunlockaddr + 10, (0x030303).to_bytes(3, "little"), "MainRAM") #w5
+                    (RAM.unlockedLevelAdress, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
+                    (RAM.unlockedLevelAdress + 3, (0x010101).to_bytes(3, "little"), "MainRAM"), #w2
+                    (RAM.unlockedLevelAdress + 6, (0x01).to_bytes(1, "little"), "MainRAM"), #w3
+                    (RAM.unlockedLevelAdress + 7, (0x010101).to_bytes(3, "little"), "MainRAM"), #w4
+                    (RAM.unlockedLevelAdress + 10, (0x030303).to_bytes(3, "little"), "MainRAM") #w5
                 ])
             #elif self.worldkeycount >= 4:
             #    await bizhawk.write(ctx.bizhawk_ctx, [
-            #        (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 13, (0x03).to_bytes(1, "little"), "MainRAM")
+            #        (RAM.unlockedLevelAdress, (0x010101).to_bytes(3, "little"), "MainRAM"),
+            #        (RAM.unlockedLevelAdress + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
+            #        (RAM.unlockedLevelAdress + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
+            #        (RAM.unlockedLevelAdress + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
+            #        (RAM.unlockedLevelAdress + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
+            #        (RAM.unlockedLevelAdress + 13, (0x03).to_bytes(1, "little"), "MainRAM")
             #    ])
             elif self.worldkeycount == 4:
                 await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 14, (0x030303).to_bytes(3, "little"), "MainRAM")
+                    (RAM.unlockedLevelAdress, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 14, (0x030303).to_bytes(3, "little"), "MainRAM")
                 ])
             elif self.worldkeycount == 5:
                 await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 14, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 17, (0x03).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 20, (0x0303).to_bytes(2, "little"), "MainRAM")
+                    (RAM.unlockedLevelAdress, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 14, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 17, (0x03).to_bytes(1, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 20, (0x0303).to_bytes(2, "little"), "MainRAM")
                 ])
             elif self.worldkeycount == 6:
                 await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 14, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 17, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 20, (0x0101).to_bytes(2, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 22, (0x03).to_bytes(1, "little"), "MainRAM")
+                    (RAM.unlockedLevelAdress, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 14, (0x010101).to_bytes(3, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 17, (0x01).to_bytes(1, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 20, (0x0101).to_bytes(2, "little"), "MainRAM"),
+                    (RAM.unlockedLevelAdress + 22, (0x03).to_bytes(1, "little"), "MainRAM")
                 ])
 
             await bizhawk.write(ctx.bizhawk_ctx, [
-                (self.gadgetaddr, (gadgetstate|3).to_bytes(1, "little"), "MainRAM")
+                (RAM.unlockedGadgetsAddress, (gadgetstate|3).to_bytes(1, "little"), "MainRAM")
             ])
 
 
@@ -193,8 +179,8 @@ class ApeEscapeClient(BizHawkClient):
 
 
             readresult = ((await bizhawk.read(ctx.bizhawk_ctx,[
-                (self.gamestateaddr, 1, "MainRAM"),
-                (self.leveladdr, 1, "MainRAM")
+                (RAM.gameStateAddress, 1, "MainRAM"),
+                (RAM.currentRoomIdAddress, 1, "MainRAM")
                 ])))
 
             gamestate = int.from_bytes(readresult[0], byteorder='little')
@@ -212,7 +198,7 @@ class ApeEscapeClient(BizHawkClient):
                     "status": ClientStatus.CLIENT_GOAL
                 }])
             elif (gamestate == 0x09 and (level != 88 and level != 255)) or gamestate == 0x0C: #quitting level
-                monkeyaddrs = self.monkeyaddrs[level]
+                monkeyaddrs = RAM.monkeyListLocal[level]
                 key_list = list(monkeyaddrs.keys())
                 val_list = list(monkeyaddrs.values())
 
@@ -274,11 +260,6 @@ class ApeEscapeClient(BizHawkClient):
 
 
             self.levelglobal = level
-
-
-
-
-
 
         except bizhawk.RequestFailedError:
             # Exit handler and return to main loop to reconnect
