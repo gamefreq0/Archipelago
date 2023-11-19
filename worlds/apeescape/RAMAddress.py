@@ -683,8 +683,36 @@ class RAM():
     unlockedGadgetsAddress = 0x0F51C4
     trainingRoomProgressAddress = 0x0DFDCC
     currentRoomIdAddress = 0x0F4476
+    currentLevelAddress = 0x0F4474
     gameStateAddress = 0x0F4470
-    unlockedLevelAdress = 0x0DFC70
+    unlockedLevelAddress = 0x0DFC70
     requiredApesAddress = 0x0F44D8
-    hundoApesAdress = 0x0F44D6
+    hundoApesAddress = 0x0F44D6
+    localApeStartAddress = 0x0DFE00
 
+    levels = {
+        "Fossil": 0x01,
+        "Primordial": 0x02,
+        "Molten": 0x03,
+        "Thick": 0x04,
+        "Dark": 0x05,
+        "Cryptic": 0x06,
+        "Stadium": 0x07,
+        "Crabby": 0x08,
+        "Coral": 0x09,
+        "Dexter": 0x0A,
+        "Snowy": 0x0B,
+        "Frosty": 0x0C,
+        "Hot": 0x0D,
+        "Gladiator": 0x0E,
+        "Sushi": 0x0F,
+        "Wabi": 0x10,
+        "Crumbling": 0x11,
+        "City": 0x14,
+        "Factory": 0x15,
+        "TV": 0x16,
+        "Specter": 0x18,
+        "Peak": 0x1E,
+        "Time": 0x1F,
+        "Training": 0x20
+    }
