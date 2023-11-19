@@ -65,6 +65,7 @@ class ApeEscapeWorld(World):
 
     def generate_early(self) -> None:
         self.goal = self.multiworld.goal[self.player].value
+        self.debug = self.multiworld.debug[self.player].value
 
     def create_regions(self):
         create_regions(self.multiworld, self.player)
@@ -100,27 +101,41 @@ class ApeEscapeWorld(World):
         waternet = self.create_item(AEItem.WaterNet.value)
         club = self.create_item(AEItem.Club.value)
 
-        self.multiworld.itempool += [shooter, hoop, flyer, car, punch]
-
-        self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
-
         self.multiworld.push_precollected(waternet)
         self.multiworld.push_precollected(club)
-        #DEBUG
-        #key1 = self.create_item("World Key")
-        #key2 = self.create_item("World Key")
-        #key3 = self.create_item("World Key")
-        #key4 = self.create_item("World Key")
-        #key5 = self.create_item("World Key")
-        #key6 = self.create_item("World Key")
+
+        if self.multiworld.debug[self.player].value == 0x00:
+            self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
+            self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
+        # DEBUG
+        elif self.multiworld.debug[self.player].value == 0x01:
+            self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(radar)
+            self.multiworld.get_location(AELocation.Jorjy.value, self.player).place_locked_item(shooter)
+            self.multiworld.get_location(AELocation.Nati.value, self.player).place_locked_item(hoop)
+            self.multiworld.get_location(AELocation.Shay.value, self.player).place_locked_item(flyer)
+            self.multiworld.get_location(AELocation.DrMonk.value, self.player).place_locked_item(car)
+            self.multiworld.get_location(AELocation.Ahchoo.value, self.player).place_locked_item(punch)
+            self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
+        # DEBUG
+        elif self.multiworld.debug[self.player].value == 0x02:
+            self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
+            key1 = self.create_item("World Key")
+            key2 = self.create_item("World Key")
+            key3 = self.create_item("World Key")
+            key4 = self.create_item("World Key")
+            key5 = self.create_item("World Key")
+            key6 = self.create_item("World Key")
+            self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(key1)
+            self.multiworld.get_location(AELocation.Jorjy.value, self.player).place_locked_item(key2)
+            self.multiworld.get_location(AELocation.Nati.value, self.player).place_locked_item(key3)
+            self.multiworld.get_location(AELocation.Shay.value, self.player).place_locked_item(key4)
+            self.multiworld.get_location(AELocation.DrMonk.value, self.player).place_locked_item(key5)
+            self.multiworld.get_location(AELocation.Ahchoo.value, self.player).place_locked_item(key6)
 
 
-        self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(radar)
-        #self.multiworld.get_location(AELocation.Jorjy.value, self.player).place_locked_item(key2)
-        #self.multiworld.get_location(AELocation.Nati.value, self.player).place_locked_item(key3)
-        #self.multiworld.get_location(AELocation.Shay.value, self.player).place_locked_item(key4)
-        #self.multiworld.get_location(AELocation.DrMonk.value, self.player).place_locked_item(key5)
-        #self.multiworld.get_location(AELocation.Ahchoo.value, self.player).place_locked_item(key6)
+
+
+
 
         if self.multiworld.goal[self.player].value == 0x00:
             self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
