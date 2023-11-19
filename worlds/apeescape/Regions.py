@@ -102,7 +102,7 @@ def create_regions(world: MultiWorld, player: int):
                          in get_array([29])]
     zanzibar = Region(AERoom.W2L1Zanzibar.value, player, world)
     zanzibar.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], zanzibar) for loc_name
-                         in get_array([22])]
+                         in get_array([31])]
     alphonse = Region(AERoom.W2L1Alphonse.value, player, world)
     alphonse.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], alphonse) for loc_name
                          in get_array([30])]
@@ -111,13 +111,13 @@ def create_regions(world: MultiWorld, player: int):
                          in get_array([21])]
     herb = Region(AERoom.W2L1Herb.value, player, world)
     herb.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], herb) for loc_name
-                         in get_array([25])]
+                         in get_array([22])]
     dilweed = Region(AERoom.W2L1Dilweed.value, player, world)
     dilweed.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], dilweed) for loc_name
                          in get_array([23])]
     stoddy = Region(AERoom.W2L1Stoddy.value, player, world)
     stoddy.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], stoddy) for loc_name
-                         in get_array([27])]
+                         in get_array([25])]
     mitong = Region(AERoom.W2L1Mitong.value, player, world)
     mitong.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mitong) for loc_name
                          in get_array([24])]
@@ -129,7 +129,7 @@ def create_regions(world: MultiWorld, player: int):
                          in get_array([28])]
     selur = Region(AERoom.W2L1Selur.value, player, world)
     selur.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], selur) for loc_name
-                        in get_array([31])]
+                        in get_array([27])]
 
     #2-2
     l221 = Region(AERoom.W2L2Outside.value, player, world)
