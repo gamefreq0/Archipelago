@@ -207,6 +207,7 @@ class AELocation(Enum):
     Carlito = "9-1 Monkey Madness Monkey 23 - Carlito"
     BG = "9-1 Monkey Madness Monkey 24 - BG"
     Specter = "9-1 Monkey Madness - Specter"
+    Specter2 = "9-2 Peak Point Matrix - Specter"
 
 class AERoom(Enum):
     W1L1Noonan = "1-1 Noonan"
@@ -492,6 +493,7 @@ class AERoom(Enum):
     W9L1Head = "9-1 Monkey Head"
     W9L1Side = "9-1 Castle Side Entry"
     W9L1Boss = "9-1 Boss"
+    W9L2Boss = "9-2 Boss"
 
 
 class AEWorld(Enum):

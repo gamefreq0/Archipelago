@@ -237,5 +237,6 @@ location_table = {
     AELocation.Carro.value: 202,
     AELocation.Carlito.value: 203,
     AELocation.BG.value: 204,
-    AELocation.Specter.value: 205
+    AELocation.Specter.value: 205,
+    AELocation.Specter2.value: 206
 }

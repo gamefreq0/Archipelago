@@ -58,11 +58,16 @@ class ApeEscapeClient(BizHawkClient):
             keyCountFromServer = 0
 
             for item in ctx.items_received:
-                if 0x1 <= (item.item - self.offset) <= 0x80:
+                if RAM.items["Club"] <= (item.item - self.offset) <= RAM.items["Car"]:
                     if gadgetStateFromServer | (item.item - self.offset) != gadgetStateFromServer:
                         gadgetStateFromServer = gadgetStateFromServer | (item.item - self.offset)
-                elif item.item - self.offset == 0x100:
+                elif item.item - self.offset == RAM.items["Key"]:
                     keyCountFromServer = keyCountFromServer + 1
+                elif item.item - self.offset == RAM.items["Victory"]:
+                    await ctx.send_msgs([{
+                        "cmd": "StatusUpdate",
+                        "status": ClientStatus.CLIENT_GOAL
+                    }])
 
             if keyCountFromServer > self.worldkeycount:
                 self.worldkeycount = keyCountFromServer
@@ -116,8 +121,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # elif changing room but still in level, use local list
             # if level stays the same, and room changes and in level
-            elif gameState == RAM.gameState[
-                "InLevel"] and currentLevel == self.levelglobal and currentRoom != self.roomglobal:
+            elif gameState == RAM.gameState["InLevel"] and currentLevel == self.levelglobal and currentRoom != self.roomglobal:
                 monkeyaddrs = RAM.monkeyListLocal[self.roomglobal]
                 key_list = list(monkeyaddrs.keys())
                 val_list = list(monkeyaddrs.values())
@@ -141,17 +145,17 @@ class ApeEscapeClient(BizHawkClient):
                         "locations": list(x for x in monkeys_to_send)
                     }])
 
-            # check for victory condition
-            if (gameState == RAM.gameState["Cleared"] or gameState == RAM.gameState["Credits1"]) and currentRoom == 86:
-                victory = set()
-                victory.add(RAM.items["Victory"] + self.offset)
+            # Check for victory conditions
+            if RAM.levelAddresses[91] == RAM.levelStatus["Complete"] or RAM.levelAddresses[91] == RAM.levelStatus["Hundo"]:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
-                    "locations": list(x for x in victory)
+                    "locations": list(x for x in [self.offset+205])
                 }])
+
+            if RAM.levelAddresses[92] == RAM.levelStatus["Complete"] or RAM.levelAddresses[92] == RAM.levelStatus["Hundo"]:
                 await ctx.send_msgs([{
-                    "cmd": "StatusUpdate",
-                    "status": ClientStatus.CLIENT_GOAL
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in [self.offset+206])
                 }])
 
             # Write Array

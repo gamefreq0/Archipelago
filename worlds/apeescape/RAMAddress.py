@@ -673,7 +673,7 @@ class RAM():
         72: 0xdfc80,
         73: 0xdfc81,
         81: 0xdfc82,
-        82: 0xdfc85,
+        82: 0xdfc84,
         83: 0xdfc86,
         91: 0xdfc88,
         92: 0xdfc8e

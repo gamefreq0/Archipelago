@@ -63,6 +63,9 @@ class ApeEscapeWorld(World):
         self.debug: Optional[int] = 0
         self.goal: Optional[int] = 0
 
+    def generate_early(self) -> None:
+        self.goal = self.multiworld.goal[self.player].value
+
     def create_regions(self):
         create_regions(self.multiworld, self.player)
 
@@ -119,9 +122,10 @@ class ApeEscapeWorld(World):
         #self.multiworld.get_location(AELocation.DrMonk.value, self.player).place_locked_item(key5)
         #self.multiworld.get_location(AELocation.Ahchoo.value, self.player).place_locked_item(key6)
 
-
-
-        self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
+        if self.multiworld.goal[self.player].value == 0x00:
+            self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
+        else:
+            self.multiworld.get_location(AELocation.Specter2.value, self.player).place_locked_item(victory)
 
         remaining = (len(location_table) - len(self.multiworld.itempool))
         self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, remaining)]

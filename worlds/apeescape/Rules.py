@@ -18,6 +18,9 @@ def set_rules(world, player: int):
     connect_regions(world, player, "Menu", AEWorld.W8.value, lambda state: Keys(state, player, 5))
     connect_regions(world, player, "Menu", AEWorld.W9.value, lambda state: Keys(state, player, 6))
 
+    if world.goal[player].value == 0x01:
+        connect_regions(world, player, "Menu", AERoom.W9L2Boss.value, lambda state: Keys(state, player, 6) and HasSling(state, player) and HasHoop(state, player) and HasFlyer(state, player) and CanHitMultiple(state, player) and HasRC(state, player))
+
     #1-1
     connect_regions(world, player, AEWorld.W1.value, AERoom.W1L1Main.value, lambda state: True)
 
@@ -355,7 +358,6 @@ def set_rules(world, player: int):
     connect_regions(world, player, AERoom.W9L1Head.value, AERoom.W9L1Carro.value, lambda state: MM_DoubleDoor(state, player))
     connect_regions(world, player, AERoom.W9L1Head.value, AERoom.W9L1Carlito.value, lambda state: MM_DoubleDoor(state, player))
     connect_regions(world, player, AERoom.W9L1Side.value, AERoom.W9L1BG.value, lambda state: MM_SHA(state, player) and HasSling(state, player) and HasFlyer(state, player))
-
 
     world.completion_condition[player] = lambda state: state.has("Victory", player, 1)
 

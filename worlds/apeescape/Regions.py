@@ -1,6 +1,7 @@
 from BaseClasses import MultiWorld, Region, Entrance
 from .Locations import location_table, ApeEscapeLocation
 from .Strings import AEWorld, AERoom
+from .Options import GoalOption
 
 def create_regions(world: MultiWorld, player: int):
 
@@ -761,7 +762,11 @@ def create_regions(world: MultiWorld, player: int):
     bg.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bg) for loc_name in
                           get_array([204])]
 
-    world.regions.extend([menu,
+    l92 = Region(AERoom.W9L2Boss.value, player, world)
+    l92.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l92) for loc_name in
+                        get_array([206])]
+
+    regions = [menu,
                           w1, w2, w3, w4, w5, w6, w7, w8, w9,
                           l11, noonan, jorjy, nati, trayc,
                           l12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
@@ -794,7 +799,13 @@ def create_regions(world: MultiWorld, player: int):
                           l911, l912, l913, l914, l915, l916, l917, l918, l919, l9110, l9111, l9112, l9113, l9114,
                           l9115,
                           goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe,
-                          gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg])
+                          gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg]
+
+    if world.goal[player].value == 0x01:
+        regions += [l92]
+
+
+    world.regions.extend(regions)
 
 
 
