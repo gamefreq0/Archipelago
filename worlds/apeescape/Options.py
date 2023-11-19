@@ -36,7 +36,24 @@ class GoalOption(Choice):
     option_second = 0x01
     default = option_first
 
+class LogicOption(Choice):
+    """Choose expected trick knowledge
+
+        glitchless: no glitches required
+        noij: all glitches except infinite jump
+        ij: all glitches
+
+        Supported values: glitchless, noij, ij
+        Default value: glitchless
+    """
+
+    display_name = "Logic"
+    option_glitchless = 0x00
+    option_noij = 0x01
+    option_ij = 0x02
+
 apeescape_option_definitions: Dict[str, type(Option)] = {
     "debug": DebugOption,
-    "goal": GoalOption
+    "goal": GoalOption,
+    "logic": LogicOption
 }

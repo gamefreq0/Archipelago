@@ -13,7 +13,7 @@ from .Rules import set_rules
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
-from .Options import apeescape_option_definitions, DebugOption, GoalOption
+from .Options import apeescape_option_definitions, DebugOption, GoalOption, LogicOption
 from Options import AssembleOptions
 
 from worlds.LauncherComponents import Component, components, SuffixIdentifier
@@ -62,10 +62,12 @@ class ApeEscapeWorld(World):
         self.game = "Ape Escape"
         self.debug: Optional[int] = 0
         self.goal: Optional[int] = 0
+        self.logic: Optional[int] = 0
 
     def generate_early(self) -> None:
         self.goal = self.multiworld.goal[self.player].value
         self.debug = self.multiworld.debug[self.player].value
+        self.logic = self.multiworld.logic[self.player].value
 
     def create_regions(self):
         create_regions(self.multiworld, self.player)
