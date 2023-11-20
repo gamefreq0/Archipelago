@@ -19,7 +19,7 @@ from Options import AssembleOptions
 from worlds.LauncherComponents import Component, components, SuffixIdentifier
 
 # Adventure
-components.append(Component('Ape Escape Client', 'ApeEscapeClient', file_identifier=SuffixIdentifier('.apae')))
+#components.append(Component('Ape Escape Client', 'ApeEscapeClient', file_identifier=SuffixIdentifier('.apae')))
 
 
 class ApeEscapeWeb(WebWorld):
