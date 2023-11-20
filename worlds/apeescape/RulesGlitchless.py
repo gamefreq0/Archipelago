@@ -10,10 +10,10 @@ class Glitchless():
         #Worlds
         connect_regions(world, player, "Menu", AEWorld.W1.value, lambda state: NoRequirement())
         connect_regions(world, player, "Menu", AEWorld.W2.value, lambda state: Keys(state, player, 1))
-        connect_regions(world, player, "Menu", AEWorld.W3.value, lambda state: CanSwim(state, player))
+        connect_regions(world, player, "Menu", AEWorld.W3.value, lambda state: CanSwim(state, player) and Keys(state, player, 2))
         connect_regions(world, player, "Menu", AEWorld.W4.value, lambda state: Keys(state, player, 2))
         connect_regions(world, player, "Menu", AEWorld.W5.value, lambda state: Keys(state, player, 3))
-        connect_regions(world, player, "Menu", AEWorld.W6.value, lambda state: HasFlyer(state, player))
+        connect_regions(world, player, "Menu", AEWorld.W6.value, lambda state: HasFlyer(state, player) and Keys(state, player, 4))
         connect_regions(world, player, "Menu", AEWorld.W7.value, lambda state: Keys(state, player, 4))
         connect_regions(world, player, "Menu", AEWorld.W8.value, lambda state: Keys(state, player, 5))
         connect_regions(world, player, "Menu", AEWorld.W9.value, lambda state: Keys(state, player, 6))
