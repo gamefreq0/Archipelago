@@ -672,12 +672,33 @@ class RAM():
         71: 0xdfc7F,
         72: 0xdfc80,
         73: 0xdfc81,
-        81: 0xdfc82,
-        82: 0xdfc84,
+        81: 0xdfc84,
+        82: 0xdfc85,
         83: 0xdfc86,
         91: 0xdfc88,
         92: 0xdfc8e
+    }
 
+    levelMonkeyCount = {
+        11: 0xdfc99,
+        12: 0xdfc9a,
+        13: 0xdfc9b,
+        21: 0xdfc9c,
+        22: 0xdfc9d,
+        23: 0xdfc9e,
+        41: 0xdfca0,
+        42: 0xdfca1,
+        43: 0xdfca2,
+        51: 0xdfca3,
+        52: 0xdfca4,
+        53: 0xdfca5,
+        71: 0xdfca7,
+        72: 0xdfca8,
+        73: 0xdfca9,
+        81: 0xdfcac,
+        82: 0xdfcad,
+        83: 0xdfcae,
+        91: 0xdfcb0
     }
 
     unlockedGadgetsAddress = 0x0F51C4

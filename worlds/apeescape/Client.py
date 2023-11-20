@@ -96,6 +96,29 @@ class ApeEscapeClient(BizHawkClient):
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
 
+            levelCountTuples = [
+                (RAM.levelMonkeyCount[11], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[12], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[13], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[21], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[22], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[23], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[41], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[42], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[43], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[51], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[52], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[53], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[71], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[72], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[73], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[81], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[82], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[83], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[91], 1, "MainRAM")
+            ]
+            monkeylevelcounts = await bizhawk.read(ctx.bizhawk_ctx, levelCountTuples)
+
             hundoCount = int.from_bytes(reads[0], byteorder="little")
             gadgets = int.from_bytes(reads[1], byteorder="little")
             currentRoom = int.from_bytes(reads[2], byteorder="little")
@@ -156,13 +179,13 @@ class ApeEscapeClient(BizHawkClient):
                     }])
 
             # Check for victory conditions
-            if RAM.levelAddresses[91] == RAM.levelStatus["Complete"] or RAM.levelAddresses[91] == RAM.levelStatus["Hundo"]:
+            if RAM.gameState["Credits1"] == gameState:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in [self.offset+205])
                 }])
 
-            if RAM.levelAddresses[92] == RAM.levelStatus["Complete"] or RAM.levelAddresses[92] == RAM.levelStatus["Hundo"]:
+            if RAM.gameState["Credits2"] == gameState:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in [self.offset+206])
@@ -208,7 +231,7 @@ class ApeEscapeClient(BizHawkClient):
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
 
-            writes += self.unlockLevels()
+            writes += self.unlockLevels(monkeylevelcounts)
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
 
@@ -219,7 +242,7 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
-    def unlockLevels(self):
+    def unlockLevels(self, monkeylevelCounts):
 
         key = self.worldkeycount
 
@@ -307,14 +330,67 @@ class ApeEscapeClient(BizHawkClient):
 
         if key == 6:
             current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-        elif key > 6:
-            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
         else:
             current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
 
         w91 = (RAM.levelAddresses[91], current, "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[0], byteorder="little") >= 4:
+            w11 = (RAM.levelAddresses[11], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[1], byteorder="little") >= 6:
+            w12 = (RAM.levelAddresses[12], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[2], byteorder="little") >= 7:
+            w13 = (RAM.levelAddresses[13], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[3], byteorder="little") >= 14:
+            w21 = (RAM.levelAddresses[21], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[4], byteorder="little") >= 13:
+            w22 = (RAM.levelAddresses[22], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[5], byteorder="little") >= 8:
+            w23 = (RAM.levelAddresses[23], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[6], byteorder="little") >= 8:
+            w41 = (RAM.levelAddresses[41], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[7], byteorder="little") >= 8:
+            w42 = (RAM.levelAddresses[42], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[8], byteorder="little") >= 11:
+            w43 = (RAM.levelAddresses[43], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[9], byteorder="little") >= 6:
+            w51 = (RAM.levelAddresses[51], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[10], byteorder="little") >= 9:
+            w52 = (RAM.levelAddresses[52], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[11], byteorder="little") >= 9:
+            w53 = (RAM.levelAddresses[53], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[12], byteorder="little") >= 12:
+            w71 = (RAM.levelAddresses[71], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[13], byteorder="little") >= 10:
+            w72 = (RAM.levelAddresses[72], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[14], byteorder="little") >= 20:
+            w73 = (RAM.levelAddresses[73], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[15], byteorder="little") >= 13:
+            w81 = (RAM.levelAddresses[81], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[16], byteorder="little") >= 10:
+            w82 = (RAM.levelAddresses[82], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[17], byteorder="little") >= 12:
+            w83 = (RAM.levelAddresses[83], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[18], byteorder="little") >= 24:
+            w83 = (RAM.levelAddresses[91], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
 
         return [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83, w91]
