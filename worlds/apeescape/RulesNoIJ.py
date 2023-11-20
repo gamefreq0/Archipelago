@@ -5,7 +5,7 @@ from .Regions import connect_regions
 from .Strings import AEItem, AEWorld, AERoom
 
 class NoIJ():
-    def set_rules(world, player: int):
+    def set_rules(world, player: int, coins: bool):
 
         #Worlds
         connect_regions(world, player, "Menu", AEWorld.W1.value, lambda state: NoRequirement())
@@ -361,6 +361,41 @@ class NoIJ():
 
 
         world.completion_condition[player] = lambda state: state.has("Victory", player, 1)
+
+        if coins:
+            # Coins
+            # 1-1
+            connect_regions(world, player, AERoom.W1L1Main.value, AERoom.Coin1.value, lambda state: NoRequirement())
+            # 1-2
+            connect_regions(world, player, AERoom.W1L2Main.value, AERoom.Coin2.value,
+                            lambda state: CanDive(state, player))
+            # 1-3
+            connect_regions(world, player, AERoom.W1L3Entry.value, AERoom.Coin3.value, lambda state: NoRequirement())
+            # 2-1
+            connect_regions(world, player, AERoom.W2L1Entry.value, AERoom.Coin6.value,
+                            lambda state: HasMobility(state, player))
+            connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.Coin7.value,
+                            lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+            connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.Coin8.value,
+                            lambda state: (TJ_FishEntry(state, player)))
+            connect_regions(world, player, AERoom.W2L1Tent.value, AERoom.Coin9.value,
+                            lambda state: ((TJ_FishEntry(state, player)) and (CanHitMultiple(state, player))) or (
+                                    (TJ_UFOEntry(state, player)) and (TJ_UFOCliff(state, player))))
+            # 2-2
+            connect_regions(world, player, AERoom.W2L2Outside.value, AERoom.Coin11.value, lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W2L2Fan.value, AERoom.Coin12.value, lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W2L2Obelisk.value, AERoom.Coin13.value,
+                            lambda state: HasRC(state, player) or HasPunch(state, player))
+            connect_regions(world, player, AERoom.W2L2Water.value, AERoom.Coin14.value,
+                            lambda state: (CanDive(state, player)) and (
+                                    (CanHitOnce(state, player)) or (HasFlyer(state, player))))
+            # 2-3
+            connect_regions(world, player, AERoom.W2L3Main.value, AERoom.Coin17.value,
+                            lambda state: (CR_Inside(state, player)) and (
+                                    (CanHitMultiple(state, player)) and (CanSwim(state, player))) or (
+                                              HasMobility(state, player)))
+            # 3-1
+            connect_regions(world, player, AEWorld.W3.value, AERoom.Coin19.value, lambda state: NoRequirement())
 
 
 def Keys(state, player, count):

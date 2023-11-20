@@ -238,5 +238,24 @@ location_table = {
     AELocation.Carlito.value: 203,
     AELocation.BG.value: 204,
     AELocation.Specter.value: 205,
-    AELocation.Specter2.value: 206
+    AELocation.Specter2.value: 206,
+
+    #Coins
+    AELocation.Coin1.value: 301,
+    AELocation.Coin2.value: 302,
+    AELocation.Coin3.value: 303,
+    AELocation.Coin6.value: 306,
+    AELocation.Coin7.value: 307,
+    AELocation.Coin8.value: 308,
+    AELocation.Coin9.value: 309,
+    AELocation.Coin11.value: 311,
+    AELocation.Coin12.value: 312,
+    AELocation.Coin13.value: 313,
+    AELocation.Coin14.value: 314,
+    AELocation.Coin17.value: 317,
+    AELocation.Coin19A.value: 319,
+    AELocation.Coin19B.value: 299,
+    AELocation.Coin19C.value: 298,
+    AELocation.Coin19D.value: 297,
+    AELocation.Coin19E.value: 296,
 }

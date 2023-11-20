@@ -33,6 +33,7 @@ class ApeEscapeClient(BizHawkClient):
     boss2flag = 0
     boss3flag = 0
     boss4flag = 0
+    currentCoinAddress = RAM.startingCoinAddress
 
     def __init__(self) -> None:
         super().__init__()
@@ -78,13 +79,19 @@ class ApeEscapeClient(BizHawkClient):
             # 2: Current Room
             # 3: Current Game state
             # 4: Current Level
+            # 5: Current New Coin State
+            # 6: Current New Coin State Room
+            # 7: Coin Count
 
             readTuples = [
                 (RAM.hundoApesAddress, 1, "MainRAM"),
                 (RAM.unlockedGadgetsAddress, 1, "MainRAM"),
                 (RAM.currentRoomIdAddress, 1, "MainRAM"),
                 (RAM.gameStateAddress, 1, "MainRAM"),
-                (RAM.currentLevelAddress, 1, "MainRAM")
+                (RAM.currentLevelAddress, 1, "MainRAM"),
+                (self.currentCoinAddress+1, 1, "MainRAM"),
+                (self.currentCoinAddress, 1, "MainRAM"),
+                (RAM.totalCoinsAddress, 1, "MainRAM")
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -94,6 +101,9 @@ class ApeEscapeClient(BizHawkClient):
             currentRoom = int.from_bytes(reads[2], byteorder="little")
             gameState = int.from_bytes(reads[3], byteorder="little")
             currentLevel = int.from_bytes(reads[4], byteorder="little")
+            currentCoinState = int.from_bytes(reads[5], byteorder="little")
+            currentCoinStateRoom = int.from_bytes(reads[6], byteorder="little")
+            coinCount = int.from_bytes(reads[7], byteorder="little")
 
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
@@ -156,6 +166,30 @@ class ApeEscapeClient(BizHawkClient):
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in [self.offset+206])
+                }])
+
+            # Check for new coins from current coin address
+            if currentCoinStateRoom != 0xFF:
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in [currentCoinStateRoom + self.offset + 300])
+                }])
+                self.currentCoinAddress += 2
+            else:
+                self.currentCoinAddress = RAM.startingCoinAddress
+
+
+            # Check for Jake Victory
+            if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"]:
+                coins = set()
+                coins.add(319+self.offset)
+                coins.add(299+self.offset)
+                coins.add(298+self.offset)
+                coins.add(297+self.offset)
+                coins.add(296+self.offset)
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in coins)
                 }])
 
             # Write Array

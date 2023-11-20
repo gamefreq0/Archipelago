@@ -383,7 +383,7 @@ class RAM():
             98: 0x0DFE31,
             97: 0x0DFE30
         },
-        36: {
+        36: { # 6-1
 
         },
         37: {  # 7-1
@@ -689,6 +689,8 @@ class RAM():
     requiredApesAddress = 0x0F44D8
     hundoApesAddress = 0x0F44D6
     localApeStartAddress = 0x0DFE00
+    startingCoinAddress = 0x0DFB70
+    totalCoinsAddress = 0x0F44BA
 
     levels = {
         "Fossil": 0x01,

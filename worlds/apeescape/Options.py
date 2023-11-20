@@ -52,8 +52,23 @@ class LogicOption(Choice):
     option_noij = 0x01
     option_ij = 0x02
 
+class CoinOption(Choice):
+    """Choose if Specter Coins should act as Locations
+
+        true: coins are added as locations
+        false: coins are not added as locations
+
+        Supported values: true, false
+        Default value: false
+    """
+
+    display_name = "Coin"
+    option_true = 0x00
+    option_false = 0x01
+
 apeescape_option_definitions: Dict[str, type(Option)] = {
     "debug": DebugOption,
     "goal": GoalOption,
-    "logic": LogicOption
+    "logic": LogicOption,
+    "coin": CoinOption
 }
