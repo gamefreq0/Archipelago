@@ -342,7 +342,7 @@ class RAM():
         27: {  # tentacle room
             79: 0x0DFE48
         },
-        28: { # miniboss room
+        28: { # slide room
 
         },
         29: {  # 5-1
@@ -544,10 +544,10 @@ class RAM():
         72: { # coaster entry
             181: 0x0DFE00
         },
-        73: {
+        73: { # coaster 1
 
         },
-        74: {
+        74: { # coaster 2
 
         },
         75: { # haunted house

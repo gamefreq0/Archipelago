@@ -253,7 +253,7 @@ def create_regions(world: MultiWorld, player: int):
     #3-1
     coin19 = Region(AERoom.Coin19.value, player, world)
     coin19.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin19) for loc_name
-                         in get_array([319, 299, 298, 297, 296])]
+                         in get_array([295, 296, 297, 298, 299])]
 
 
     #4-1
