@@ -93,6 +93,7 @@ class ApeEscapeWorld(World):
 
 
     def create_items(self):
+        numberoflocations = len(Locations.location_table)
 
         radar = self.create_item(AEItem.Radar.value)
         shooter = self.create_item(AEItem.Sling.value)
@@ -111,6 +112,7 @@ class ApeEscapeWorld(World):
         if self.multiworld.debug[self.player].value == 0x00:
             self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
             self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
+            numberoflocations -= 12
         # DEBUG
         elif self.multiworld.debug[self.player].value == 0x01:
             self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(radar)
@@ -120,6 +122,7 @@ class ApeEscapeWorld(World):
             self.multiworld.get_location(AELocation.DrMonk.value, self.player).place_locked_item(car)
             self.multiworld.get_location(AELocation.Ahchoo.value, self.player).place_locked_item(punch)
             self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
+            numberoflocations -= 12
         # DEBUG
         elif self.multiworld.debug[self.player].value == 0x02:
             self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
@@ -135,19 +138,21 @@ class ApeEscapeWorld(World):
             self.multiworld.get_location(AELocation.Shay.value, self.player).place_locked_item(key4)
             self.multiworld.get_location(AELocation.DrMonk.value, self.player).place_locked_item(key5)
             self.multiworld.get_location(AELocation.Ahchoo.value, self.player).place_locked_item(key6)
+            numberoflocations -= 12
 
 
-
+        if self.multiworld.coin[self.player].value == 0x01:
+            numberoflocations -= 59
 
 
 
         if self.multiworld.goal[self.player].value == 0x00:
             self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
+            numberoflocations -= 1
         else:
             self.multiworld.get_location(AELocation.Specter2.value, self.player).place_locked_item(victory)
 
-        remaining = (len(location_table) - len(self.multiworld.itempool))
-        self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, remaining)]
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, numberoflocations)]
 
     def fill_slot_data(self):
         return {}
