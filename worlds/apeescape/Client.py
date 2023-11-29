@@ -227,11 +227,22 @@ class ApeEscapeClient(BizHawkClient):
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"]:
                 coins = set()
-                coins.add(319+self.offset)
-                coins.add(299+self.offset)
-                coins.add(298+self.offset)
-                coins.add(297+self.offset)
+                coins.add(295+self.offset)
                 coins.add(296+self.offset)
+                coins.add(297+self.offset)
+                coins.add(298+self.offset)
+                coins.add(299+self.offset)
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in coins)
+                }])
+            elif currentRoom == 36 and gameState == RAM.gameState["JakeCleared"]:
+                coins = set()
+                coins.add(290+self.offset)
+                coins.add(291+self.offset)
+                coins.add(292+self.offset)
+                coins.add(293+self.offset)
+                coins.add(294+self.offset)
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in coins)
