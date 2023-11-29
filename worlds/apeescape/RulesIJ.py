@@ -5,7 +5,7 @@ from .Regions import connect_regions
 from .Strings import AEItem, AEWorld, AERoom
 
 class IJ():
-    def set_rules(world, player: int, coins: bool):
+    def set_rules(self, world, player: int, coins: bool):
 
         #Worlds
         connect_regions(world, player, "Menu", AEWorld.W1.value, lambda state: NoRequirement())
@@ -396,6 +396,111 @@ class IJ():
                                               HasMobility(state, player)))
             # 3-1
             connect_regions(world, player, AEWorld.W3.value, AERoom.Coin19.value, lambda state: NoRequirement())
+
+            # 4-1
+            connect_regions(world, player, AERoom.W4L1SecondRoom.value, AERoom.Coin21.value,
+                            lambda state: NoRequirement())
+
+            # 4-2
+            connect_regions(world, player, AERoom.W4L2SecondRoom.value, AERoom.Coin23.value,
+                            lambda state: CanDive(state, player))
+
+            # 4-3
+            connect_regions(world, player, AERoom.W4L3Outside.value, AERoom.Coin24.value,
+                            lambda state: CanSwim(state, player) or CanHitOnce(state, player))
+            connect_regions(world, player, AERoom.W4L3Stomach.value, AERoom.Coin25.value,
+                            lambda state: CanDive(state, player) and CanHitOnce(state, player))
+            connect_regions(world, player, AERoom.W4L3Slide.value, AERoom.Coin28.value,
+                            lambda state: (CanSwim(state, player)) and (
+                                        ((CanHitOnce(state, player))) or (HasPunch(state, player))))
+
+            # 5-1
+            connect_regions(world, player, AERoom.W5L1Main.value, AERoom.Coin29.value,
+                            lambda state: NoRequirement())
+
+            # 5-2
+            connect_regions(world, player, AERoom.W5L2Entry.value, AERoom.Coin30.value,
+                            lambda state: HasFlyer(state, player))
+            connect_regions(world, player, AERoom.W5L2Water.value, AERoom.Coin31.value,
+                            lambda state: HasFlyer(state, player) and CanDive(state, player))
+            connect_regions(world, player, AERoom.W5L2Caverns.value, AERoom.Coin32.value,
+                            lambda state: HasFlyer(state, player))
+
+            # 5-3
+            connect_regions(world, player, AERoom.W5L3Spring.value, AERoom.Coin34.value,
+                            lambda state: HasFlyer(state, player))
+            connect_regions(world, player, AERoom.W5L3Cave.value, AERoom.Coin35.value,
+                            lambda state: CanHitMultiple(state, player))
+
+            # 6-1
+            connect_regions(world, player, AEWorld.W6.value, AERoom.Coin36.value, lambda state: HasFlyer(state, player))
+
+            # 7-1
+            connect_regions(world, player, AERoom.W7L1Outside.value, AERoom.Coin37.value,
+                            lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W7L1Temple.value, AERoom.Coin38.value,
+                            lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W7L1Well.value, AERoom.Coin39.value,
+                            lambda state: HasFlyer(state, player))
+
+            # 7-2
+            connect_regions(world, player, AERoom.W7L2First.value, AERoom.Coin40.value,
+                            lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W7L2Gong.value, AERoom.Coin41.value,
+                            lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W7L2Barrel.value, AERoom.Coin43.value,
+                            lambda state: HasFlyer(state, player))
+
+            # 7-3
+            connect_regions(world, player, AERoom.W7L3Outside.value, AERoom.Coin45.value,
+                            lambda state: HasClub(state, player) or HasFlyer(state, player) or HasPunch(state, player))
+            connect_regions(world, player, AERoom.W7L3Castle.value, AERoom.Coin46.value,
+                            lambda state: CC_5Monkeys(state, player))
+            connect_regions(world, player, AERoom.W7L3Button.value, AERoom.Coin49.value,
+                            lambda state: CC_ButtonRoom(state, player))
+            connect_regions(world, player, AERoom.W7L3Elevator.value, AERoom.Coin50.value,
+                            lambda state: CC_5Monkeys(state, player) or CC_WaterRoom(state, player))
+
+            # 8-1
+            connect_regions(world, player, AERoom.W8L1Outside.value, AERoom.Coin53.value,
+                            lambda state: CP_FrontBarrels(state, player) and CanDive(state, player) and HasFlyer(state,
+                                                                                                                 player))
+            connect_regions(world, player, AERoom.W8L1Sewers.value, AERoom.Coin54.value,
+                            lambda state: CP_FrontSewer(state, player) and HasRC(state, player))
+            connect_regions(world, player, AERoom.W8L1Barrel.value, AERoom.Coin55.value,
+                            lambda state: CP_FrontBarrels(state, player) and HasFlyer(state, player))
+
+            # 8-2
+            connect_regions(world, player, AERoom.W8L2RC.value, AERoom.Coin58.value,
+                            lambda state: SF_CarRoom(state, player))
+            connect_regions(world, player, AERoom.W8L2Lava.value, AERoom.Coin62.value,
+                            lambda state: SF_MechRoom(state, player))
+
+            # 8-3
+            connect_regions(world, player, AERoom.W8L3Water.value, AERoom.Coin64.value,
+                            lambda state: HasFlyer(state, player))
+            connect_regions(world, player, AERoom.W8L3Tank.value, AERoom.Coin66.value,
+                            lambda state: TVT_TankRoom(state, player))
+
+            # 9-1
+            connect_regions(world, player, AERoom.W9L1Entry.value, AERoom.Coin73.value,
+                            lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W9L1Entry.value, AERoom.Coin74.value,
+                            lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W9L1Haunted.value, AERoom.Coin75.value,
+                            lambda state: HasFlyer(state, player))
+            connect_regions(world, player, AERoom.W9L1Western.value, AERoom.Coin77.value,
+                            lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W9L1Outside.value, AERoom.Coin79.value,
+                            lambda state: MM_SHA(state, player))
+            connect_regions(world, player, AERoom.W9L1Castle.value, AERoom.Coin80.value,
+                            lambda state: MM_UFODoor(state, player))
+            connect_regions(world, player, AERoom.W9L1Head.value, AERoom.Coin81.value,
+                            lambda state: MM_DoubleDoor(state, player))
+            connect_regions(world, player, AERoom.W9L1Side.value, AERoom.Coin82.value,
+                            lambda state: MM_SHA(state, player) and HasFlyer(state, player))
+            connect_regions(world, player, AERoom.W9L1Climb2.value, AERoom.Coin83.value,
+                            lambda state: MM_SpaceMonkeys(state, player))
 
 
 def Keys(state, player, count):

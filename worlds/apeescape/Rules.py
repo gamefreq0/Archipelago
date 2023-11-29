@@ -10,8 +10,8 @@ from .RulesIJ import IJ
 
 def set_rules(world, player: int):
     if world.logic[player].value == 0x00:
-        Glitchless.set_rules(world, player, world.coin[player].value == 0x00)
+        Glitchless.set_rules(None, world, player, world.coin[player].value == 0x00)
     elif world.logic[player].value == 0x01:
-        NoIJ.set_rules(world, player, world.coin[player].value == 0x00)
+        NoIJ.set_rules(None, world, player, world.coin[player].value == 0x00)
     elif world.logic[player].value == 0x02:
-        IJ.set_rules(world, player, world.coin[player].value == 0x00)
+        IJ.set_rules(None, world, player, world.coin[player].value == 0x00)

@@ -287,6 +287,10 @@ def create_regions(world: MultiWorld, player: int):
     puka.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], puka) for loc_name in
                        get_array([60])]
 
+    coin21 = Region(AERoom.Coin21.value, player, world)
+    coin21.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin21) for loc_name
+                         in get_array([321])]
+
     #4-2
     l421 = Region(AERoom.W4L2FirstRoom.value, player, world)
     l422 = Region(AERoom.W4L2SecondRoom.value, player, world)
@@ -314,6 +318,10 @@ def create_regions(world: MultiWorld, player: int):
     pickles = Region(AERoom.W4L2Pickles.value, player, world)
     pickles.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], pickles) for loc_name in
                            get_array([68])]
+
+    coin23 = Region(AERoom.Coin23.value, player, world)
+    coin23.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin23) for loc_name
+                         in get_array([323])]
 
     #4-3
     l431 = Region(AERoom.W4L3Outside.value, player, world)
@@ -355,6 +363,16 @@ def create_regions(world: MultiWorld, player: int):
     quirck.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], quirck) for loc_name in
                         get_array([79])]
 
+    coin24 = Region(AERoom.Coin24.value, player, world)
+    coin24.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin24) for loc_name
+                         in get_array([324])]
+    coin25 = Region(AERoom.Coin25.value, player, world)
+    coin25.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin25) for loc_name
+                         in get_array([325])]
+    coin28 = Region(AERoom.Coin28.value, player, world)
+    coin28.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin28) for loc_name
+                         in get_array([328])]
+
     #5-1
     l51 = Region(AERoom.W5L1Main.value, player, world)
     popcicle = Region(AERoom.W5L1Popcicle.value, player, world)
@@ -375,6 +393,10 @@ def create_regions(world: MultiWorld, player: int):
     chilly = Region(AERoom.W5L1Chilly.value, player, world)
     chilly.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], chilly) for loc_name in
                           get_array([85])]
+
+    coin29 = Region(AERoom.Coin29.value, player, world)
+    coin29.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin29) for loc_name
+                         in get_array([329])]
 
     #5-2
     l521 = Region(AERoom.W5L2Entry.value, player, world)
@@ -408,6 +430,16 @@ def create_regions(world: MultiWorld, player: int):
     droog.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], droog) for loc_name in
                          get_array([94])]
 
+    coin30 = Region(AERoom.Coin30.value, player, world)
+    coin30.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin30) for loc_name
+                         in get_array([330])]
+    coin31 = Region(AERoom.Coin31.value, player, world)
+    coin31.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin31) for loc_name
+                         in get_array([331])]
+    coin32 = Region(AERoom.Coin32.value, player, world)
+    coin32.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin32) for loc_name
+                         in get_array([332])]
+
     #5-3
     l531 = Region(AERoom.W5L3Outside.value, player, world)
     l532 = Region(AERoom.W5L3Spring.value, player, world)
@@ -439,6 +471,19 @@ def create_regions(world: MultiWorld, player: int):
     looza = Region(AERoom.W5L3Looza.value, player, world)
     looza.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], looza) for loc_name in
                           get_array([103])]
+
+    coin34 = Region(AERoom.Coin34.value, player, world)
+    coin34.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin34) for loc_name
+                         in get_array([334])]
+    coin35 = Region(AERoom.Coin35.value, player, world)
+    coin35.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin35) for loc_name
+                         in get_array([335])]
+
+    #6-1
+
+    coin36 = Region(AERoom.Coin36.value, player, world)
+    coin36.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin36) for loc_name
+                         in get_array([290, 291, 292, 293, 294])]
 
     #7-1
     l711 = Region(AERoom.W7L1Outside.value, player, world)
@@ -481,6 +526,16 @@ def create_regions(world: MultiWorld, player: int):
     chunky.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], chunky) for loc_name in
                        get_array([115])]
 
+    coin37 = Region(AERoom.Coin37.value, player, world)
+    coin37.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin37) for loc_name
+                         in get_array([337])]
+    coin38 = Region(AERoom.Coin38.value, player, world)
+    coin38.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin38) for loc_name
+                         in get_array([338])]
+    coin39 = Region(AERoom.Coin39.value, player, world)
+    coin39.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin39) for loc_name
+                         in get_array([339])]
+
 
     #7-2
     l721 = Region(AERoom.W7L2First.value, player, world)
@@ -518,6 +573,16 @@ def create_regions(world: MultiWorld, player: int):
     phool = Region(AERoom.W7L2Phool.value, player, world)
     phool.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], phool) for loc_name in
                         get_array([125])]
+
+    coin40 = Region(AERoom.Coin40.value, player, world)
+    coin40.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin40) for loc_name
+                         in get_array([340])]
+    coin41 = Region(AERoom.Coin41.value, player, world)
+    coin41.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin41) for loc_name
+                         in get_array([341])]
+    coin43 = Region(AERoom.Coin43.value, player, world)
+    coin43.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin43) for loc_name
+                         in get_array([343])]
 
     #7-3
     l731 = Region(AERoom.W7L3Outside.value, player, world)
@@ -589,6 +654,19 @@ def create_regions(world: MultiWorld, player: int):
     donqui.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], donqui) for loc_name in
                          get_array([145])]
 
+    coin45 = Region(AERoom.Coin45.value, player, world)
+    coin45.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin45) for loc_name
+                         in get_array([345])]
+    coin46 = Region(AERoom.Coin46.value, player, world)
+    coin46.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin46) for loc_name
+                         in get_array([346])]
+    coin49 = Region(AERoom.Coin49.value, player, world)
+    coin49.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin49) for loc_name
+                         in get_array([349])]
+    coin50 = Region(AERoom.Coin50.value, player, world)
+    coin50.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin50) for loc_name
+                         in get_array([350])]
+
     #8-1
     l811 = Region(AERoom.W8L1Outside.value, player, world)
     l812 = Region(AERoom.W8L1Sewers.value, player, world)
@@ -634,6 +712,16 @@ def create_regions(world: MultiWorld, player: int):
     huener.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], huener) for loc_name in
                          get_array([158])]
 
+    coin53 = Region(AERoom.Coin53.value, player, world)
+    coin53.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin53) for loc_name
+                         in get_array([353])]
+    coin54 = Region(AERoom.Coin54.value, player, world)
+    coin54.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin54) for loc_name
+                         in get_array([354])]
+    coin55 = Region(AERoom.Coin55.value, player, world)
+    coin55.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin55) for loc_name
+                         in get_array([355])]
+
     #8-2
     l821 = Region(AERoom.W8L2Outside.value, player, world)
     l822 = Region(AERoom.W8L2Factory.value, player, world)
@@ -672,6 +760,13 @@ def create_regions(world: MultiWorld, player: int):
     khamo = Region(AERoom.W8L2Khamo.value, player, world)
     khamo.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], khamo) for loc_name in
                         get_array([168])]
+
+    coin58 = Region(AERoom.Coin58.value, player, world)
+    coin58.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin58) for loc_name
+                         in get_array([358])]
+    coin62 = Region(AERoom.Coin62.value, player, world)
+    coin62.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin62) for loc_name
+                         in get_array([362])]
 
     #8-3
     l831 = Region(AERoom.W8L3Outside.value, player, world)
@@ -717,6 +812,13 @@ def create_regions(world: MultiWorld, player: int):
     frostee = Region(AERoom.W8L3Frostee.value, player, world)
     frostee.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], frostee) for loc_name in
                           get_array([180])]
+
+    coin64 = Region(AERoom.Coin64.value, player, world)
+    coin64.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin64) for loc_name
+                         in get_array([364])]
+    coin66 = Region(AERoom.Coin66.value, player, world)
+    coin66.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin66) for loc_name
+                         in get_array([366])]
 
     #9-1
     l911 = Region(AERoom.W9L1Entry.value, player, world)
@@ -810,6 +912,36 @@ def create_regions(world: MultiWorld, player: int):
     bg.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bg) for loc_name in
                           get_array([204])]
 
+    coin73 = Region(AERoom.Coin73.value, player, world)
+    coin73.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin73) for loc_name
+                         in get_array([373])]
+    coin74 = Region(AERoom.Coin74.value, player, world)
+    coin74.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin74) for loc_name
+                         in get_array([374])]
+    coin75 = Region(AERoom.Coin75.value, player, world)
+    coin75.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin75) for loc_name
+                         in get_array([375])]
+    coin77 = Region(AERoom.Coin77.value, player, world)
+    coin77.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin77) for loc_name
+                         in get_array([377])]
+    coin79 = Region(AERoom.Coin79.value, player, world)
+    coin79.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin79) for loc_name
+                         in get_array([379])]
+    coin80 = Region(AERoom.Coin80.value, player, world)
+    coin80.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin80) for loc_name
+                         in get_array([380])]
+    coin83 = Region(AERoom.Coin83.value, player, world)
+    coin83.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin83) for loc_name
+                         in get_array([383])]
+    coin81 = Region(AERoom.Coin81.value, player, world)
+    coin81.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin81) for loc_name
+                         in get_array([381])]
+    coin82 = Region(AERoom.Coin82.value, player, world)
+    coin82.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin82) for loc_name
+                         in get_array([382])]
+
+    #9-2
+
     l92 = Region(AERoom.W9L2Boss.value, player, world)
     l92.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l92) for loc_name in
                         get_array([206])]
@@ -853,7 +985,11 @@ def create_regions(world: MultiWorld, player: int):
         regions += [l92]
 
     if world.coin[player].value == 0x00:
-        regions += [coin1, coin2, coin3, coin6, coin7, coin8, coin9, coin11, coin12, coin13, coin14, coin17, coin19]
+        regions += [coin1, coin2, coin3, coin6, coin7, coin8, coin9, coin11, coin12, coin13, coin14, coin17, coin19,
+                    coin21, coin23, coin24, coin25, coin28, coin29, coin30, coin31, coin32, coin34, coin35, coin36,
+                    coin37, coin38, coin39, coin40, coin41, coin43, coin45, coin46, coin49, coin50, coin53, coin54,
+                    coin55, coin58, coin62, coin64, coin66, coin73, coin74, coin75, coin77, coin79, coin80, coin83,
+                    coin81, coin82]
 
 
     world.regions.extend(regions)
