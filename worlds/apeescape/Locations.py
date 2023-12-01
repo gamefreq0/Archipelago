@@ -13,20 +13,21 @@ class ApeEscapeLocation(Location):
         super().__init__(player, name, address, parent)
         self.event = not address
 
+
 location_table = {
-    #1-1 Fossil Field
+    # 1-1 Fossil Field
     AELocation.Noonan.value: 1,
     AELocation.Jorjy.value: 2,
     AELocation.Nati.value: 3,
     AELocation.TrayC.value: 4,
-    #1-2 Primordial Ooze
+    # 1-2 Primordial Ooze
     AELocation.Shay.value: 5,
     AELocation.DrMonk.value: 6,
     AELocation.Grunt.value: 7,
     AELocation.Ahchoo.value: 8,
     AELocation.Gornif.value: 9,
     AELocation.Tyrone.value: 10,
-    #1-3 Molten Lava
+    # 1-3 Molten Lava
     AELocation.Scotty.value: 11,
     AELocation.Coco.value: 12,
     AELocation.JThomas.value: 13,
@@ -34,7 +35,7 @@ location_table = {
     AELocation.Barney.value: 15,
     AELocation.Rocky.value: 16,
     AELocation.Moggan.value: 17,
-    #2-1 Thick Jungle
+    # 2-1 Thick Jungle
     AELocation.Marquez.value: 18,
     AELocation.Livinston.value: 19,
     AELocation.George.value: 20,
@@ -49,7 +50,7 @@ location_table = {
     AELocation.Gonzo.value: 29,
     AELocation.Alphonse.value: 30,
     AELocation.Zanzibar.value: 31,
-    #2-2 Dark Ruins
+    # 2-2 Dark Ruins
     AELocation.Mooshy.value: 32,
     AELocation.Kyle.value: 33,
     AELocation.Cratman.value: 34,
@@ -63,7 +64,7 @@ location_table = {
     AELocation.Kenny.value: 42,
     AELocation.Trance.value: 43,
     AELocation.Chino.value: 44,
-    #2-3 Cryptic Relics
+    # 2-3 Cryptic Relics
     AELocation.Troopa.value: 45,
     AELocation.Spanky.value: 46,
     AELocation.Stymie.value: 47,
@@ -72,7 +73,7 @@ location_table = {
     AELocation.Jesta.value: 50,
     AELocation.Bazzle.value: 51,
     AELocation.Crash.value: 52,
-    #4-1 Crabby Beach
+    # 4-1 Crabby Beach
     AELocation.CoolBlue.value: 53,
     AELocation.Sandy.value: 54,
     AELocation.ShellE.value: 55,
@@ -81,7 +82,7 @@ location_table = {
     AELocation.MaxMahalo.value: 58,
     AELocation.Moko.value: 59,
     AELocation.Puka.value: 60,
-    #4-2 Coral Cave
+    # 4-2 Coral Cave
     AELocation.Chip.value: 61,
     AELocation.Oreo.value: 62,
     AELocation.Puddles.value: 63,
@@ -90,7 +91,7 @@ location_table = {
     AELocation.Jux.value: 66,
     AELocation.BongBong.value: 67,
     AELocation.Pickles.value: 68,
-    #4-3 Dexter's Island
+    # 4-3 Dexter's Island
     AELocation.Stuw.value: 69,
     AELocation.TonTon.value: 70,
     AELocation.Murky.value: 71,
@@ -102,14 +103,14 @@ location_table = {
     AELocation.Mars.value: 77,
     AELocation.Horke.value: 78,
     AELocation.Quirck.value: 79,
-    #5-1 Snowy Mammoth
+    # 5-1 Snowy Mammoth
     AELocation.Popcicle.value: 80,
     AELocation.Iced.value: 81,
     AELocation.Denggoy.value: 82,
     AELocation.Skeens.value: 83,
     AELocation.Rickets.value: 84,
     AELocation.Chilly.value: 85,
-    #5-2 Frosty Retreat
+    # 5-2 Frosty Retreat
     AELocation.Storm.value: 86,
     AELocation.Qube.value: 87,
     AELocation.Gash.value: 88,
@@ -119,7 +120,7 @@ location_table = {
     AELocation.Sticky.value: 92,
     AELocation.Sharpe.value: 93,
     AELocation.Droog.value: 94,
-    #5-3 Hot Springs
+    # 5-3 Hot Springs
     AELocation.Punky.value: 95,
     AELocation.Ameego.value: 96,
     AELocation.Roti.value: 97,
@@ -129,7 +130,7 @@ location_table = {
     AELocation.Crank.value: 101,
     AELocation.Claxter.value: 102,
     AELocation.Looza.value: 103,
-    #7-1 Sushi Temple
+    # 7-1 Sushi Temple
     AELocation.Taku.value: 104,
     AELocation.Rocka.value: 105,
     AELocation.Maralea.value: 106,
@@ -142,7 +143,7 @@ location_table = {
     AELocation.Voti.value: 113,
     AELocation.Elly.value: 114,
     AELocation.Chunky.value: 115,
-    #7-2 Wabi Sabi Wall
+    # 7-2 Wabi Sabi Wall
     AELocation.Minky.value: 116,
     AELocation.Zobbro.value: 117,
     AELocation.Xeeto.value: 118,
@@ -153,7 +154,7 @@ location_table = {
     AELocation.Doxs.value: 123,
     AELocation.Kong.value: 124,
     AELocation.Phool.value: 125,
-    #7-3 Crumbling Castle
+    # 7-3 Crumbling Castle
     AELocation.Naners.value: 126,
     AELocation.Robart.value: 127,
     AELocation.Neeners.value: 128,
@@ -174,7 +175,7 @@ location_table = {
     AELocation.Fej.value: 143,
     AELocation.Joey.value: 144,
     AELocation.Donqui.value: 145,
-    #8-1 City Park
+    # 8-1 City Park
     AELocation.Kaine.value: 146,
     AELocation.Jaxx.value: 147,
     AELocation.Gehry.value: 148,
@@ -188,7 +189,7 @@ location_table = {
     AELocation.BLuv.value: 156,
     AELocation.Camper.value: 157,
     AELocation.Huener.value: 158,
-    #8-2 Specter's Factory
+    # 8-2 Specter's Factory
     AELocation.BigShow.value: 159,
     AELocation.Dreos.value: 160,
     AELocation.Reznor.value: 161,
@@ -199,7 +200,7 @@ location_table = {
     AELocation.Hurt.value: 166,
     AELocation.String.value: 167,
     AELocation.Khamo.value: 168,
-    #8-3 TV Tower
+    # 8-3 TV Tower
     AELocation.Fredo.value: 169,
     AELocation.Charlee.value: 170,
     AELocation.Mach3.value: 171,
@@ -212,7 +213,7 @@ location_table = {
     AELocation.Tellis.value: 178,
     AELocation.Whack.value: 179,
     AELocation.Frostee.value: 180,
-    #9-1 Monkey Madness
+    # 9-1 Monkey Madness
     AELocation.Goopo.value: 181,
     AELocation.Porto.value: 182,
     AELocation.Slam.value: 183,
@@ -240,7 +241,7 @@ location_table = {
     AELocation.Specter.value: 205,
     AELocation.Specter2.value: 206,
 
-    #Coins
+    # Coins
     AELocation.Coin1.value: 301,
     AELocation.Coin2.value: 302,
     AELocation.Coin3.value: 303,

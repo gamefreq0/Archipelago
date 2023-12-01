@@ -1,5 +1,5 @@
 from enum import Enum
-import typing
+
 
 class AELocation(Enum):
     Noonan = "1-1 Fossil Field Monkey 1 - Noonan"
@@ -267,6 +267,7 @@ class AELocation(Enum):
     Coin83 = "9-1 Monkey Madness Coin - Climb (Outside)"
     Coin81 = "9-1 Monkey Madness Coin - Monkey Head"
     Coin82 = "9-1 Monkey Madness Coin - Side Entry"
+
 
 class AERoom(Enum):
     W1L1Noonan = "1-1 Noonan"
@@ -606,7 +607,6 @@ class AERoom(Enum):
     Coin82 = "9-1 Monkey Madness Coin - Side Entry"
 
 
-
 class AEWorld(Enum):
     W1 = "World 1"
     W2 = "World 2"
@@ -617,6 +617,7 @@ class AEWorld(Enum):
     W7 = "World 7"
     W8 = "World 8"
     W9 = "World 9"
+
 
 class AEItem(Enum):
     Club = "Stun Club"

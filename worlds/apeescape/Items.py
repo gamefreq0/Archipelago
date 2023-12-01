@@ -24,7 +24,7 @@ nothing_item_id = base_apeescape_item_id
 # not the same order as the items in RAM (but offset 0 is a 16-bit address of
 # location of room and position data)
 item_table = {
-    #Gadgets
+    # Gadgets
     AEItem.Club.value: RAM.items["Club"],
     AEItem.Net.value: RAM.items["Net"],
     AEItem.Radar.value: RAM.items["Radar"],
@@ -36,7 +36,7 @@ item_table = {
 
     AEItem.WaterNet.value: 0x400,
 
-    #Keys
+    # Keys
     AEItem.Key.value: RAM.items["Key"],
     AEItem.Victory.value: RAM.items["Victory"],
     AEItem.Nothing.value: RAM.items["Nothing"]

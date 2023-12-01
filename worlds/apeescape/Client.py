@@ -111,7 +111,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.currentRoomIdAddress, 1, "MainRAM"),
                 (RAM.gameStateAddress, 1, "MainRAM"),
                 (RAM.currentLevelAddress, 1, "MainRAM"),
-                (self.currentCoinAddress+1, 1, "MainRAM"),
+                (self.currentCoinAddress + 1, 1, "MainRAM"),
                 (self.currentCoinAddress, 1, "MainRAM"),
                 (RAM.totalCoinsAddress, 1, "MainRAM")
             ]
@@ -176,7 +176,8 @@ class ApeEscapeClient(BizHawkClient):
 
             # elif changing room but still in level, use local list
             # if level stays the same, and room changes and in level
-            elif gameState == RAM.gameState["InLevel"] and currentLevel == self.levelglobal and currentRoom != self.roomglobal:
+            elif gameState == RAM.gameState[
+                "InLevel"] and currentLevel == self.levelglobal and currentRoom != self.roomglobal:
                 monkeyaddrs = RAM.monkeyListLocal[self.roomglobal]
                 key_list = list(monkeyaddrs.keys())
                 val_list = list(monkeyaddrs.values())
@@ -204,13 +205,13 @@ class ApeEscapeClient(BizHawkClient):
             if RAM.gameState["Credits1"] == gameState:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
-                    "locations": list(x for x in [self.offset+205])
+                    "locations": list(x for x in [self.offset + 205])
                 }])
 
             if RAM.gameState["Credits2"] == gameState:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
-                    "locations": list(x for x in [self.offset+206])
+                    "locations": list(x for x in [self.offset + 206])
                 }])
 
             # Check for new coins from current coin address
@@ -223,26 +224,25 @@ class ApeEscapeClient(BizHawkClient):
             else:
                 self.currentCoinAddress = RAM.startingCoinAddress
 
-
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"]:
                 coins = set()
-                coins.add(295+self.offset)
-                coins.add(296+self.offset)
-                coins.add(297+self.offset)
-                coins.add(298+self.offset)
-                coins.add(299+self.offset)
+                coins.add(295 + self.offset)
+                coins.add(296 + self.offset)
+                coins.add(297 + self.offset)
+                coins.add(298 + self.offset)
+                coins.add(299 + self.offset)
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in coins)
                 }])
             elif currentRoom == 36 and gameState == RAM.gameState["JakeCleared"]:
                 coins = set()
-                coins.add(290+self.offset)
-                coins.add(291+self.offset)
-                coins.add(292+self.offset)
-                coins.add(293+self.offset)
-                coins.add(294+self.offset)
+                coins.add(290 + self.offset)
+                coins.add(291 + self.offset)
+                coins.add(292 + self.offset)
+                coins.add(293 + self.offset)
+                coins.add(294 + self.offset)
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in coins)
@@ -424,6 +424,5 @@ class ApeEscapeClient(BizHawkClient):
 
         if int.from_bytes(monkeylevelCounts[18], byteorder="little") >= 24:
             w83 = (RAM.levelAddresses[91], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
 
         return [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83, w91]

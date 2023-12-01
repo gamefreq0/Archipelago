@@ -1,5 +1,4 @@
-
-class RAM():
+class RAM:
     monkeyListGlobal = {
         1: 0x0DF828,
         2: 0x0DF829,
@@ -296,7 +295,7 @@ class RAM():
             48: 0x0DFE48,
             52: 0x0DFE49
         },
-        19: { # 3-1?
+        19: {  # 3-1?
 
         },
         20: {  # 4-1
@@ -342,7 +341,7 @@ class RAM():
         27: {  # tentacle room
             79: 0x0DFE48
         },
-        28: { # slide room
+        28: {  # slide room
 
         },
         29: {  # 5-1
@@ -357,13 +356,13 @@ class RAM():
             86: 0x0DFE00,
             87: 0x0DFE01
         },
-        31: { # water room
+        31: {  # water room
             91: 0x0DFE18,
             92: 0x0DFE1A,
             93: 0x0DFE19,
             94: 0x0DFE1B
         },
-        32: { # caverns
+        32: {  # caverns
             88: 0x0DFE30,
             90: 0x0DFE32,
             89: 0x0DFE31
@@ -374,16 +373,16 @@ class RAM():
             99: 0x0DFE02,
             100: 0x0DFE03
         },
-        34: { # hot spring
+        34: {  # hot spring
             101: 0x0DFE18,
             102: 0x0DFE19,
             103: 0x0DFE1A
         },
-        35: { # polar bear cave
+        35: {  # polar bear cave
             98: 0x0DFE31,
             97: 0x0DFE30
         },
-        36: { # 6-1
+        36: {  # 6-1
 
         },
         37: {  # 7-1
@@ -392,14 +391,14 @@ class RAM():
             106: 0x0DFE02,
             107: 0x0DFE03
         },
-        38: { # temple
+        38: {  # temple
             108: 0x0DFE1A,
             110: 0x0DFE19,
             109: 0x0DFE18,
             114: 0x0DFE1B,
             115: 0x0DFE1C
         },
-        39: { # well
+        39: {  # well
             111: 0x0DFE31,
             112: 0x0DFE32,
             113: 0x0DFE30
@@ -408,15 +407,15 @@ class RAM():
             116: 0x0DFE00,
             117: 0x0DFE01
         },
-        41: { # gong room
+        41: {  # gong room
             118: 0x0DFE18,
             119: 0x0DFE19,
             120: 0x0DFE1A
         },
-        42: { # middle room
+        42: {  # middle room
             123: 0x0DFE30
         },
-        43: { # obstacle course/barrel room
+        43: {  # obstacle course/barrel room
             122: 0x0DFE49,
             121: 0x0DFE48,
             124: 0x0DFE60,
@@ -432,13 +431,13 @@ class RAM():
             137: 0x0DFE04,
             136: 0x0DFE01
         },
-        46: { # castle main
+        46: {  # castle main
             129: 0x0DFE18,
             131: 0x0DFE1B,
             130: 0x0DFE1A,
             135: 0x0DFE19
         },
-        47: { # flooded basement
+        47: {  # flooded basement
             133: 0x0DFE30,
             134: 0x0DFE31,
             135: 0x0DFE32
@@ -446,16 +445,16 @@ class RAM():
         48: {
 
         },
-        49: { # button room
+        49: {  # button room
             139: 0x0DFE61,  #
             138: 0x0DFE60  #
         },
-        50: { # elevator room
+        50: {  # elevator room
             140: 0x0DFE78,  #
             141: 0x0DFE79,  #
             142: 0x0DFE7A  #
         },
-        51: { # bell tower
+        51: {  # bell tower
             145: 0x0DFE92,  #
             144: 0x0DFE91,  #
             143: 0x0DFE90  #
@@ -469,12 +468,12 @@ class RAM():
             147: 0x0DFE01,
             148: 0x0DFE02
         },
-        54: { # sewers front
+        54: {  # sewers front
             151: 0x0DFE19,
             152: 0x0DFE18,
             150: 0x0DFE1A
         },
-        55: { # barrel room
+        55: {  # barrel room
             155: 0x0DFE32,
             153: 0x0DFE30,
             156: 0x0DFE33,
@@ -486,13 +485,13 @@ class RAM():
             159: 0x0DFE00,
             160: 0x0DFE01
         },
-        57: { # main factory
+        57: {  # main factory
             161: 0x0DFE18
         },
-        58: { # rc car room
+        58: {  # rc car room
             162: 0x0DFE30
         },
-        59: { # lava room/mech room?
+        59: {  # lava room/mech room?
             164: 0x0DFE49,
             167: 0x0DFE4A,
             168: 0x0DFE48
@@ -500,30 +499,30 @@ class RAM():
         60: {
 
         },
-        61: { # conveyor room?
+        61: {  # conveyor room?
             165: 0x0DFE79,
             166: 0x0DFE78
         },
-        62: { # lava room?
+        62: {  # lava room?
             163: 0x0DFE90
         },
         63: {  # 8-3
             169: 0x0DFE00
         },
-        64: { # water basement
+        64: {  # water basement
             171: 0x0DFE19,
             170: 0x0DFE18
         },
-        65: { # lobby
+        65: {  # lobby
             172: 0x0DFE30,
             173: 0x0DFE31
         },
-        66: { # tank room
+        66: {  # tank room
             174: 0x0DFE48,
             175: 0x0DFE49,
             176: 0x0DFE4A
         },
-        67: { # fan room
+        67: {  # fan room
             177: 0x0DFE60,
             179: 0x0DFE62,
             180: 0x0DFE63,
@@ -532,7 +531,7 @@ class RAM():
         68: {
 
         },
-        69: { # MM Lobby
+        69: {  # MM Lobby
 
         },
         70: {
@@ -541,59 +540,59 @@ class RAM():
         71: {
 
         },
-        72: { # coaster entry
+        72: {  # coaster entry
             181: 0x0DFE00
         },
-        73: { # coaster 1
+        73: {  # coaster 1
 
         },
-        74: { # coaster 2
+        74: {  # coaster 2
 
         },
-        75: { # haunted house
+        75: {  # haunted house
             182: 0x0DFE48
         },
-        76: { # coffin room
+        76: {  # coffin room
             183: 0x0DFE60,
             184: 0x0DFE61,
             185: 0x0DFE62
         },
-        77: { # western land
+        77: {  # western land
             187: 0x0DFE01,
             186: 0x0DFE00,
             188: 0x0DFE02,
             189: 0x0DFE03
         },
-        78: { # crater
+        78: {  # crater
             190: 0x0DFE00
         },
-        79: { # outside castle/castle main?
+        79: {  # outside castle/castle main?
             192: 0x0DFE18,
             193: 0x0DFE19
         },
-        80: { # castle main
+        80: {  # castle main
             194: 0x0DFE30,
             195: 0x0DFE32,
             196: 0x0DFE31,
             197: 0x0DFE33
         },
-        81: { # monkey head?
+        81: {  # monkey head?
             201: 0x0DFE48,
             202: 0x0DFE49
         },
-        82: { # monkey head/castle side entry?
+        82: {  # monkey head/castle side entry?
             203: 0x0DFE60,
             204: 0x0DFE61
         },
         83: {
 
         },
-        84: { # climb inside
+        84: {  # climb inside
             198: 0x0DFE90,
             199: 0x0DFE91,
             200: 0x0DFE92
         },
-        85: { # outside castle?
+        85: {  # outside castle?
             191: 0x0DFEA8
         },
         86: {

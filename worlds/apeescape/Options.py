@@ -4,6 +4,7 @@ from Options import Choice, Option
 
 from typing import Dict
 
+
 class DebugOption(Choice):
     """Choose current Debug Settings
 
@@ -21,6 +22,7 @@ class DebugOption(Choice):
     option_key = 0x02
     default = option_off
 
+
 class GoalOption(Choice):
     """Choose end goal
 
@@ -35,6 +37,7 @@ class GoalOption(Choice):
     option_first = 0x00
     option_second = 0x01
     default = option_first
+
 
 class LogicOption(Choice):
     """Choose expected trick knowledge
@@ -52,6 +55,7 @@ class LogicOption(Choice):
     option_noij = 0x01
     option_ij = 0x02
 
+
 class CoinOption(Choice):
     """Choose if Specter Coins should act as Locations
 
@@ -65,6 +69,7 @@ class CoinOption(Choice):
     display_name = "Coin"
     option_true = 0x00
     option_false = 0x01
+
 
 apeescape_option_definitions: Dict[str, type(Option)] = {
     "debug": DebugOption,
