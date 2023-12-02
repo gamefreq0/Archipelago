@@ -678,6 +678,8 @@ class IJ():
                             lambda state: HasFlyer(state, player))
             connect_regions(world, player, AERoom.W9L1Western.value, AERoom.Coin77.value,
                             lambda state: NoRequirement())
+            connect_regions(world, player, AERoom.W9L1Crater.value, AERoom.Coin78.value,
+                            lambda state: MM_SHA(state, player) and HasFlyer(state, player))
             connect_regions(world, player, AERoom.W9L1Outside.value, AERoom.Coin79.value,
                             lambda state: MM_SHA(state, player))
             connect_regions(world, player, AERoom.W9L1Castle.value, AERoom.Coin80.value,

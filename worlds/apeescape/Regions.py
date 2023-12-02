@@ -143,16 +143,16 @@ def create_regions(world: MultiWorld, player: int):
 
     coin6 = Region(AERoom.Coin6.value, player, world)
     coin6.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin6) for loc_name
-                        in get_array([304])]
+                        in get_array([306])]
     coin7 = Region(AERoom.Coin7.value, player, world)
     coin7.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin7) for loc_name
-                        in get_array([305])]
+                        in get_array([307])]
     coin8 = Region(AERoom.Coin8.value, player, world)
     coin8.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin8) for loc_name
-                        in get_array([306])]
+                        in get_array([308])]
     coin9 = Region(AERoom.Coin9.value, player, world)
     coin9.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin9) for loc_name
-                        in get_array([307])]
+                        in get_array([309])]
 
     # 2-2
     l221 = Region(AERoom.W2L2Outside.value, player, world)
@@ -202,16 +202,16 @@ def create_regions(world: MultiWorld, player: int):
 
     coin11 = Region(AERoom.Coin11.value, player, world)
     coin11.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin11) for loc_name
-                         in get_array([308])]
+                         in get_array([311])]
     coin12 = Region(AERoom.Coin12.value, player, world)
     coin12.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin12) for loc_name
-                         in get_array([309])]
+                         in get_array([312])]
     coin13 = Region(AERoom.Coin13.value, player, world)
     coin13.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin13) for loc_name
-                         in get_array([310])]
+                         in get_array([313])]
     coin14 = Region(AERoom.Coin14.value, player, world)
     coin14.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin14) for loc_name
-                         in get_array([311])]
+                         in get_array([314])]
 
     # 2-3
     l231 = Region(AERoom.W2L3Outside.value, player, world)
@@ -246,7 +246,7 @@ def create_regions(world: MultiWorld, player: int):
 
     coin17 = Region(AERoom.Coin17.value, player, world)
     coin17.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin17) for loc_name
-                         in get_array([312])]
+                         in get_array([317])]
 
     # 3-1
     coin19 = Region(AERoom.Coin19.value, player, world)
@@ -920,6 +920,9 @@ def create_regions(world: MultiWorld, player: int):
     coin77 = Region(AERoom.Coin77.value, player, world)
     coin77.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin77) for loc_name
                          in get_array([377])]
+    coin78 = Region(AERoom.Coin78.value, player, world)
+    coin78.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin78) for loc_name
+                         in get_array([378])]
     coin79 = Region(AERoom.Coin79.value, player, world)
     coin79.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin79) for loc_name
                          in get_array([379])]
@@ -984,8 +987,8 @@ def create_regions(world: MultiWorld, player: int):
         regions += [coin1, coin2, coin3, coin6, coin7, coin8, coin9, coin11, coin12, coin13, coin14, coin17, coin19,
                     coin21, coin23, coin24, coin25, coin28, coin29, coin30, coin31, coin32, coin34, coin35, coin36,
                     coin37, coin38, coin39, coin40, coin41, coin43, coin45, coin46, coin49, coin50, coin53, coin54,
-                    coin55, coin58, coin62, coin64, coin66, coin73, coin74, coin75, coin77, coin79, coin80, coin83,
-                    coin81, coin82]
+                    coin55, coin58, coin62, coin64, coin66, coin73, coin74, coin75, coin77, coin78, coin79, coin80,
+                    coin83, coin81, coin82]
 
     world.regions.extend(regions)
 
