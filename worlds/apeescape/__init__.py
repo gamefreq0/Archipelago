@@ -93,7 +93,7 @@ class ApeEscapeWorld(World):
 
 
     def create_items(self):
-        numberoflocations = len(Locations.location_table)
+        numberoflocations = len(location_table)
 
         radar = self.create_item(AEItem.Radar.value)
         shooter = self.create_item(AEItem.Sling.value)
@@ -105,6 +105,7 @@ class ApeEscapeWorld(World):
 
         waternet = self.create_item(AEItem.WaterNet.value)
         club = self.create_item(AEItem.Club.value)
+        numberoflocations -= 1
 
         self.multiworld.push_precollected(waternet)
         self.multiworld.push_precollected(club)
