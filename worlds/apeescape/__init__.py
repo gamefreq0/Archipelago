@@ -142,7 +142,7 @@ class ApeEscapeWorld(World):
 
 
         if self.multiworld.coin[self.player].value == 0x01:
-            numberoflocations -= 59
+            numberoflocations -= 60
 
 
 
