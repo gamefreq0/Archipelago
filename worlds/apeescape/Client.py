@@ -1,16 +1,40 @@
+import sys
+import logging
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar
 
 from NetUtils import ClientStatus
+
+# TODO: REMOVE ASAP - Borrowed from MM2
+# This imports the bizhawk apworld if it's not already imported. This code block should be removed for a PR.
+if "worlds._bizhawk" not in sys.modules:
+    import importlib
+    import os
+    import zipimport
+
+    bh_apworld_path = os.path.join(os.path.dirname(sys.modules["worlds"].__file__), "_bizhawk.apworld")
+    if os.path.isfile(bh_apworld_path):
+        importer = zipimport.zipimporter(bh_apworld_path)
+        spec = importer.find_spec(os.path.basename(bh_apworld_path).rsplit(".", 1)[0])
+        mod = importlib.util.module_from_spec(spec)
+        mod.__package__ = f"worlds.{mod.__package__}"
+        mod.__name__ = f"worlds.{mod.__name__}"
+        sys.modules[mod.__name__] = mod
+        importer.exec_module(mod)
+    elif not os.path.isdir(os.path.splitext(bh_apworld_path)[0]):
+        logging.error("Did not find _bizhawk.apworld required to play Ape Escape.")
+
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
+
+from worlds.apeescape.RAMAddress import RAM
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 else:
     BizHawkClientContext = object
 
-
 EXPECTED_ROM_NAME = "ape escape / AP 2"
+
 
 # These flags are communicated to the tracker as a bitfield using this order.
 # Modifying the order will cause undetectable autotracking issues.
@@ -24,416 +48,14 @@ class ApeEscapeClient(BizHawkClient):
     goal_flag: int
 
     offset = 128000000
-
-    gadgetaddr = 0x0F51C4
-    trainingroomaddr = 0x0DFDCC
-    leveladdr = 0x0F4476
-    gamestateaddr = 0x0F4470 #0B in level, 0A loading, 09 Menu, 0C stage clear
-    levelunlockaddr = 0x0DFC70
     levelglobal = 0
+    roomglobal = 0
     worldkeycount = 0
     boss1flag = 0
     boss2flag = 0
     boss3flag = 0
     boss4flag = 0
-
-    requiredmonkeyaddr = 0x0F44D8
-    hundomonkeyaddr = 0x0F44D6
-
-    monkeyaddrs = {
-        1: { #1-1
-            1: 0x0DFE00,
-            3: 0x0DFE02,
-            2: 0x0DFE01,
-            4: 0x0DFE03
-        },
-        2: { #1-2
-            5: 0x0DFE00,
-            6: 0x0DFE01,
-            7: 0x0DFE03,
-            10: 0x0DFE04,
-            9: 0x0DFE05,
-            8: 0x0DFE02
-        },
-        3: { #1-3
-            11: 0x0DFE00,
-            12: 0x0DFE01,
-            17: 0x0DFE03,
-            13: 0x0DFE02
-        },
-        4: { #3 sub area
-            14: 0x0DFE19,
-            15: 0x0DFE18
-        },
-        5: { #3 sub area
-            16: 0x0DFE30
-        },
-        6: { #2-1
-            18: 0x0DFE00,
-            19: 0x0DFE01,
-            20: 0x0DFE02
-        },
-        7: { #6 sub area
-            29: 0x0DFE18,
-            30: 0x0DFE1A,
-            31: 0x0DFE19
-        },
-        8: { #6 sub area
-            23: 0x0DFE32,
-            21: 0x0DFE30,
-            22: 0x0DFE31
-        },
-        9: { #6 sub area
-            24: 0x0DFE49,
-            25: 0x0DFE48,
-            26: 0x0DFE4A
-        },
-        10: { #6 sub area
-            27: 0x0DFE61,
-            28: 0x0DFE60
-        },
-        11: { #2-2
-            32: 0x0DFE04,
-            33: 0x0DFE00,
-            34: 0x0DFE03,
-            37: 0x0DFE01,
-            42: 0x0DFE02
-        },
-        12: { #sub area of 11
-            35: 0x0DFE18,
-            36: 0x0DFE19
-        },
-        13: { #sub area of 11
-            38: 0x0DFE32,
-            41: 0x0DFE30,
-            43: 0x0DFE31
-        },
-        14: { #sub area of 11
-            39: 0x0DFE48,
-            40: 0x0DFE49,
-            44: 0x0DFE4A
-        },
-        15: { #2-3
-            49: 0x0DFE01,
-            51: 0x0DFE00
-        },
-        16: { #sub area of 15
-            45: 0x0DFE18
-        },
-        17: { #sub area of 15
-            47: 0x0DFE30,
-            50: 0x0DFE32,
-            46: 0x0DFE31
-        },
-        18: { #sub area of 16
-            48: 0x0DFE48,
-            52: 0x0DFE49
-        },
-        19: {
-
-        },
-        20: { #4-1
-            53: 0x0DFE00,
-            54: 0x0DFE01,
-            55: 0x0DFE02,
-            56: 0x0DFE03
-        },
-        21: { #sub area of 20
-            57: 0x0DFE18,
-            58: 0x0DFE1A,
-            59: 0x0DFE1B,
-            60: 0x0DFE19
-        },
-        22: { #4-2
-            61: 0x0DFE00,
-            62: 0x0DFE01,
-            63: 0x0DFE02, #doesn't match ign
-            64: 0x0DFE03
-        },
-        23: { #sub area 22
-            65: 0x0DFE18,
-            67: 0x0DFE19, #doesn't match ign
-            68: 0x0DFE1B,
-            66: 0x0DFE1A
-        },
-        24: { #4-3
-            69: 0x0DFE01,
-            70: 0x0DFE00
-        },
-        25: {
-            71: 0x0DFE19,
-            77: 0x0DFE18,
-            78: 0x0DFE1A
-        },
-        26: {
-            72: 0x0DFE30,
-            73: 0x0DFE31,
-            74: 0x0DFE32,
-            75: 0x0DFE33,
-            76: 0x0DFE34
-        },
-        27: {
-            79: 0x0DFE48
-        },
-        28: {
-
-        },
-        29: { #5-1
-            80: 0x0DFE00,
-            81: 0x0DFE01,
-            84: 0x0DFE02,
-            83: 0x0DFE04,
-            85: 0x0DFE05,
-            82: 0x0DFE03
-        },
-        30: { #5-2
-            86: 0x0DFE00,
-            87: 0x0DFE01
-        },
-        31: {
-            91: 0x0DFE18,
-            92: 0x0DFE1A,
-            93: 0x0DFE19,
-            94: 0x0DFE1B
-        },
-        32: {
-            88: 0x0DFE30,
-            90: 0x0DFE32,
-            89: 0x0DFE31
-        },
-        33: { #5-3
-            95: 0x0DFE00,
-            96: 0x0DFE01,
-            99: 0x0DFE02,
-            100: 0x0DFE03
-        },
-        34: {
-            101: 0x0DFE18,
-            102: 0x0DFE19,
-            103: 0x0DFE1A
-        },
-        35: {
-            98: 0x0DFE31,
-            97: 0x0DFE30
-        },
-        36: {
-
-        },
-        37: { #7-1
-            104: 0x0DFE00,
-            105: 0x0DFE01,
-            106: 0x0DFE02,
-            107: 0x0DFE03
-        },
-        38: {
-            108: 0x0DFE1A,
-            110: 0x0DFE19,
-            109: 0x0DFE18,
-            114: 0x0DFE1B,
-            115: 0x0DFE1C
-        },
-        39: {
-            111: 0x0DFE31,
-            112: 0x0DFE32,
-            113: 0x0DFE30
-        },
-        40: { #7-2
-            116: 0x0DFE00,
-            117: 0x0DFE01
-        },
-        41: {
-            118: 0x0DFE18,
-            119: 0x0DFE19,
-            120: 0x0DFE1A
-        },
-        42: {
-            123: 0x0DFE30
-        },
-        43: {
-            122: 0x0DFE49,
-            121: 0x0DFE48,
-            124: 0x0DFE60,
-            125: 0x0DFE61
-        },
-        44: {
-
-        },
-        45: { #7-3
-            126: 0x0DFE02,
-            127: 0x0DFE00,
-            128: 0x0DFE03,#
-            137: 0x0DFE04,
-            136: 0x0DFE01
-        },
-        46: {
-            129: 0x0DFE18,#
-            131: 0x0DFE1B,#
-            130: 0x0DFE1A,#
-            135: 0x0DFE19
-        },
-        47: {
-            133: 0x0DFE30,#
-            134: 0x0DFE31,#
-            135: 0x0DFE32#
-        },
-        48: {
-
-        },
-        49: {
-            139: 0x0DFE61,#
-            138: 0x0DFE60#
-        },
-        50: {
-            140: 0x0DFE78,#
-            141: 0x0DFE79,#
-            142: 0x0DFE7A#
-        },
-        51: {
-            145: 0x0DFE92,#
-            144: 0x0DFE91,#
-            143: 0x0DFE90#
-        },
-        52: {
-
-        },
-        53: { #8-1
-            146: 0x0DFE00,
-            149: 0x0DFE03,
-            147: 0x0DFE01,
-            148: 0x0DFE02
-        },
-        54: {
-            151: 0x0DFE19,
-            152: 0x0DFE18,
-            150: 0x0DFE1A
-        },
-        55: {
-            155: 0x0DFE32,
-            153: 0x0DFE30,
-            156: 0x0DFE33,
-            157: 0x0DFE34,
-            154: 0x0DFE31,
-            158: 0x0DFE35
-        },
-        56: { #8-2
-            159: 0x0DFE00,
-            160: 0x0DFE01
-        },
-        57: {
-            161: 0x0DFE18
-        },
-        58: {
-            162: 0x0DFE30
-        },
-        59: {
-            164: 0x0DFE49,
-            167: 0x0DFE4A,
-            168: 0x0DFE48
-        },
-        60: {
-
-        },
-        61: {
-            165: 0x0DFE79,
-            166: 0x0DFE78
-        },
-        62: {
-            163: 0x0DFE90
-        },
-        63: { #8-3
-            169: 0x0DFE00
-        },
-        64: {
-            171: 0x0DFE19,
-            170: 0x0DFE18
-        },
-        65: {
-            172: 0x0DFE30,
-            173: 0x0DFE31
-        },
-        66: {
-            174: 0x0DFE48,
-            175: 0x0DFE49,
-            176: 0x0DFE4A
-        },
-        67: {
-            177: 0x0DFE60,
-            179: 0x0DFE62,#
-            180: 0x0DFE63,#
-            178: 0x0DFE61#
-        },
-        68: {
-
-        },
-        69: {
-
-        },
-        70: {
-
-        },
-        71: {
-
-        },
-        72: {
-            181: 0x0DFE00#
-        },
-        73: {
-
-        },
-        74: {
-
-        },
-        75: {
-            182: 0x0DFE48
-        },
-        76: {
-            183: 0x0DFE60,#?
-            184: 0x0DFE61,#
-            185: 0x0DFE62#?
-        },
-        77: {
-            187: 0x0DFE01,#
-            186: 0x0DFE00,
-            188: 0x0DFE02,#
-            189: 0x0DFE03#
-        },
-        78: {
-            190: 0x0DFE00
-        },
-        79: {
-            192: 0x0DFE18,
-            193: 0x0DFE19
-        },
-        80: {
-            194: 0x0DFE30,
-            195: 0x0DFE32,
-            196: 0x0DFE31,
-            197: 0x0DFE33
-        },
-        81: {
-            201: 0x0DFE48,
-            202: 0x0DFE49
-        },
-        82: {
-            203: 0x0DFE60,
-            204: 0x0DFE61
-        },
-        83: {
-
-        },
-        84: {
-            198: 0x0DFE90,
-            199: 0x0DFE91,
-            200: 0x0DFE92
-        },
-        85: {
-            191: 0x0DFEA8
-        },
-        86: {
-
-        }
-    }
-
+    currentCoinAddress = RAM.startingCoinAddress
 
     def __init__(self) -> None:
         super().__init__()
@@ -447,10 +69,6 @@ class ApeEscapeClient(BizHawkClient):
         from CommonClient import logger
         ctx.game = self.game
         ctx.items_handling = 0b011
-        self.levelglobal = int.from_bytes(((await bizhawk.read(ctx.bizhawk_ctx, [
-            (self.leveladdr, 1, "MainRAM")
-        ])))[0],byteorder='little')
-
         return True
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
@@ -458,216 +76,353 @@ class ApeEscapeClient(BizHawkClient):
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         try:
-            hundocount = ((await bizhawk.read(ctx.bizhawk_ctx,[
-                (self.hundomonkeyaddr, 1, "MainRAM")
-                ])))[0]
-
-            await bizhawk.write(ctx.bizhawk_ctx, [
-                (self.trainingroomaddr, (0xFF).to_bytes(1, "little"), "MainRAM"),
-                (self.requiredmonkeyaddr, hundocount, "MainRAM")
-            ])
-
-            gadgetstate = int.from_bytes(((await bizhawk.read(ctx.bizhawk_ctx, [
-                (self.gadgetaddr, 1, "MainRAM")
-            ])))[0], byteorder="little")
-
-
-            self.worldkeycount = 0
-            self.boss1flag = 0
-            self.boss2flag = 0
-
-            bosses = ((await bizhawk.read(ctx.bizhawk_ctx, [
-                (self.levelunlockaddr + 6, 1, "MainRAM"),
-                (self.levelunlockaddr + 13, 1, "MainRAM")
-            ])))
-
-            if int.from_bytes(bosses[0], byteorder="little") == 1:
-                self.boss1flag = 1
-            if int.from_bytes(bosses[1], byteorder="little") == 1:
-                self.boss2flag = 1
-
+            # Get items from server
+            gadgetStateFromServer = 3
+            keyCountFromServer = 0
 
             for item in ctx.items_received:
-                if (item.item-self.offset) >= 0x1 and (item.item-self.offset) <= 0x80:
-                    if gadgetstate | (item.item-self.offset) != gadgetstate:
-                        gadgetstate = gadgetstate | (item.item-self.offset)
-                        gadgetstate = gadgetstate | 3
-                elif item.item-self.offset == 0x100:
-                    self.worldkeycount = self.worldkeycount + 1
+                if RAM.items["Club"] <= (item.item - self.offset) <= RAM.items["Car"]:
+                    if gadgetStateFromServer | (item.item - self.offset) != gadgetStateFromServer:
+                        gadgetStateFromServer = gadgetStateFromServer | (item.item - self.offset)
+                elif item.item - self.offset == RAM.items["Key"]:
+                    keyCountFromServer = keyCountFromServer + 1
+                elif item.item - self.offset == RAM.items["Victory"]:
+                    await ctx.send_msgs([{
+                        "cmd": "StatusUpdate",
+                        "status": ClientStatus.CLIENT_GOAL
+                    }])
 
-            if self.worldkeycount == 0:
-                await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x030303).to_bytes(3, "little"), "MainRAM") #w1
-                ])
-            elif self.worldkeycount == 1:
-                await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
-                    (self.levelunlockaddr+3, (0x030303).to_bytes(3, "little"), "MainRAM") #w2
-                ])
-            #elif self.worldkeycount >= 2 and self.boss1flag == 0:
-            #    #do a check that boss 1 complete
-            #    await bizhawk.write(ctx.bizhawk_ctx, [
-            #        (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        #(self.levelunlockaddr + 6, (0x03).to_bytes(1, "little"), "MainRAM")
-            #    ])
-            elif self.worldkeycount == 2:
-                #do a check that boss 1 complete
-                await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"), #w2
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"), #w3
-                    (self.levelunlockaddr + 7, (0x030303).to_bytes(3, "little"), "MainRAM") #w4
-                ])
-            elif self.worldkeycount == 3:
-                await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"), #w1
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"), #w2
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"), #w3
-                    (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"), #w4
-                    (self.levelunlockaddr + 10, (0x030303).to_bytes(3, "little"), "MainRAM") #w5
-                ])
-            #elif self.worldkeycount >= 4:
-            #    await bizhawk.write(ctx.bizhawk_ctx, [
-            #        (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
-            #        (self.levelunlockaddr + 13, (0x03).to_bytes(1, "little"), "MainRAM")
-            #    ])
-            elif self.worldkeycount == 4:
-                await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 14, (0x030303).to_bytes(3, "little"), "MainRAM")
-                ])
-            elif self.worldkeycount == 5:
-                await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 14, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 17, (0x03).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 20, (0x0303).to_bytes(2, "little"), "MainRAM")
-                ])
-            elif self.worldkeycount == 6:
-                await bizhawk.write(ctx.bizhawk_ctx, [
-                    (self.levelunlockaddr, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 3, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 6, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 7, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 10, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 13, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 14, (0x010101).to_bytes(3, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 17, (0x01).to_bytes(1, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 20, (0x0101).to_bytes(2, "little"), "MainRAM"),
-                    (self.levelunlockaddr + 22, (0x03).to_bytes(1, "little"), "MainRAM")
-                ])
+            if keyCountFromServer > self.worldkeycount:
+                self.worldkeycount = keyCountFromServer
 
-            await bizhawk.write(ctx.bizhawk_ctx, [
-                (self.gadgetaddr, (gadgetstate|3).to_bytes(1, "little"), "MainRAM")
-            ])
+            # Read Array
+            # 0: Hundo monkey count, to write to required count
+            # 1: Gadget unlocked states
+            # 2: Current Room
+            # 3: Current Game state
+            # 4: Current Level
+            # 5: Current New Coin State
+            # 6: Current New Coin State Room
+            # 7: Coin Count
 
+            readTuples = [
+                (RAM.hundoApesAddress, 1, "MainRAM"),
+                (RAM.unlockedGadgetsAddress, 1, "MainRAM"),
+                (RAM.currentRoomIdAddress, 1, "MainRAM"),
+                (RAM.gameStateAddress, 1, "MainRAM"),
+                (RAM.currentLevelAddress, 1, "MainRAM"),
+                (self.currentCoinAddress + 1, 1, "MainRAM"),
+                (self.currentCoinAddress, 1, "MainRAM"),
+                (RAM.totalCoinsAddress, 1, "MainRAM")
+            ]
 
+            reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
 
+            levelCountTuples = [
+                (RAM.levelMonkeyCount[11], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[12], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[13], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[21], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[22], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[23], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[41], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[42], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[43], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[51], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[52], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[53], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[71], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[72], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[73], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[81], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[82], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[83], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[91], 1, "MainRAM")
+            ]
+            monkeylevelcounts = await bizhawk.read(ctx.bizhawk_ctx, levelCountTuples)
 
+            hundoCount = int.from_bytes(reads[0], byteorder="little")
+            gadgets = int.from_bytes(reads[1], byteorder="little")
+            currentRoom = int.from_bytes(reads[2], byteorder="little")
+            gameState = int.from_bytes(reads[3], byteorder="little")
+            currentLevel = int.from_bytes(reads[4], byteorder="little")
+            currentCoinState = int.from_bytes(reads[5], byteorder="little")
+            currentCoinStateRoom = int.from_bytes(reads[6], byteorder="little")
+            coinCount = int.from_bytes(reads[7], byteorder="little")
 
-            readresult = ((await bizhawk.read(ctx.bizhawk_ctx,[
-                (self.gamestateaddr, 1, "MainRAM"),
-                (self.leveladdr, 1, "MainRAM")
-                ])))
+            # Check if in level select or in time hub, then read global monkeys
+            if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
+                keyList = list(RAM.monkeyListGlobal.keys())
+                valList = list(RAM.monkeyListGlobal.values())
 
-            gamestate = int.from_bytes(readresult[0], byteorder='little')
-            level = int.from_bytes(readresult[1], byteorder='little')
+                addresses = []
 
-            if (gamestate == 0xC or gamestate == 0xD) and level == 86:
-                victory = set()
-                victory.add(205+self.offset)
+                for val in valList:
+                    tuple1 = (val, 1, "MainRAM")
+                    addresses.append(tuple1)
+
+                globalMonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+                monkeysToSend = set()
+
+                for i in range(len(globalMonkeys)):
+                    if int.from_bytes(globalMonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"]:
+                        monkeysToSend.add(keyList[i] + self.offset)
+
+                if monkeysToSend is not None:
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": list(x for x in monkeysToSend)
+                    }])
+
+            # elif changing room but still in level, use local list
+            # if level stays the same, and room changes and in level
+            elif gameState == RAM.gameState[
+                "InLevel"] and currentLevel == self.levelglobal and currentRoom != self.roomglobal:
+                monkeyaddrs = RAM.monkeyListLocal[self.roomglobal]
+                key_list = list(monkeyaddrs.keys())
+                val_list = list(monkeyaddrs.values())
+
+                addresses = []
+
+                for val in val_list:
+                    tuple1 = (val, 1, "MainRAM")
+                    addresses.append(tuple1)
+
+                localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+                monkeys_to_send = set()
+
+                for i in range(len(localmonkeys)):
+                    if int.from_bytes(localmonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"]:
+                        monkeys_to_send.add(key_list[i] + self.offset)
+
+                if monkeys_to_send is not None:
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": list(x for x in monkeys_to_send)
+                    }])
+
+            # Check for victory conditions
+            if RAM.gameState["Credits1"] == gameState:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
-                    "locations": list(x for x in victory)
+                    "locations": list(x for x in [self.offset + 205])
                 }])
+
+            if RAM.gameState["Credits2"] == gameState:
                 await ctx.send_msgs([{
-                    "cmd": "StatusUpdate",
-                    "status": ClientStatus.CLIENT_GOAL
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in [self.offset + 206])
                 }])
-            elif (gamestate == 0x09 and (level != 88 and level != 255)) or gamestate == 0x0C: #quitting level
-                monkeyaddrs = self.monkeyaddrs[level]
-                key_list = list(monkeyaddrs.keys())
-                val_list = list(monkeyaddrs.values())
 
-                addresses = [(1,1,""),(1,1,"")]
+            # Check for new coins from current coin address
+            if currentCoinStateRoom != 0xFF:
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in [currentCoinStateRoom + self.offset + 300])
+                }])
+                self.currentCoinAddress += 2
+            else:
+                self.currentCoinAddress = RAM.startingCoinAddress
 
-                for val in val_list:
-                    tuple1 = (val, 1, "MainRAM")
-                    addresses.append(tuple1)
+            # Check for Jake Victory
+            if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"]:
+                coins = set()
+                coins.add(295 + self.offset)
+                coins.add(296 + self.offset)
+                coins.add(297 + self.offset)
+                coins.add(298 + self.offset)
+                coins.add(299 + self.offset)
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in coins)
+                }])
+            elif currentRoom == 36 and gameState == RAM.gameState["JakeCleared"]:
+                coins = set()
+                coins.add(290 + self.offset)
+                coins.add(291 + self.offset)
+                coins.add(292 + self.offset)
+                coins.add(293 + self.offset)
+                coins.add(294 + self.offset)
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in coins)
+                }])
 
-                addresses.pop(0)
-                addresses.pop(0)
+            # Write Array
+            # Training Room, set to 0xFF to mark as complete
+            # Gadgets unlocked
+            # Required apes (to match hundo)
+            # Local apes first room (optional: for if in hub)
+            # unlockLevels()
 
-                readmonkeys = ((await bizhawk.read(ctx.bizhawk_ctx, addresses)))
-                monkeys_to_send = set()
+            writes = [
+                (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
+                (RAM.unlockedGadgetsAddress, (gadgets | gadgetStateFromServer).to_bytes(1, "little"), "MainRAM"),
+                (RAM.requiredApesAddress, hundoCount.to_bytes(1, "little"), "MainRAM"),
+            ]
 
+            if gameState == RAM.gameState["LevelSelect"]:
+                writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
 
+            writes += self.unlockLevels(monkeylevelcounts)
 
-                for i in range(len(readmonkeys)):
-                    if int.from_bytes(readmonkeys[i], byteorder='little') == 0x02:
-                        #position = val_list.index(monkeyaddrs[i])
+            await bizhawk.write(ctx.bizhawk_ctx, writes)
 
-                        monkeys_to_send.add(key_list[i] + self.offset)
-
-                if monkeys_to_send is not None:
-                    levelbase = 0
-                    await ctx.send_msgs([{
-                        "cmd": "LocationChecks",
-                        "locations": list(x+levelbase for x in monkeys_to_send)
-                    }])
-            elif level != self.levelglobal and (level != 88 and level != 255 and self.levelglobal != 88 and self.levelglobal != 255):
-                monkeyaddrs = self.monkeyaddrs[self.levelglobal]
-                key_list = list(monkeyaddrs.keys())
-                val_list = list(monkeyaddrs.values())
-
-                addresses = [(1, 1, ""), (1, 1, "")]
-
-                for val in val_list:
-                    tuple1 = (val, 1, "MainRAM")
-                    addresses.append(tuple1)
-
-                addresses.pop(0)
-                addresses.pop(0)
-
-                readmonkeys = ((await bizhawk.read(ctx.bizhawk_ctx, addresses)))
-                monkeys_to_send = set()
-
-                for i in range(len(readmonkeys)):
-                    if int.from_bytes(readmonkeys[i], byteorder='little') == 0x02:
-                        # position = val_list.index(monkeyaddrs[i])
-
-                        monkeys_to_send.add(key_list[i] + self.offset)
-
-                if monkeys_to_send is not None:
-                    levelbase = 0
-                    await ctx.send_msgs([{
-                        "cmd": "LocationChecks",
-                        "locations": list(x + levelbase for x in monkeys_to_send)
-                    }])
-
-
-            self.levelglobal = level
-
-
-
-
-
+            self.levelglobal = currentLevel
+            self.roomglobal = currentRoom
 
         except bizhawk.RequestFailedError:
             # Exit handler and return to main loop to reconnect
             pass
+
+    def unlockLevels(self, monkeylevelCounts):
+
+        key = self.worldkeycount
+
+        current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+        currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+        if key > 0:
+            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+
+        w11 = (RAM.levelAddresses[11], current, "MainRAM")
+        w12 = (RAM.levelAddresses[12], current, "MainRAM")
+        w13 = (RAM.levelAddresses[13], currentLock, "MainRAM")
+
+        if key == 1:
+            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+        elif key > 1:
+            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+        else:
+            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+
+        w21 = (RAM.levelAddresses[21], current, "MainRAM")
+        w22 = (RAM.levelAddresses[22], current, "MainRAM")
+        w23 = (RAM.levelAddresses[23], currentLock, "MainRAM")
+
+        if key == 2:
+            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+        elif key > 2:
+            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+        else:
+            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+
+        w31 = (RAM.levelAddresses[31], current, "MainRAM")
+        w41 = (RAM.levelAddresses[41], current, "MainRAM")
+        w42 = (RAM.levelAddresses[42], current, "MainRAM")
+        w43 = (RAM.levelAddresses[43], currentLock, "MainRAM")
+
+        if key == 3:
+            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+        elif key > 3:
+            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+        else:
+            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+
+        w51 = (RAM.levelAddresses[51], current, "MainRAM")
+        w52 = (RAM.levelAddresses[52], current, "MainRAM")
+        w53 = (RAM.levelAddresses[53], currentLock, "MainRAM")
+
+        if key == 4:
+            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+        elif key > 4:
+            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+        else:
+            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+
+        w61 = (RAM.levelAddresses[61], current, "MainRAM")
+        w71 = (RAM.levelAddresses[71], current, "MainRAM")
+        w72 = (RAM.levelAddresses[72], current, "MainRAM")
+        w73 = (RAM.levelAddresses[73], currentLock, "MainRAM")
+
+        if key == 5:
+            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+        elif key > 5:
+            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+        else:
+            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+
+        w81 = (RAM.levelAddresses[81], current, "MainRAM")
+        w82 = (RAM.levelAddresses[82], current, "MainRAM")
+        w83 = (RAM.levelAddresses[83], currentLock, "MainRAM")
+
+        if key == 6:
+            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+        else:
+            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+
+        w91 = (RAM.levelAddresses[91], current, "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[0], byteorder="little") >= 4:
+            w11 = (RAM.levelAddresses[11], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[1], byteorder="little") >= 6:
+            w12 = (RAM.levelAddresses[12], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[2], byteorder="little") >= 7:
+            w13 = (RAM.levelAddresses[13], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[3], byteorder="little") >= 14:
+            w21 = (RAM.levelAddresses[21], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[4], byteorder="little") >= 13:
+            w22 = (RAM.levelAddresses[22], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[5], byteorder="little") >= 8:
+            w23 = (RAM.levelAddresses[23], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[6], byteorder="little") >= 8:
+            w41 = (RAM.levelAddresses[41], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[7], byteorder="little") >= 8:
+            w42 = (RAM.levelAddresses[42], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[8], byteorder="little") >= 11:
+            w43 = (RAM.levelAddresses[43], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[9], byteorder="little") >= 6:
+            w51 = (RAM.levelAddresses[51], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[10], byteorder="little") >= 9:
+            w52 = (RAM.levelAddresses[52], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[11], byteorder="little") >= 9:
+            w53 = (RAM.levelAddresses[53], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[12], byteorder="little") >= 12:
+            w71 = (RAM.levelAddresses[71], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[13], byteorder="little") >= 10:
+            w72 = (RAM.levelAddresses[72], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[14], byteorder="little") >= 20:
+            w73 = (RAM.levelAddresses[73], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[15], byteorder="little") >= 13:
+            w81 = (RAM.levelAddresses[81], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[16], byteorder="little") >= 10:
+            w82 = (RAM.levelAddresses[82], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[17], byteorder="little") >= 12:
+            w83 = (RAM.levelAddresses[83], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        if int.from_bytes(monkeylevelCounts[18], byteorder="little") >= 24:
+            w83 = (RAM.levelAddresses[91], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+
+        return [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83, w91]
