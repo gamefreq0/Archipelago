@@ -2,9 +2,7 @@ import os
 import json
 from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple
 
-from BaseClasses import Entrance, Item, ItemClassification, MultiWorld, Region, Tutorial, \
-    LocationProgressType
-from Options import Choice
+from BaseClasses import Item, ItemClassification, MultiWorld, Tutorial
 from worlds.AutoWorld import WebWorld, World
 from .Items import item_table, ItemData, nothing_item_id, event_table, ApeEscapeItem
 from .Locations import location_table, base_location_id
@@ -15,11 +13,6 @@ from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
 from .Options import apeescape_option_definitions, DebugOption, GoalOption, LogicOption, CoinOption
 from Options import AssembleOptions
-
-from worlds.LauncherComponents import Component, components, SuffixIdentifier
-
-# Adventure
-#components.append(Component('Ape Escape Client', 'ApeEscapeClient', file_identifier=SuffixIdentifier('.apae')))
 
 
 class ApeEscapeWeb(WebWorld):
