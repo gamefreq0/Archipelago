@@ -264,7 +264,7 @@ class ApeEscapeClient(BizHawkClient):
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
 
-            writes += self.unlockLevels(monkeylevelcounts)
+            writes += self.unlockLevels(monkeylevelcounts, gadgets)
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
 
@@ -275,9 +275,11 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
-    def unlockLevels(self, monkeylevelCounts):
+    def unlockLevels(self, monkeylevelCounts, gadgets):
 
         key = self.worldkeycount
+        if key > 3 and (gadgets & RAM.items["Flyer"] != RAM.items["Flyer"]):
+            key = 3
 
         current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
         currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
