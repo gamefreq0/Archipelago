@@ -587,7 +587,7 @@ class Glitchless():
                                     (CanHitMultiple(state, player)) and (CanSwim(state, player))) or (
                                               HasMobility(state, player)))
             # 3-1
-            connect_regions(world, player, AEWorld.W3.value, AERoom.Coin19.value, lambda state: NoRequirement())
+            connect_regions(world, player, AEWorld.W3.value, AERoom.Coin19.value, lambda state: CanSwim(state, player))
 
             # 4-1
             connect_regions(world, player, AERoom.W4L1SecondRoom.value, AERoom.Coin21.value,
@@ -605,6 +605,7 @@ class Glitchless():
             connect_regions(world, player, AERoom.W4L3Slide.value, AERoom.Coin28.value,
                             lambda state: (CanSwim(state, player)) and (
                                     ((CanHitOnce(state, player))) or (HasPunch(state, player))))
+			#Punch or Net, if Net is shuffled.
 
             # 5-1
             connect_regions(world, player, AERoom.W5L1Main.value, AERoom.Coin29.value,

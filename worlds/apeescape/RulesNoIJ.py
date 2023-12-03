@@ -11,10 +11,12 @@ class NoIJ():
         # Worlds
         connect_regions(world, player, "Menu", AEWorld.W1.value, lambda state: NoRequirement())
         connect_regions(world, player, "Menu", AEWorld.W2.value, lambda state: Keys(state, player, 1))
-        connect_regions(world, player, "Menu", AEWorld.W3.value, lambda state: CanSwim(state, player))
+        connect_regions(world, player, "Menu", AEWorld.W3.value,
+                        lambda state: CanSwim(state, player) and Keys(state, player, 2))
         connect_regions(world, player, "Menu", AEWorld.W4.value, lambda state: Keys(state, player, 2))
         connect_regions(world, player, "Menu", AEWorld.W5.value, lambda state: Keys(state, player, 3))
-        connect_regions(world, player, "Menu", AEWorld.W6.value, lambda state: HasFlyer(state, player))
+        connect_regions(world, player, "Menu", AEWorld.W6.value,
+                        lambda state: HasFlyer(state, player) and Keys(state, player, 4))
         connect_regions(world, player, "Menu", AEWorld.W7.value, lambda state: Keys(state, player, 4))
         connect_regions(world, player, "Menu", AEWorld.W8.value, lambda state: Keys(state, player, 5))
         connect_regions(world, player, "Menu", AEWorld.W9.value, lambda state: Keys(state, player, 6))
@@ -566,17 +568,16 @@ class NoIJ():
             connect_regions(world, player, AERoom.W2L2Outside.value, AERoom.Coin11.value, lambda state: NoRequirement())
             connect_regions(world, player, AERoom.W2L2Fan.value, AERoom.Coin12.value, lambda state: NoRequirement())
             connect_regions(world, player, AERoom.W2L2Obelisk.value, AERoom.Coin13.value,
-                            lambda state: HasRC(state, player) or HasPunch(state, player))
+                            lambda state: (HasHoop(state, player) and HasFlyer(state, player)) or
+									HasRC(state, player) or HasPunch(state, player))
             connect_regions(world, player, AERoom.W2L2Water.value, AERoom.Coin14.value,
-                            lambda state: (CanDive(state, player)) and (
-                                    (CanHitOnce(state, player)) or (HasFlyer(state, player))))
+                            lambda state: CanDive(state, player) and CanHitOnce(state, player))
             # 2-3
             connect_regions(world, player, AERoom.W2L3Main.value, AERoom.Coin17.value,
-                            lambda state: (CR_Inside(state, player)) and (
-                                    (CanHitMultiple(state, player)) and (CanSwim(state, player))) or (
-                                              HasMobility(state, player)))
+                            lambda state: CR_Inside(state, player) and
+									(CanSwim(state, player) or HasMobility(state, player)))
             # 3-1
-            connect_regions(world, player, AEWorld.W3.value, AERoom.Coin19.value, lambda state: NoRequirement())
+            connect_regions(world, player, AEWorld.W3.value, AERoom.Coin19.value, lambda state: CanSwim(state, player))
 
             # 4-1
             connect_regions(world, player, AERoom.W4L1SecondRoom.value, AERoom.Coin21.value,
@@ -584,7 +585,7 @@ class NoIJ():
 
             # 4-2
             connect_regions(world, player, AERoom.W4L2SecondRoom.value, AERoom.Coin23.value,
-                            lambda state: CanDive(state, player))
+                            lambda state: CanDive(state, player) or HasRC(state, player))
 
             # 4-3
             connect_regions(world, player, AERoom.W4L3Outside.value, AERoom.Coin24.value,
@@ -592,8 +593,8 @@ class NoIJ():
             connect_regions(world, player, AERoom.W4L3Stomach.value, AERoom.Coin25.value,
                             lambda state: CanDive(state, player) and CanHitOnce(state, player))
             connect_regions(world, player, AERoom.W4L3Slide.value, AERoom.Coin28.value,
-                            lambda state: (CanSwim(state, player)) and (
-                                    ((CanHitOnce(state, player))) or (HasPunch(state, player))))
+                            lambda state: (CanHitOnce(state, player)) or HasPunch(state, player))
+			#CanHitOnce and Net, if Net is shuffled.
 
             # 5-1
             connect_regions(world, player, AERoom.W5L1Main.value, AERoom.Coin29.value,
@@ -601,17 +602,17 @@ class NoIJ():
 
             # 5-2
             connect_regions(world, player, AERoom.W5L2Entry.value, AERoom.Coin30.value,
-                            lambda state: HasFlyer(state, player))
+                            lambda state: NoRequirement())
             connect_regions(world, player, AERoom.W5L2Water.value, AERoom.Coin31.value,
-                            lambda state: HasFlyer(state, player) and CanDive(state, player))
+                            lambda state: CanDive(state, player))
             connect_regions(world, player, AERoom.W5L2Caverns.value, AERoom.Coin32.value,
-                            lambda state: HasFlyer(state, player))
+                            lambda state: NoRequirement())
 
             # 5-3
             connect_regions(world, player, AERoom.W5L3Spring.value, AERoom.Coin34.value,
                             lambda state: HasFlyer(state, player))
             connect_regions(world, player, AERoom.W5L3Cave.value, AERoom.Coin35.value,
-                            lambda state: CanHitMultiple(state, player))
+                            lambda state: CanHitOnce(state, player))
 
             # 6-1
             connect_regions(world, player, AEWorld.W6.value, AERoom.Coin36.value, lambda state: HasFlyer(state, player))
@@ -634,22 +635,25 @@ class NoIJ():
 
             # 7-3
             connect_regions(world, player, AERoom.W7L3Outside.value, AERoom.Coin45.value,
-                            lambda state: HasClub(state, player) or HasFlyer(state, player) or HasPunch(state, player))
+                            lambda state: HasClub(state, player) or HasSling(state, player) or HasHoop(state, player) or HasFlyer(state, player) or HasPunch(state, player))
             connect_regions(world, player, AERoom.W7L3Castle.value, AERoom.Coin46.value,
                             lambda state: CC_5Monkeys(state, player))
             connect_regions(world, player, AERoom.W7L3Button.value, AERoom.Coin49.value,
                             lambda state: CC_ButtonRoom(state, player))
             connect_regions(world, player, AERoom.W7L3Elevator.value, AERoom.Coin50.value,
-                            lambda state: CC_5Monkeys(state, player) or CC_WaterRoom(state, player))
+                            lambda state: CC_5Monkeys(state, player) or CC_WaterRoom(state, player) or
+									(HasHoop(state, player) and HasFlyer(state, player)))
 
             # 8-1
             connect_regions(world, player, AERoom.W8L1Outside.value, AERoom.Coin53.value,
-                            lambda state: CP_FrontBarrels(state, player) and CanDive(state, player)
-                            and HasFlyer(state, player))
+                            lambda state: (CP_FrontBarrels(state, player) and CanDive(state, player)) or
+									HasFlyer(state, player))
             connect_regions(world, player, AERoom.W8L1Sewers.value, AERoom.Coin54.value,
-                            lambda state: CP_FrontSewer(state, player) and HasRC(state, player))
+                            lambda state: (CP_FrontSewer(state, player) or CP_BackSewer(state, player))
+									and HasRC(state, player))
             connect_regions(world, player, AERoom.W8L1Barrel.value, AERoom.Coin55.value,
-                            lambda state: CP_FrontBarrels(state, player) and HasFlyer(state, player))
+                            lambda state: (CP_FrontBarrels(state, player) or CP_BackSewer(state, player))
+									and HasFlyer(state, player))
 
             # 8-2
             connect_regions(world, player, AERoom.W8L2RC.value, AERoom.Coin58.value,
