@@ -215,14 +215,12 @@ class ApeEscapeClient(BizHawkClient):
                 }])
 
             # Check for new coins from current coin address
-            if currentCoinStateRoom != 0xFF:
+            if currentCoinStateRoom != 0xFF and currentCoinStateRoom != 0x00:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in [currentCoinStateRoom + self.offset + 300])
                 }])
                 self.currentCoinAddress += 2
-            else:
-                self.currentCoinAddress = RAM.startingCoinAddress
 
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"]:
