@@ -929,15 +929,15 @@ def create_regions(world: MultiWorld, player: int):
     coin80 = Region(AERoom.Coin80.value, player, world)
     coin80.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin80) for loc_name
                          in get_array([380])]
-    coin83 = Region(AERoom.Coin83.value, player, world)
-    coin83.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin83) for loc_name
-                         in get_array([383])]
-    coin81 = Region(AERoom.Coin81.value, player, world)
-    coin81.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin81) for loc_name
-                         in get_array([381])]
     coin82 = Region(AERoom.Coin82.value, player, world)
     coin82.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin82) for loc_name
                          in get_array([382])]
+    coin84 = Region(AERoom.Coin84.value, player, world)
+    coin84.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin84) for loc_name
+                         in get_array([384])]
+    coin85 = Region(AERoom.Coin85.value, player, world)
+    coin85.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin85) for loc_name
+                         in get_array([385])]
 
     # 9-2
 
@@ -988,7 +988,7 @@ def create_regions(world: MultiWorld, player: int):
                     coin21, coin23, coin24, coin25, coin28, coin29, coin30, coin31, coin32, coin34, coin35, coin36,
                     coin37, coin38, coin39, coin40, coin41, coin43, coin45, coin46, coin49, coin50, coin53, coin54,
                     coin55, coin58, coin62, coin64, coin66, coin73, coin74, coin75, coin77, coin78, coin79, coin80,
-                    coin83, coin81, coin82]
+                    coin82, coin84, coin85]
 
     world.regions.extend(regions)
 

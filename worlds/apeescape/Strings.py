@@ -265,9 +265,9 @@ class AELocation(Enum):
     Coin78 = "9-1 Monkey Madness Coin - Crater"
     Coin79 = "9-1 Monkey Madness Coin - Outside Castle"
     Coin80 = "9-1 Monkey Madness Coin - Castle Main"
-    Coin83 = "9-1 Monkey Madness Coin - Climb (Outside)"
-    Coin81 = "9-1 Monkey Madness Coin - Monkey Head"
-    Coin82 = "9-1 Monkey Madness Coin - Side Entry"
+    Coin82 = "9-1 Monkey Madness Coin - Climb (Outside)"
+    Coin84 = "9-1 Monkey Madness Coin - Monkey Head"
+    Coin85 = "9-1 Monkey Madness Coin - Side Entry"
 
 
 class AERoom(Enum):
@@ -604,9 +604,9 @@ class AERoom(Enum):
     Coin78 = "9-1 Monkey Madness Coin - Crater"
     Coin79 = "9-1 Monkey Madness Coin - Outside Castle"
     Coin80 = "9-1 Monkey Madness Coin - Castle Main"
-    Coin83 = "9-1 Monkey Madness Coin - Climb (Outside)"
-    Coin81 = "9-1 Monkey Madness Coin - Monkey Head"
-    Coin82 = "9-1 Monkey Madness Coin - Side Entry"
+    Coin82 = "9-1 Monkey Madness Coin - Climb (Outside)"
+    Coin84 = "9-1 Monkey Madness Coin - Monkey Head"
+    Coin85 = "9-1 Monkey Madness Coin - Side Entry"
 
 
 class AEWorld(Enum):
