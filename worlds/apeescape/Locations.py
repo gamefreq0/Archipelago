@@ -299,7 +299,7 @@ location_table = {
     AELocation.Coin78.value: 378,
     AELocation.Coin79.value: 379,
     AELocation.Coin80.value: 380,
-    AELocation.Coin83.value: 383,
+    AELocation.Coin85.value: 385,
     AELocation.Coin84.value: 384,
     AELocation.Coin82.value: 382,
 

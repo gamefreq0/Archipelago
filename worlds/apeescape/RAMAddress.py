@@ -592,7 +592,7 @@ class RAM:
             199: 0x0DFE91,
             200: 0x0DFE92
         },
-        85: {  # outside castle?
+        85: {  # side entry
             191: 0x0DFEA8
         },
         86: {
