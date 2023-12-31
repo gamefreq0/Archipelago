@@ -1,3 +1,4 @@
+import math
 import os
 import json
 from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple
@@ -145,6 +146,26 @@ class ApeEscapeWorld(World):
             numberoflocations -= 1
         else:
             self.multiworld.get_location(AELocation.Specter2.value, self.player).place_locked_item(victory)
+
+        sixth = math.floor(numberoflocations/6)
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Shirt.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Triangle.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.BigTriangle.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Cookie.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Flash.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Rocket.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
 
         self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, numberoflocations)]
 
