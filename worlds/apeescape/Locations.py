@@ -14,7 +14,7 @@ class ApeEscapeLocation(Location):
         self.event = not address
 
 
-location_table_ape = {
+location_table = {
     # 1-1 Fossil Field
     AELocation.Noonan.value: 1,
     AELocation.Jorjy.value: 2,
@@ -238,14 +238,9 @@ location_table_ape = {
     AELocation.Carro.value: 202,
     AELocation.Carlito.value: 203,
     AELocation.BG.value: 204,
-    AELocation.Specter.value: 205
-}
+    AELocation.Specter.value: 205,
+    AELocation.Specter2.value: 206,
 
-location_table_boss = {
-    AELocation.Specter2.value: 206
-}
-
-location_table_coin = {
     # Coins
     AELocation.Coin1.value: 301,
     AELocation.Coin2.value: 302,
@@ -306,5 +301,6 @@ location_table_coin = {
     AELocation.Coin80.value: 380,
     AELocation.Coin85.value: 385,
     AELocation.Coin84.value: 384,
-    AELocation.Coin82.value: 382
+    AELocation.Coin82.value: 382,
+
 }

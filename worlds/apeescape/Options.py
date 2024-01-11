@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from Options import Choice, Option, PerGameCommonOptions
+from Options import Choice, Option
 
 from typing import Dict
 
@@ -72,9 +71,9 @@ class CoinOption(Choice):
     option_false = 0x01
 
 
-@dataclass
-class ApeEscapeOptions(PerGameCommonOptions):
-    debug: DebugOption
-    goal: GoalOption
-    logic: LogicOption
-    coin: CoinOption
+apeescape_option_definitions: Dict[str, type(Option)] = {
+    "debug": DebugOption,
+    "goal": GoalOption,
+    "logic": LogicOption,
+    "coin": CoinOption
+}

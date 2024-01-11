@@ -1,3 +1,4 @@
+from worlds.apeescape import location_table
 from worlds.generic.Rules import add_rule, set_rule, forbid_item
 from BaseClasses import LocationProgressType
 from .Regions import connect_regions

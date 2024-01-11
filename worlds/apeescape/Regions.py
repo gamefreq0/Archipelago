@@ -1,12 +1,9 @@
 from BaseClasses import MultiWorld, Region, Entrance
-from .Locations import location_table_ape, location_table_boss, location_table_coin, ApeEscapeLocation
+from .Locations import location_table, ApeEscapeLocation
 from .Strings import AEWorld, AERoom
 
 
 def create_regions(world: MultiWorld, player: int):
-
-    location_table = {**location_table_ape, **location_table_boss, **location_table_coin}
-
     # menu
     menu = Region("Menu", player, world)
 
@@ -1009,7 +1006,6 @@ def connect_regions(world: MultiWorld, player: int, source: str, target: str, ru
 
 
 def get_range(i, j):
-    location_table = {**location_table_ape, **location_table_boss, **location_table_coin}
     i = i + 128000000
     j = j + 128000000
     res = dict()
@@ -1020,7 +1016,6 @@ def get_range(i, j):
 
 
 def get_array(array):
-    location_table = {**location_table_ape, **location_table_boss, **location_table_coin}
     res = dict()
     for i in array:
         for key, val in location_table.items():
