@@ -6,13 +6,13 @@ from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple
 from BaseClasses import Item, ItemClassification, MultiWorld, Tutorial
 from worlds.AutoWorld import WebWorld, World
 from .Items import item_table, ItemData, nothing_item_id, event_table, ApeEscapeItem
-from .Locations import location_table, base_location_id
+from .Locations import location_table_ape, location_table_coin, location_table_boss, base_location_id
 from .Regions import create_regions
 from .Rules import set_rules
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
-from .Options import apeescape_option_definitions, DebugOption, GoalOption, LogicOption, CoinOption
+from .Options import ApeEscapeOptions, DebugOption, GoalOption, LogicOption, CoinOption
 from Options import AssembleOptions
 
 
@@ -39,14 +39,23 @@ class ApeEscapeWorld(World):
     web: ClassVar[WebWorld] = ApeEscapeWeb()
     topology_present = True
 
-    option_definitions: ClassVar[Dict[str, AssembleOptions]] = apeescape_option_definitions
-
     item_name_to_id = item_table
+
+    options_dataclass = ApeEscapeOptions
+    options: ApeEscapeOptions
 
     for key, value in item_name_to_id.items():
         item_name_to_id[key] = value + 128000000
 
+    location_table = location_table_ape
+
+    if options.coin == 0x01:
+        location_table.update(location_table_coin)
+    if options.goal == 0x01:
+        location_table.update(location_table_boss)
+
     location_name_to_id = location_table
+    #seperate location table into many
 
     for key, value in location_name_to_id.items():
         location_name_to_id[key] = value + 128000000
@@ -60,10 +69,12 @@ class ApeEscapeWorld(World):
         self.coin: Optional[int] = 0
 
     def generate_early(self) -> None:
-        self.goal = self.multiworld.goal[self.player].value
-        self.debug = self.multiworld.debug[self.player].value
-        self.logic = self.multiworld.logic[self.player].value
-        self.coin = self.multiworld.coin[self.player].value
+        self.goal = self.options.goal
+        self.debug = self.options.debug
+        self.logic = self.options.logic
+        self.coin = self.options.coin
+
+
 
     def create_regions(self):
         create_regions(self.multiworld, self.player)
@@ -87,7 +98,8 @@ class ApeEscapeWorld(World):
 
 
     def create_items(self):
-        numberoflocations = len(location_table)
+
+        numberoflocations = len(self.location_name_to_id)+1
 
         radar = self.create_item(AEItem.Radar.value)
         shooter = self.create_item(AEItem.Sling.value)
@@ -104,12 +116,12 @@ class ApeEscapeWorld(World):
         self.multiworld.push_precollected(waternet)
         self.multiworld.push_precollected(club)
 
-        if self.multiworld.debug[self.player].value == 0x00:
+        if self.options.debug == 0x00:
             self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
             self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
             numberoflocations -= 12
         # DEBUG
-        elif self.multiworld.debug[self.player].value == 0x01:
+        elif self.options.debug == 0x01:
             self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(radar)
             self.multiworld.get_location(AELocation.Jorjy.value, self.player).place_locked_item(shooter)
             self.multiworld.get_location(AELocation.Nati.value, self.player).place_locked_item(hoop)
@@ -119,7 +131,7 @@ class ApeEscapeWorld(World):
             self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
             numberoflocations -= 12
         # DEBUG
-        elif self.multiworld.debug[self.player].value == 0x02:
+        elif self.options.debug == 0x02:
             self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
             key1 = self.create_item("World Key")
             key2 = self.create_item("World Key")
@@ -136,12 +148,10 @@ class ApeEscapeWorld(World):
             numberoflocations -= 12
 
 
-        if self.multiworld.coin[self.player].value == 0x01:
+        if self.options.coin == 0x01:
             numberoflocations -= 60
 
-
-
-        if self.multiworld.goal[self.player].value == 0x00:
+        if self.options.goal == 0x00:
             self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
             numberoflocations -= 1
         else:
@@ -175,6 +185,12 @@ class ApeEscapeWorld(World):
     def generate_output(self, output_directory: str):
         if self.multiworld.players != 1:
             return
+
+        for i in self.multiworld.get_locations():
+            if i.item == None:
+                print("test")
+
+
         data = {
             "slot_data": self.fill_slot_data(),
             "location_to_item": {self.location_name_to_id[i.name]: item_table[i.item.name] for i in
