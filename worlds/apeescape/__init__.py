@@ -12,7 +12,7 @@ from .Rules import set_rules
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
-from .Options import apeescape_option_definitions, DebugOption, GoalOption, LogicOption, CoinOption
+from .Options import ApeEscapeOptions, DebugOption, GoalOption, LogicOption, CoinOption
 from Options import AssembleOptions
 
 
@@ -39,7 +39,8 @@ class ApeEscapeWorld(World):
     web: ClassVar[WebWorld] = ApeEscapeWeb()
     topology_present = True
 
-    option_definitions: ClassVar[Dict[str, AssembleOptions]] = apeescape_option_definitions
+    options_dataclass = ApeEscapeOptions
+    options: ApeEscapeOptions
 
     item_name_to_id = item_table
 
@@ -60,10 +61,10 @@ class ApeEscapeWorld(World):
         self.coin: Optional[int] = 0
 
     def generate_early(self) -> None:
-        self.goal = self.multiworld.goal[self.player].value
-        self.debug = self.multiworld.debug[self.player].value
-        self.logic = self.multiworld.logic[self.player].value
-        self.coin = self.multiworld.coin[self.player].value
+        self.debug = self.options.debug
+        self.goal = self.options.goal
+        self.logic = self.options.logic
+        self.coin = self.options.coin
 
     def create_regions(self):
         create_regions(self.multiworld, self.player)
