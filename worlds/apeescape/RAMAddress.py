@@ -592,7 +592,7 @@ class RAM:
             199: 0x0DFE91,
             200: 0x0DFE92
         },
-        85: {  # outside castle?
+        85: {  # side entry
             191: 0x0DFEA8
         },
         86: {
@@ -611,7 +611,13 @@ class RAM:
         "Car": 0x80,
         "Key": 0x100,
         "Victory": 0x200,
-        "Nothing": 0x0
+        "Nothing": 0x0,
+        "Shirt": 0x210,
+        "Triangle": 0x211,
+        "BigTriangle": 0x212,
+        "Cookie": 0x213,
+        "Flash": 0x214,
+        "Rocket": 0x215
     }
 
     caughtStatus = {

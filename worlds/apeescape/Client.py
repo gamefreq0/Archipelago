@@ -91,6 +91,8 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "StatusUpdate",
                         "status": ClientStatus.CLIENT_GOAL
                     }])
+                #elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["Rocket"]:
+                    
 
             if keyCountFromServer > self.worldkeycount:
                 self.worldkeycount = keyCountFromServer

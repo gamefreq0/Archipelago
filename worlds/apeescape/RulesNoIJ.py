@@ -682,11 +682,11 @@ class NoIJ():
                             lambda state: MM_SHA(state, player))
             connect_regions(world, player, AERoom.W9L1Castle.value, AERoom.Coin80.value,
                             lambda state: MM_UFODoor(state, player))
-            connect_regions(world, player, AERoom.W9L1Head.value, AERoom.Coin81.value,
+            connect_regions(world, player, AERoom.W9L1Head.value, AERoom.Coin84.value,
                             lambda state: MM_DoubleDoor(state, player))
-            connect_regions(world, player, AERoom.W9L1Side.value, AERoom.Coin82.value,
+            connect_regions(world, player, AERoom.W9L1Side.value, AERoom.Coin85.value,
                             lambda state: MM_SHA(state, player) and HasFlyer(state, player))
-            connect_regions(world, player, AERoom.W9L1Climb2.value, AERoom.Coin83.value,
+            connect_regions(world, player, AERoom.W9L1Climb2.value, AERoom.Coin82.value,
                             lambda state: MM_SpaceMonkeys(state, player))
 
 

@@ -39,7 +39,15 @@ item_table = {
     # Keys
     AEItem.Key.value: RAM.items["Key"],
     AEItem.Victory.value: RAM.items["Victory"],
-    AEItem.Nothing.value: RAM.items["Nothing"]
+
+    #Junk
+    AEItem.Nothing.value: RAM.items["Nothing"],
+    AEItem.Shirt.value: RAM.items["Shirt"],
+    AEItem.Triangle.value: RAM.items["Triangle"],
+    AEItem.BigTriangle.value: RAM.items["BigTriangle"],
+    AEItem.Cookie.value: RAM.items["Cookie"],
+    AEItem.Flash.value: RAM.items["Flash"],
+    AEItem.Rocket.value: RAM.items["Rocket"],
 }
 
 event_table = {

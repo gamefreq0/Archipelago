@@ -1,3 +1,4 @@
+import math
 import os
 import json
 from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple
@@ -11,7 +12,7 @@ from .Rules import set_rules
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
-from .Options import apeescape_option_definitions, DebugOption, GoalOption, LogicOption, CoinOption
+from .Options import ApeEscapeOptions, DebugOption, GoalOption, LogicOption, CoinOption
 from Options import AssembleOptions
 
 
@@ -38,7 +39,8 @@ class ApeEscapeWorld(World):
     web: ClassVar[WebWorld] = ApeEscapeWeb()
     topology_present = True
 
-    option_definitions: ClassVar[Dict[str, AssembleOptions]] = apeescape_option_definitions
+    options_dataclass = ApeEscapeOptions
+    options: ApeEscapeOptions
 
     item_name_to_id = item_table
 
@@ -59,10 +61,10 @@ class ApeEscapeWorld(World):
         self.coin: Optional[int] = 0
 
     def generate_early(self) -> None:
-        self.goal = self.multiworld.goal[self.player].value
-        self.debug = self.multiworld.debug[self.player].value
-        self.logic = self.multiworld.logic[self.player].value
-        self.coin = self.multiworld.coin[self.player].value
+        self.debug = self.options.debug
+        self.goal = self.options.goal
+        self.logic = self.options.logic
+        self.coin = self.options.coin
 
     def create_regions(self):
         create_regions(self.multiworld, self.player)
@@ -145,6 +147,26 @@ class ApeEscapeWorld(World):
             numberoflocations -= 1
         else:
             self.multiworld.get_location(AELocation.Specter2.value, self.player).place_locked_item(victory)
+
+        sixth = math.floor(numberoflocations/6)
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Shirt.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Triangle.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.BigTriangle.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Cookie.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Flash.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
+
+        self.multiworld.itempool += [self.create_item_filler(AEItem.Rocket.value) for i in range(0, sixth)]
+        numberoflocations -= sixth
 
         self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, numberoflocations)]
 
