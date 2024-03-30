@@ -363,7 +363,7 @@ class IJ():
         connect_regions(world, player, AERoom.W7L3Basement.value, AERoom.W7L3Castalist.value,
                         lambda state: CC_WaterRoom(state, player) and CanDive(state, player))
         connect_regions(world, player, AERoom.W7L3Basement.value, AERoom.W7L3Deveneom.value,
-                        lambda state: CC_WaterRoom(state, player))
+                        lambda state: CC_WaterRoom(state, player) and (CanSwim(state, player) or HasSling(state, player) or HasFlyer(state, player)))
         connect_regions(world, player, AERoom.W7L3Button.value, AERoom.W7L3Astur.value,
                         lambda state: CC_ButtonRoom(state, player))
         connect_regions(world, player, AERoom.W7L3Button.value, AERoom.W7L3Kilserack.value,
