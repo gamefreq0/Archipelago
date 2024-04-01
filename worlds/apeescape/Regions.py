@@ -974,7 +974,7 @@ def connect_regions(world: MultiWorld, player: int, source: str, target: str, ru
     sourceRegion = world.get_region(source, player)
     targetRegion = world.get_region(target, player)
 
-    connection = Entrance(player, '', sourceRegion)
+    connection = Entrance(player, source + '_to_' + target, sourceRegion)
     if rule:
         connection.access_rule = rule
 
