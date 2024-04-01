@@ -360,7 +360,7 @@ class NoIJ():
         connect_regions(world, player, AERoom.W7L3Basement.value, AERoom.W7L3Castalist.value,
                         lambda state: CC_WaterRoom(state, player) and CanDive(state, player))
         connect_regions(world, player, AERoom.W7L3Basement.value, AERoom.W7L3Deveneom.value,
-                        lambda state: CC_WaterRoom(state, player))
+                        lambda state: CC_ButtonRoom(state, player))
         connect_regions(world, player, AERoom.W7L3Button.value, AERoom.W7L3Astur.value,
                         lambda state: CC_ButtonRoom(state, player))
         connect_regions(world, player, AERoom.W7L3Button.value, AERoom.W7L3Kilserack.value,
@@ -585,7 +585,7 @@ class NoIJ():
 
             # 4-2
             connect_regions(world, player, AERoom.W4L2SecondRoom.value, AERoom.Coin23.value,
-                            lambda state: CanDive(state, player) or HasRC(state, player))
+                            lambda state: CanDive(state, player) or (CanSwim(state, player) and HasRC(state, player))
 
             # 4-3
             connect_regions(world, player, AERoom.W4L3Outside.value, AERoom.Coin24.value,
