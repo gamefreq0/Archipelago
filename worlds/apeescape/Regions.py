@@ -216,9 +216,6 @@ def create_regions(world: MultiWorld, player: int):
     sandy = Region(AERoom.W4L1Sandy.value, player, world)
     sandy.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], sandy) for loc_name in
                         get_array([54])]
-    sandy = Region(AERoom.W4L1Sandy.value, player, world)
-    sandy.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], sandy) for loc_name in
-                        get_array([54])]
     shelle = Region(AERoom.W4L1ShellE.value, player, world)
     shelle.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], shelle) for loc_name in
                          get_array([55])]
