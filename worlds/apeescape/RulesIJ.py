@@ -591,7 +591,7 @@ class IJ():
 
             # 4-2
             connect_regions(world, player, AERoom.W4L2SecondRoom.value, AERoom.Coin23.value,
-                            lambda state: CanDive(state, player) or (CanSwim(state, player) and HasRC(state, player))
+                            lambda state: CanDive(state, player) or (CanSwim(state, player) and HasRC(state, player)))
 
             # 4-3
             connect_regions(world, player, AERoom.W4L3Outside.value, AERoom.Coin24.value,
