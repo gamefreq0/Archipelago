@@ -16,7 +16,7 @@ class SpyroClient(BizHawkClient):
   system = "PSX"
 
   async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
-    spyro_id: bytes = struct.pack("<17s", b'BASCUS-94228SPYRO')
+    spyro_id: bytes = struct.pack("<17s", b"BASCUS-94228SPYRO")
     spyro_id_ram_address: int = 0xBA92
     try:
       # Check ROM name
@@ -37,7 +37,10 @@ class SpyroClient(BizHawkClient):
       return False
 
     ctx.game = self.game
-    ctx.items_handling = 0b001
+    # We want to be able to receive items from ourselves, and others
+    # Also handle starting inventory for initial level(s)
+    ctx.items_handling = 0b111
+    # Slot data will hold a lot of useful data for shuffling levels and such
     ctx.want_slot_data = True
     # Setup command processor here
     return True
