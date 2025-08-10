@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger("Client")
 
 class SpyroClient(BizHawkClient):
-  game = "Spyro the Dragon"
-  system = "PSX"
+  game: str = "Spyro the Dragon"
+  system: str = "PSX"
 
   async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
     spyro_id: bytes = struct.pack("<17s", b"BASCUS-94228SPYRO")
@@ -21,7 +21,7 @@ class SpyroClient(BizHawkClient):
     try:
       # Check ROM name
       # Hopefully this keeps the encoding right on big endian machines
-      read_bytes = ((await bizhawk.read(ctx.bizhawk_ctx, [(
+      read_bytes: bytes = ((await bizhawk.read(ctx.bizhawk_ctx, [(
         spyro_id_ram_address, len(spyro_id),"MainRAM"
       )])))[0]
       if read_bytes != spyro_id:
