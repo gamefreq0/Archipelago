@@ -198,3 +198,4 @@ Thumbs.db
 
 # pipenv stuff
 Pipfile
+Pipfile.lock
