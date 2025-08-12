@@ -1,7 +1,9 @@
 import logging
 import struct
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
+from typing import override
+from typing import final
 
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
@@ -12,12 +14,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger("Client")
 
 
+@final
 class SpyroClient(BizHawkClient):
     game = "Spyro the Dragon"
     system = "PSX"
+    patch_suffix = ""
 
+    @override
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
-        spyro_id = struct.pack("<17s", b"BASCUS-94228SPYRO")
+        spyro_id: bytes = struct.pack("<17s", b"BASCUS-94228SPYRO")
         spyro_id_ram_address: int = 0xBA92
         try:
             # Check ROM name
@@ -46,6 +51,7 @@ class SpyroClient(BizHawkClient):
         # Setup command processor here
         return True
 
+    @override
     async def game_watcher(self, ctx: "BizHawkClientContext") -> None:
         pass
 
