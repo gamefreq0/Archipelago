@@ -199,3 +199,6 @@ Thumbs.db
 # pipenv stuff
 Pipfile
 Pipfile.lock
+
+# IDE specific stuff
+pyproject.toml
