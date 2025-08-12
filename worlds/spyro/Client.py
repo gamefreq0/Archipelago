@@ -1,7 +1,7 @@
 import logging
 import struct
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 from typing import override
 from typing import final
 
