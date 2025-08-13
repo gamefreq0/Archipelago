@@ -66,7 +66,7 @@ filler_items = [
 ]
 
 full_item_list = homeworld_access + level_access + boss_items + trap_items
-item_table = dict(enumerate(full_item_list))
+item_table = dict(enumerate(full_item_list, start=base_spyro_item_id))
 
 item_name_groups = {
     "worlds": set(homeworld_access),
