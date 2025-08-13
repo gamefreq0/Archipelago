@@ -3,8 +3,8 @@ from typing import final
 from BaseClasses import Item, Location, MultiWorld, Tutorial, ItemClassification
 from ..AutoWorld import World, WebWorld
 from .Client import SpyroClient
-from .Items import SpyroItem, item_table
-from .Locations import SpyroLocation, location_table
+from .Items import SpyroItem, item_table, grouped_items
+from .Locations import SpyroLocation, location_table, grouped_locations
 from .Options import SpyroOptions
 
 
@@ -23,3 +23,6 @@ class SpyroWorld(World):
 
     item_name_to_id = {v: k for k, v in item_table.items()}
     location_name_to_id = {v: k for k, v in location_table.items()}
+
+    item_name_groups = grouped_items
+    location_name_groups = grouped_locations
