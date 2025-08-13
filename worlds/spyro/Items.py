@@ -66,7 +66,7 @@ filler_items = [
 ]
 
 full_item_list = homeworld_access + level_access + boss_items + trap_items
-item_table = {index: value for index, value in enumerate(full_item_list)}
+item_table = dict(enumerate(full_item_list))
 
 item_name_groups = {
     "worlds": {
