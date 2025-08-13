@@ -136,3 +136,16 @@ boss_levels = [
     "Jacques",
     "Gnasty Gnorc"
 ]
+location_name_groups = {
+    "flight levels": flight_levels,
+    "boss levels": boss_levels
+}
+level_groups: dict[str, list[str]] = {}
+for level_name, _ in all_stats.items():
+    cur_level_list: list[str] = []
+    for location in location_list:
+        if level_name in location:
+            cur_level_list.append(location)
+    level_groups[level_name] = cur_level_list
+for level, locations in level_groups.items():
+    location_name_groups[level] = locations
