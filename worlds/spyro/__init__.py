@@ -4,7 +4,7 @@ from BaseClasses import Item, Location, MultiWorld, Tutorial, ItemClassification
 from worlds.spyro.Options import SpyroOptions
 from ..AutoWorld import World, WebWorld
 from .Client import SpyroClient
-from .Items import SpyroItem
+from .Items import SpyroItem, item_table
 from .Locations import SpyroLocation
 from .Options import SpyroOptions
 
@@ -21,3 +21,5 @@ class SpyroWorld(World):
     options_dataclass = SpyroOptions
     options: SpyroOptions
     topology_present = True
+
+    item_name_to_id = {v: k for k, v in item_table.items()}
