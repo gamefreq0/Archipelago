@@ -1,4 +1,4 @@
-from typing import final
+from typing import final, override
 
 from BaseClasses import Item, Location, MultiWorld, Tutorial, ItemClassification
 from ..AutoWorld import World, WebWorld
@@ -26,3 +26,13 @@ class SpyroWorld(World):
 
     item_name_groups = grouped_items
     location_name_groups = grouped_locations
+
+    def __init__(self, multiworld: "MultiWorld", player: int):
+        self.goal: int | None = 0
+        self.itempool: list[SpyroItem] = []
+        super().__init__(multiworld, player)
+
+    @override
+    def generate_early(self) -> None:
+        self.goal = self.options.goal.value
+        self.itempool = []
