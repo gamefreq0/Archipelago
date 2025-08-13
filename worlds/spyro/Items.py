@@ -1,6 +1,5 @@
 from typing import final
 from BaseClasses import Item
-from .Addresses import RAM
 
 base_spyro_item_id = 1000
 
