@@ -1,7 +1,6 @@
 from typing import final
 
 from BaseClasses import Item, Location, MultiWorld, Tutorial, ItemClassification
-from worlds.spyro.Options import SpyroOptions
 from ..AutoWorld import World, WebWorld
 from .Client import SpyroClient
 from .Items import SpyroItem, item_table
