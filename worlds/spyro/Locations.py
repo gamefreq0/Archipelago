@@ -96,7 +96,7 @@ for d in (homeworld_stats, artisans_stats, keepers_stats, crafters_stats, makers
     all_stats.update(d)
 
 level_gem_threshold_locations: dict[str, int] = {}
-for level, _ in all_stats:
+for level, _ in all_stats.items():
     level_gem_threshold_locations[level + " 25% Gems"] = int(all_stats[level].treasure_count / 4)
     level_gem_threshold_locations[level + " 50% Gems"] = int(all_stats[level].treasure_count / 4)
     level_gem_threshold_locations[level + " 75% Gems"] = int(all_stats[level].treasure_count / 4)
