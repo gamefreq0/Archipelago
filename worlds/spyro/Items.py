@@ -64,7 +64,7 @@ filler_items = [
     "Butterfly"
 ]
 
-full_item_list = homeworld_access + level_access + boss_items + trap_items
+full_item_list = homeworld_access + level_access + boss_items + trap_items + filler_items
 item_table = dict(enumerate(full_item_list, start=base_spyro_item_id))
 
 grouped_items = {
