@@ -4,6 +4,7 @@ from BaseClasses import Item, Location, MultiWorld, Tutorial, ItemClassification
 from ..AutoWorld import World, WebWorld
 from .Client import SpyroClient
 from .Items import SpyroItem, item_table, grouped_items
+from .Items import homeworld_access, level_access, boss_items, trap_items
 from .Locations import SpyroLocation, location_table, grouped_locations
 from .Options import SpyroOptions
 from .Regions import create_regions
@@ -41,3 +42,13 @@ class SpyroWorld(World):
     @override
     def create_regions(self) -> None:
         return create_regions(self)
+    
+    @override
+    def create_item(self, name: str) -> SpyroItem:
+        if (name in homeworld_access) or (name in level_access) or (name in boss_items):
+            classification = ItemClassification.progression
+        elif name in trap_items:
+            classification = ItemClassification.trap
+        else:
+            classification = ItemClassification.filler
+        return SpyroItem(name, classification, self.item_name_to_id[name], self.player)
