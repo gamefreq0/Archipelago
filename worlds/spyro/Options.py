@@ -48,9 +48,9 @@ class SpyroColorOption(FreeText):
 
 
 @dataclass
+@final
 class SpyroOptions(PerGameCommonOptions):
     goal: GoalOption
     starting_world: StartingHomeworldOption
     spyro_color: SpyroColorOption
     death_link: DeathLink
-    
