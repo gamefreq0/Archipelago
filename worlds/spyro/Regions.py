@@ -1,3 +1,4 @@
+from os import name
 from typing import TYPE_CHECKING
 
 from BaseClasses import Region
@@ -79,5 +80,31 @@ def create_regions(world: "SpyroWorld"):
                     region.locations.append(SpyroLocation(world.player, location_table[location]))
 
     # TODO: Create regions within levels for move shuffle eventually.
-    # TODO: Create balloonist region, in case move shuffle prevents access from a given hub?
+    # TODO: Move following bit elsewhere for ER, to account for the disconnect between starting area and
+    # ability to actually reach the balloonist. Won't matter until move shuffle, though.
+
+    _ = menu.add_exits(
+            {hub_artisans.name: "Balloonist"},
+            {hub_artisans.name: lambda state: state.has(hub_artisans.name, world.player)}
+        )
+    _ = menu.add_exits(
+            {hub_keepers.name: "Balloonist"},
+            {hub_keepers.name: lambda state: state.has(hub_keepers.name, world.player)}
+        )
+    _ = menu.add_exits(
+            {hub_crafters.name: "Balloonist"},
+            {hub_crafters.name: lambda state: state.has(hub_crafters.name, world.player)}
+        )
+    _ = menu.add_exits(
+            {hub_makers.name: "Balloonist"},
+            {hub_makers.name: lambda state: state.has(hub_makers.name, world.player)}
+        )
+    _ = menu.add_exits(
+            {hub_weavers.name: "Balloonist"},
+            {hub_weavers.name: lambda state: state.has(hub_weavers.name, world.player)}
+        )
+    _ = menu.add_exits(
+            {hub_gnasty.name: "Balloonist"},
+            {hub_gnasty.name: lambda state: state.has(hub_gnasty.name, world.player)}
+        )
     multiworld.regions.extend(regions)
