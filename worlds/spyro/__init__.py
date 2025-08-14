@@ -3,7 +3,7 @@ from typing import final, override
 from BaseClasses import Item, Location, MultiWorld, Tutorial, ItemClassification
 from ..AutoWorld import World, WebWorld
 from .Client import SpyroClient
-from .Items import SpyroItem, item_table, grouped_items
+from .Items import SpyroItem, filler_items, item_table, grouped_items
 from .Items import homeworld_access, level_access, boss_items, trap_items
 from .Locations import SpyroLocation, location_table, grouped_locations
 from .Options import SpyroOptions
@@ -52,3 +52,25 @@ class SpyroWorld(World):
         else:
             classification = ItemClassification.filler
         return SpyroItem(name, classification, self.item_name_to_id[name], self.player)
+
+    @override
+    def create_items(self) -> None:
+        for name in homeworld_access:
+            self.itempool += [self.create_item(name)]
+        for name in level_access:
+            self.itempool += [self.create_item(name)]
+        for name in boss_items:
+            self.itempool += [self.create_item(name)]
+
+        trap_percentage = 0.05
+        trap_count = round(len(self.multiworld.get_unfilled_locations(self.player)) * trap_percentage)
+
+        for _ in range(trap_count):
+            random_trap = self.multiworld.random.choice(trap_items)
+            self.itempool += [self.create_item(random_trap)]
+
+        junk_count = len(self.multiworld.get_unfilled_locations(self.player))
+
+        for _ in range(junk_count):
+            random_filler = self.multiworld.random.choice(filler_items)
+            self.itempool += [self.create_item(random_filler)]
