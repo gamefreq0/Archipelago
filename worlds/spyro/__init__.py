@@ -6,6 +6,7 @@ from .Client import SpyroClient
 from .Items import SpyroItem, item_table, grouped_items
 from .Locations import SpyroLocation, location_table, grouped_locations
 from .Options import SpyroOptions
+from .Regions import create_regions
 
 
 @final
@@ -36,3 +37,7 @@ class SpyroWorld(World):
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
         self.itempool = []
+
+    @override
+    def create_regions(self) -> None:
+        return create_regions(self)
