@@ -54,6 +54,7 @@ boss_items = [
     "Metalhead's Mohawk",
     "Jacques' Ribbon"
 ]
+goal_item = ["Victory"]
 trap_items = [
     "Flop Trap",
     "Roll Trap",
@@ -64,7 +65,7 @@ filler_items = [
     "Butterfly"
 ]
 
-full_item_list = homeworld_access + level_access + boss_items
+full_item_list = homeworld_access + level_access + boss_items + goal_item
 full_item_list += trap_items + filler_items
 item_table = dict(enumerate(full_item_list, start=BASE_SPYRO_ITEM_ID))
 

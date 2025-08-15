@@ -1,15 +1,17 @@
 from typing import final, override
 
-from BaseClasses import Entrance, Item, Location, MultiWorld, Tutorial
+from BaseClasses import Entrance, MultiWorld
 from BaseClasses import ItemClassification
 from entrance_rando import randomize_entrances
-from ..AutoWorld import World, WebWorld
+from ..AutoWorld import World
 from .Client import SpyroClient
-from .Items import SpyroItem, filler_items, item_table, grouped_items
+from .Items import SpyroItem, filler_items, goal_item, item_table
 from .Items import homeworld_access, level_access, boss_items, trap_items
-from .Locations import SpyroLocation, location_table, grouped_locations
+from .Items import grouped_items
+from .Locations import location_table, grouped_locations
 from .Options import SpyroOptions
 from .Regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
+from .Rules import set_rules
 
 
 @final
@@ -75,12 +77,13 @@ class SpyroWorld(World):
             self.itempool += [self.create_item(name)]
         for name in boss_items:
             self.itempool += [self.create_item(name)]
+        victory = self.create_item(goal_item[0])
 
         trap_percentage = 0.05
         total_unfilled_locations = len(
             self.multiworld.get_unfilled_locations(self.player)
         )
-        total_filled_local_locations = len(self.itempool)
+        total_filled_local_locations = len(self.itempool) + 1 # Victory item
         trap_count = round(
             (
                 total_unfilled_locations - total_filled_local_locations
@@ -97,6 +100,12 @@ class SpyroWorld(World):
         for _ in range(junk_count):
             random_filler = self.multiworld.random.choice(filler_items)
             self.itempool += [self.create_item(random_filler)]
+        
+        if self.options.goal == "gnasty":
+            # TODO: Replace goal location with beating Gnasty
+            self.get_location("Gnasty Gnorc 100% Gems").place_locked_item(
+                victory
+            )
 
         self.multiworld.itempool += self.itempool
 
@@ -109,8 +118,6 @@ class SpyroWorld(World):
                     ENTRANCE_OUT: [ENTRANCE_IN]
                 }, False
             )
-            for pairing in shuffled_entrances.pairings:
-                print(pairing)
         else:
             all_entrances = self.get_entrances()
             all_ents_list: list[Entrance] = []
@@ -134,3 +141,7 @@ class SpyroWorld(World):
                 ):
                     pair[0].connect(pair[1].parent_region)
                     pair[1].connect(pair[0].parent_region)
+
+    @override
+    def set_rules(self) -> None:
+        set_rules(self)
