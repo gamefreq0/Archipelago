@@ -8,7 +8,8 @@ from .Locations import SpyroLocation, location_table
 if TYPE_CHECKING:
     from . import SpyroWorld
 
-# TODO: Handle entrances for level shuffle
+ENTRANCE_IN: int = 0x0
+ENTRANCE_OUT: int = 0x1
 
 hub_names: dict[str, list[str]]
 
@@ -56,8 +57,6 @@ hub_names = {
     ]
 }
 
-hub_portals: list[str] = []
-level_entrances: list[str] = []
 
 def create_regions(world: "SpyroWorld"):
     options = world.options
@@ -123,30 +122,28 @@ def create_regions(world: "SpyroWorld"):
         for level_name in hub_names[hub_name]:
             level_region = level_regions[level_name]
             portal_to_flyin = hub_region.create_exit(f"{level_name} Portal")
-            portal_to_flyin.randomization_type = EntranceType.ONE_WAY
-            hub_portals.append(portal_to_flyin.name)
+            portal_to_flyin.randomization_type = EntranceType.TWO_WAY
+            portal_to_flyin.randomization_group = ENTRANCE_IN
             portal_from_vortex = hub_region.create_er_target(
                 f"{level_name} Portal"
             )
-            portal_from_vortex.randomization_type = EntranceType.ONE_WAY
+            portal_from_vortex.randomization_type = EntranceType.TWO_WAY
+            portal_from_vortex.randomization_group = ENTRANCE_IN
             level_flyin_from_portal = level_region.create_er_target(
                 f"{level_name} Fly-in"
             )
-            level_flyin_from_portal.randomization_type = EntranceType.ONE_WAY
+            level_flyin_from_portal.randomization_type = EntranceType.TWO_WAY
             level_flyin_from_portal.access_rule = (
                 lambda state, level_name=level_name: state.has(
                     level_name, player
                 )
             )
-            level_entrances.append(level_flyin_from_portal.name)
-            # TODO: split the next two lines out of this loop, so we can tack
-            # this on to the region the vortex actually sits in (or other exit
-            # condition) so that there's a directed logic limiting reaching
-            # the vortex for move shuffle
+            level_flyin_from_portal.randomization_group = ENTRANCE_OUT
             level_vortex_to_portal = level_region.create_exit(
                 f"{level_name} Fly-in"
             )
-            level_vortex_to_portal.randomization_type = EntranceType.ONE_WAY
+            level_vortex_to_portal.randomization_type = EntranceType.TWO_WAY
+            level_vortex_to_portal.randomization_group = ENTRANCE_OUT
         _ = hub_region.connect(balloonist_menu, f"{hub_name} Balloonist")
         _ = balloonist_menu.connect(
                 hub_region, f"Balloonist to {hub_name}", lambda state,

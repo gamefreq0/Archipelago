@@ -9,7 +9,7 @@ from .Items import SpyroItem, filler_items, item_table, grouped_items
 from .Items import homeworld_access, level_access, boss_items, trap_items
 from .Locations import SpyroLocation, location_table, grouped_locations
 from .Options import SpyroOptions
-from .Regions import create_regions, level_entrances, hub_portals
+from .Regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 
 
 @final
@@ -104,7 +104,10 @@ class SpyroWorld(World):
     def connect_entrances(self) -> None:
         if self.options.portal_shuffle:
             shuffled_entrances = randomize_entrances(
-                self, True, {0: [0]}, False
+                self, True, {
+                    ENTRANCE_IN: [ENTRANCE_OUT],
+                    ENTRANCE_OUT: [ENTRANCE_IN]
+                }, False
             )
             for pairing in shuffled_entrances.pairings:
                 print(pairing)
