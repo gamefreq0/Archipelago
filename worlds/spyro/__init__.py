@@ -1,6 +1,7 @@
 from typing import final, override
 
-from BaseClasses import Item, Location, MultiWorld, Tutorial, ItemClassification
+from BaseClasses import Item, Location, MultiWorld, Tutorial
+from BaseClasses import ItemClassification
 from ..AutoWorld import World, WebWorld
 from .Client import SpyroClient
 from .Items import SpyroItem, filler_items, item_table, grouped_items
@@ -42,35 +43,59 @@ class SpyroWorld(World):
     @override
     def create_regions(self) -> None:
         return create_regions(self)
-    
+
     @override
     def create_item(self, name: str) -> SpyroItem:
-        if (name in homeworld_access) or (name in level_access) or (name in boss_items):
-            classification = ItemClassification.progression
+        if name in filler_items:
+            classification = ItemClassification.filler
         elif name in trap_items:
             classification = ItemClassification.trap
         else:
-            classification = ItemClassification.filler
-        return SpyroItem(name, classification, self.item_name_to_id[name], self.player)
+            classification = ItemClassification.progression
+        return SpyroItem(
+            name, classification, self.item_name_to_id[name], self.player
+        )
+
+    def create_event(self, event: str) -> SpyroItem:
+        return SpyroItem(
+            event, ItemClassification.progression, None, self.player
+        )
 
     @override
     def create_items(self) -> None:
         for name in homeworld_access:
-            self.itempool += [self.create_item(name)]
+            if name == self.options.starting_world.get_option_name(
+                self.options.starting_world.value
+            ):
+                self.push_precollected(self.create_item(name))
+                print(name)
+            else:
+                self.itempool += [self.create_item(name)]
         for name in level_access:
             self.itempool += [self.create_item(name)]
         for name in boss_items:
             self.itempool += [self.create_item(name)]
 
         trap_percentage = 0.05
-        trap_count = round(len(self.multiworld.get_unfilled_locations(self.player)) * trap_percentage)
+        total_unfilled_locations = len(
+            self.multiworld.get_unfilled_locations(self.player)
+        )
+        total_filled_local_locations = len(self.itempool)
+        trap_count = round(
+            (
+                total_unfilled_locations - total_filled_local_locations
+            ) * trap_percentage
+        )
+        total_filled_local_locations += trap_count
 
         for _ in range(trap_count):
             random_trap = self.multiworld.random.choice(trap_items)
             self.itempool += [self.create_item(random_trap)]
 
-        junk_count = len(self.multiworld.get_unfilled_locations(self.player))
+        junk_count = total_unfilled_locations - total_filled_local_locations
 
         for _ in range(junk_count):
             random_filler = self.multiworld.random.choice(filler_items)
             self.itempool += [self.create_item(random_filler)]
+
+        self.multiworld.itempool += self.itempool
