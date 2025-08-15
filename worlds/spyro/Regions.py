@@ -145,9 +145,10 @@ def create_regions(world: "SpyroWorld"):
             level_vortex_to_portal.randomization_type = EntranceType.TWO_WAY
             level_vortex_to_portal.randomization_group = ENTRANCE_OUT
         _ = hub_region.connect(balloonist_menu, f"{hub_name} Balloonist")
-        _ = balloonist_menu.connect(
-                hub_region, f"Balloonist to {hub_name}", lambda state,
-                hub_name=hub_name: state.has(hub_name, player)
+        if "Gnasty" not in hub_name:
+            _ = balloonist_menu.connect(
+                    hub_region, f"Balloonist to {hub_name}", lambda state,
+                    hub_name=hub_name: state.has(hub_name, player)
             )
     _ = balloonist_menu.connect(
             hub_regions["Gnasty's World"], "Balloonist to Gnorc Gnexus",
