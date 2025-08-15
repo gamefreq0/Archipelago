@@ -1,7 +1,7 @@
 from typing import final
 from BaseClasses import Location
 
-base_spyro_location_id = 1000
+BASE_SPYRO_LOCATION_ID = 1000
 
 
 @final
@@ -31,7 +31,8 @@ class LevelStats():
     reached_vortex: bool
 
     def __init__(
-        self, egg_count: int = 0, treasure_count: int = 0, dragon_count: int = 0, has_vortex: bool = True
+        self, egg_count: int = 0, treasure_count: int = 0,
+        dragon_count: int = 0, has_vortex: bool = True
     ) -> None:
         self.egg_count = egg_count
         self.treasure_count = treasure_count
@@ -92,18 +93,22 @@ gnasty_stats = {
 }
 
 all_stats: dict[str, LevelStats] = {}
-for d in (homeworld_stats, artisans_stats, keepers_stats, crafters_stats, makers_stats, weavers_stats, gnasty_stats):
+for d in [
+        homeworld_stats, artisans_stats, keepers_stats, crafters_stats,
+        makers_stats, weavers_stats, gnasty_stats
+        ]:
     all_stats.update(d)
 
 level_gem_threshold_locations: dict[str, int] = {}
-for level, _ in all_stats.items():
-    level_gem_threshold_locations[level + " 25% Gems"] = int(all_stats[level].treasure_count / 4)
-    level_gem_threshold_locations[level + " 50% Gems"] = int(all_stats[level].treasure_count / 4)
-    level_gem_threshold_locations[level + " 75% Gems"] = int(all_stats[level].treasure_count / 4)
-    level_gem_threshold_locations[level + " 100% Gems"] = int(all_stats[level].treasure_count / 4)
+for level, stats in all_stats.items():
+    quarter_gems = int(stats.treasure_count / 4)
+    level_gem_threshold_locations[level + " 25% Gems"] = quarter_gems
+    level_gem_threshold_locations[level + " 50% Gems"] = quarter_gems * 2
+    level_gem_threshold_locations[level + " 75% Gems"] = quarter_gems * 3
+    level_gem_threshold_locations[level + " 100% Gems"] = quarter_gems * 4
 
 total_gem_threshold_locations: dict[str, int] = {}
-for gem_count in range(500, total_treasure, 500):
+for gem_count in range(500, total_treasure + 1, 500):
     total_gem_threshold_locations[f"{gem_count:,d} Gems"] = gem_count
 
 # TODO: Create table of dragon names. Ugh. Can't take easy way out with numbers like with gems.
@@ -112,14 +117,17 @@ dragon_locations: list[str] = []
 egg_locations: list[str] = []
 for level, stats in all_stats.items():
     for count in range(stats.egg_count):
-        egg_locations.append(f"{level} Egg {count:d}")
+        egg_locations.append(f"{level} Egg {count + 1:d}")
 
 location_list: list[str] = []
-for d in (level_gem_threshold_locations.keys(), total_gem_threshold_locations.keys(), dragon_locations, egg_locations):
+for d in [
+    level_gem_threshold_locations.keys(), total_gem_threshold_locations.keys(),
+    dragon_locations, egg_locations
+]:
     for item in d:
         location_list.append(item)
 
-location_table = dict(enumerate(location_list, start=base_spyro_location_id))
+location_table = dict(enumerate(location_list, start=BASE_SPYRO_LOCATION_ID))
 
 flight_levels = [
     "Sunny Flight",
