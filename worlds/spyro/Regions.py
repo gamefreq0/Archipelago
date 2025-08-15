@@ -56,6 +56,8 @@ hub_names = {
     ]
 }
 
+hub_portals: list[str] = []
+level_entrances: list[str] = []
 
 def create_regions(world: "SpyroWorld"):
     options = world.options
@@ -113,23 +115,28 @@ def create_regions(world: "SpyroWorld"):
     starting_world_name = options.starting_world.current_key
     starting_world_name = starting_world_name.replace("_", " ")
     starting_world: Region = hub_regions[starting_world_name.title()]
-    level_entrances: list[Entrance] = []
+
     _ = menu.connect(starting_world, "Starting Homeworld")
     _ = menu.connect(main_world, "Global Stats")
     for hub in hub_regions.items():
         hub_name, hub_region = hub
         for level_name in hub_names[hub_name]:
             level_region = level_regions[level_name]
-            portal = hub_region.create_exit(f"{level_name} Portal")
-            portal.randomization_type = EntranceType.TWO_WAY
-            level_flyin = level_region.create_er_target(f"{level_name} Portal")
-            level_flyin.randomization_type = EntranceType.TWO_WAY
-            level_flyin.access_rule = (
+            portal_to_flyin = hub_region.create_exit(f"{level_name} Portal")
+            portal_to_flyin.randomization_type = EntranceType.ONE_WAY
+            hub_portals.append(portal_to_flyin.name)
+            portal_from_vortex = hub_region.create_er_target(f"{level_name} Portal")
+            portal_from_vortex.randomization_type = EntranceType.ONE_WAY
+            level_flyin_from_portal = level_region.create_er_target(f"{level_name} Fly-in")
+            level_flyin_from_portal.randomization_type = EntranceType.ONE_WAY
+            level_flyin_from_portal.access_rule = (
                 lambda state, level_name=level_name: state.has(
                     level_name, player
                 )
             )
-            level_entrances.append(level_flyin)
+            level_entrances.append(level_flyin_from_portal.name)
+            level_vortex_to_portal = level_region.create_exit(f"{level_name} Fly-in")
+            level_vortex_to_portal.randomization_type = EntranceType.ONE_WAY
         _ = hub_region.connect(balloonist_menu, f"{hub_name} Balloonist")
         _ = balloonist_menu.connect(
                 hub_region, f"Balloonist to {hub_name}", lambda state,
