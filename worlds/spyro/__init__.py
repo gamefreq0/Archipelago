@@ -1,14 +1,15 @@
 from typing import final, override
 
-from BaseClasses import Item, Location, MultiWorld, Tutorial
+from BaseClasses import Entrance, Item, Location, MultiWorld, Tutorial
 from BaseClasses import ItemClassification
+from entrance_rando import randomize_entrances
 from ..AutoWorld import World, WebWorld
 from .Client import SpyroClient
 from .Items import SpyroItem, filler_items, item_table, grouped_items
 from .Items import homeworld_access, level_access, boss_items, trap_items
 from .Locations import SpyroLocation, location_table, grouped_locations
 from .Options import SpyroOptions
-from .Regions import create_regions
+from .Regions import create_regions, level_entrances, hub_portals
 
 
 @final
@@ -68,7 +69,6 @@ class SpyroWorld(World):
                 self.options.starting_world.value
             ):
                 self.push_precollected(self.create_item(name))
-                print(name)
             else:
                 self.itempool += [self.create_item(name)]
         for name in level_access:
@@ -99,3 +99,35 @@ class SpyroWorld(World):
             self.itempool += [self.create_item(random_filler)]
 
         self.multiworld.itempool += self.itempool
+
+    @override
+    def connect_entrances(self) -> None:
+        if self.options.portal_shuffle:
+            shuffled_entrances = randomize_entrances(
+                self, True, {0: [0]}, False
+            )
+            for pairing in shuffled_entrances.pairings:
+                print(pairing)
+        else:
+            all_entrances = self.get_entrances()
+            all_ents_list: list[Entrance] = []
+            for entrance in all_entrances:
+                all_ents_list.append(entrance)
+            levels_start: int = 0
+            levels_stop: int = 0
+            for index, ent in enumerate(all_ents_list):
+                if ("Stone Hill" in ent.name) and (levels_start == 0):
+                    levels_start = index
+                elif ("Gnasty's Loot" in ent.name):
+                    levels_stop = index
+            vanilla_pairs: list[tuple[Entrance, Entrance]] = []
+            for index in range(levels_start, levels_stop, 2):
+                vanilla_pairs.append(
+                    (all_ents_list[index], all_ents_list[index + 1])
+                )
+            for pair in vanilla_pairs:
+                if (pair[0].parent_region is not None) and (
+                    pair[1].parent_region is not None
+                ):
+                    pair[0].connect(pair[1].parent_region)
+                    pair[1].connect(pair[0].parent_region)
