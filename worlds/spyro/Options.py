@@ -21,19 +21,20 @@ class GoalOption(Choice):
 @final
 class StartingHomeworldOption(Choice):
     """Choose which homeworld to start in.
-    artisans: Start in the Artisans
-    keepers: Start in Peace Keepers
-    crafters: Start in Magic Crafters
-    makers: Start in Beast Makers
-    weavers: Start in Dream Weavers
+    Options are:
+    artisans
+    peace_keepers
+    magic_crafters
+    beast_makers
+    dream_weavers
     """
 
     display_name = "Starting Homeworld"
     option_artisans = 0x00
-    option_keepers = 0x01
-    option_crafters = 0x02
-    option_makers = 0x03
-    option_weavers = 0x04
+    option_peace_keepers = 0x01
+    option_magic_crafters = 0x02
+    option_beast_makers = 0x03
+    option_dream_weavers = 0x04
     default = option_artisans
 
 
