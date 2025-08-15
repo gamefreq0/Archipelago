@@ -1,7 +1,7 @@
 from typing import final
 from BaseClasses import Item
 
-base_spyro_item_id = 1000
+BASE_SPYRO_ITEM_ID = 1000
 
 
 @final
@@ -64,8 +64,9 @@ filler_items = [
     "Butterfly"
 ]
 
-full_item_list = homeworld_access + level_access + boss_items + trap_items + filler_items
-item_table = dict(enumerate(full_item_list, start=base_spyro_item_id))
+full_item_list = homeworld_access + level_access + boss_items
+full_item_list += trap_items + filler_items
+item_table = dict(enumerate(full_item_list, start=BASE_SPYRO_ITEM_ID))
 
 grouped_items = {
     "worlds": set(homeworld_access),
