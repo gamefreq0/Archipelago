@@ -1,7 +1,7 @@
 from typing import final
 
 from dataclasses import dataclass
-from Options import Choice, DeathLink, PerGameCommonOptions, FreeText
+from Options import Choice, DeathLink, PerGameCommonOptions, FreeText, Toggle
 
 
 @final
@@ -36,6 +36,13 @@ class StartingHomeworldOption(Choice):
     option_beast_makers = 0x03
     option_dream_weavers = 0x04
     default = option_artisans
+
+
+@final
+class PortalShuffle(Toggle):
+    """If enabled, where a portal leads to is shuffled."""
+    display_name = "Portal Shuffle"
+    default = False
 
 
 @final
