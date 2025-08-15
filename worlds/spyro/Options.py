@@ -39,7 +39,7 @@ class StartingHomeworldOption(Choice):
 
 
 @final
-class PortalShuffle(Toggle):
+class PortalShuffleOption(Toggle):
     """If enabled, where a portal leads to is shuffled."""
     display_name = "Portal Shuffle"
     default = False
@@ -60,5 +60,6 @@ class SpyroColorOption(FreeText):
 class SpyroOptions(PerGameCommonOptions):
     goal: GoalOption
     starting_world: StartingHomeworldOption
+    portal_shuffle: PortalShuffleOption
     spyro_color: SpyroColorOption
     death_link: DeathLink
