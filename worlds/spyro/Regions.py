@@ -1,7 +1,7 @@
-from os import name
 from typing import TYPE_CHECKING
 
-from BaseClasses import Region
+from BaseClasses import Entrance, Region
+from worlds.spyro.Items import boss_items
 
 from .Locations import SpyroLocation, location_table
 
@@ -9,6 +9,52 @@ if TYPE_CHECKING:
     from . import SpyroWorld
 
 # TODO: Handle entrances for level shuffle
+
+hub_names: dict[str, list[str]]
+
+hub_names = {
+    "Artisans": [
+        "Stone Hill",
+        "Dark Hollow",
+        "Town Square",
+        "Toasty",
+        "Sunny Flight"
+    ],
+    "Peace Keepers": [
+        "Dry Canyon",
+        "Cliff Town",
+        "Ice Cavern",
+        "Doctor Shemp",
+        "Night Flight"
+    ],
+    "Magic Crafters": [
+        "Alpine Ridge",
+        "High Caves",
+        "Wizard Peak",
+        "Blowhard",
+        "Crystal Flight"
+    ],
+    "Beast Makers": [
+        "Terrace Village",
+        "Misty Bog",
+        "Tree Tops",
+        "Metalhead",
+        "Wild Flight"
+    ],
+    "Dream Weavers": [
+        "Dark Passage",
+        "Lofty Castle",
+        "Haunted Towers",
+        "Jacques",
+        "Icy Flight"
+    ],
+    "Gnasty's World": [
+        "Gnorc Cove",
+        "Twilight Harbor",
+        "Gnasty Gnorc",
+        "Gnasty's Loot"
+    ]
+}
 
 
 def create_regions(world: "SpyroWorld"):
@@ -20,91 +66,69 @@ def create_regions(world: "SpyroWorld"):
     menu = Region("Menu", player, multiworld)
 
     # Start of level/world regions. Anywhere accessible upon spawning within.
-    hub_artisans = Region("Artisans", player, multiworld)
-    level_stone_hill = Region("Stone Hill", player, multiworld)
-    level_dark_hollow = Region("Dark Hollow", player, multiworld)
-    level_town_square = Region("Town Square", player, multiworld)
-    level_toasty = Region("Toasty", player, multiworld)
-    level_sunny_flight = Region("Sunny Flight", player, multiworld)
+    hub_regions: dict[str, Region] = {}
+    level_regions: dict[str, Region] = {}
+    for hub in hub_names.items():
+        hub_name, level_names = hub
+        hub_regions[hub_name] = Region(hub_name, player, multiworld)
+        for level_name in level_names:
+            level_regions[level_name] = Region(level_name, player, multiworld)
 
-    hub_keepers = Region("Peace Keepers", player, multiworld)
-    level_dry_canyon = Region("Dry Canyon", player, multiworld)
-    level_cliff_town = Region("Cliff Town", player, multiworld)
-    level_ice_cavern = Region("Ice Cavern", player, multiworld)
-    level_doctor_shemp = Region("Doctor Shemp", player, multiworld)
-    level_night_flight = Region("Night Flight", player, multiworld)
+    main_world = Region("Global Stats", player, multiworld)
 
-    hub_crafters = Region("Magic Crafters", player, multiworld)
-    level_alpine_ridge = Region("Alpine Ridge", player, multiworld)
-    level_high_caves = Region("High Caves", player, multiworld)
-    level_wizard_peak = Region("Wizard Peak", player, multiworld)
-    level_blowhard = Region("Blowhard", player, multiworld)
-    level_crystal_flight = Region("Crystal Flight", player, multiworld)
+    balloonist_menu = Region("Balloonist Menu", player, multiworld)
 
-    hub_makers = Region("Beast Makers", player, multiworld)
-    level_terrace_village = Region("Terrace Village", player, multiworld)
-    level_misty_bog = Region("Misty Bog", player, multiworld)
-    level_tree_tops = Region("Tree Tops", player, multiworld)
-    level_metalhead = Region("Metalhead", player, multiworld)
-    level_wild_flight = Region("Wild Flight", player, multiworld)
-
-    hub_weavers = Region("Dream Weavers", player, multiworld)
-    level_dark_passage = Region("Dark Passage", player, multiworld)
-    level_lofty_castle = Region("Lofty Castle", player, multiworld)
-    level_haunted_towers = Region("Haunted Towers", player, multiworld)
-    level_jacques = Region("Jacques", player, multiworld)
-    level_icy_flight = Region("Icy Flight", player, multiworld)
-
-    hub_gnasty = Region("Gnasty's World", player, multiworld)
-    level_gnorc_cove = Region("Gnorc Cove", player, multiworld)
-    level_twilight_harbor = Region("Twilight Harbor", player, multiworld)
-    level_gnasty_gnorc = Region("Gnasty Gnorc", player, multiworld)
-    level_loot = Region("Gnasty's Loot", player, multiworld)
-
-    regions = [
+    regions: list[Region] = [
         menu,
-        hub_artisans, level_stone_hill, level_dark_hollow, level_town_square, level_toasty, level_sunny_flight,
-        hub_keepers, level_dry_canyon, level_cliff_town, level_ice_cavern, level_doctor_shemp, level_night_flight,
-        hub_crafters, level_alpine_ridge, level_high_caves, level_wizard_peak, level_blowhard, level_crystal_flight,
-        hub_makers, level_terrace_village, level_misty_bog, level_tree_tops, level_metalhead, level_wild_flight,
-        hub_weavers, level_dark_passage, level_lofty_castle, level_haunted_towers, level_jacques, level_icy_flight,
-        hub_gnasty, level_gnorc_cove, level_twilight_harbor, level_gnasty_gnorc, level_loot
+        main_world, balloonist_menu
     ]
+
+    for hub in hub_regions.items():
+        hub_name, hub_region = hub
+        regions.append(hub_region)
+    for level in level_regions.items():
+        level_name, level_region = level
+        regions.append(level_region)
 
     # Add matching locations to their level region. This will be very manual if move shuffle becomes a thing, because
     # not all locations will be accessible from the start of the level. Oh, joy.
     for region in regions:
         if region != menu:
             for location in location_table:
-                if region.name in location_table[location]:
-                    region.locations.append(SpyroLocation(world.player, location_table[location]))
+                if (region.name in location_table[location]):
+                    region.locations.append(SpyroLocation(
+                        player, location_table[location], None, region
+                    ))
+                elif (region == main_world) and (
+                    "00 Gems" in location_table[location]
+                ):
+                    region.locations.append(SpyroLocation(
+                        player, location_table[location], None, region
+                    ))
 
     # TODO: Create regions within levels for move shuffle eventually.
-    # TODO: Move following bit elsewhere for ER, to account for the disconnect between starting area and
-    # ability to actually reach the balloonist. Won't matter until move shuffle, though.
 
-    _ = menu.add_exits(
-            {hub_artisans.name: "Balloonist"},
-            {hub_artisans.name: lambda state: state.has(hub_artisans.name, world.player)}
-        )
-    _ = menu.add_exits(
-            {hub_keepers.name: "Balloonist"},
-            {hub_keepers.name: lambda state: state.has(hub_keepers.name, world.player)}
-        )
-    _ = menu.add_exits(
-            {hub_crafters.name: "Balloonist"},
-            {hub_crafters.name: lambda state: state.has(hub_crafters.name, world.player)}
-        )
-    _ = menu.add_exits(
-            {hub_makers.name: "Balloonist"},
-            {hub_makers.name: lambda state: state.has(hub_makers.name, world.player)}
-        )
-    _ = menu.add_exits(
-            {hub_weavers.name: "Balloonist"},
-            {hub_weavers.name: lambda state: state.has(hub_weavers.name, world.player)}
-        )
-    _ = menu.add_exits(
-            {hub_gnasty.name: "Balloonist"},
-            {hub_gnasty.name: lambda state: state.has(hub_gnasty.name, world.player)}
-        )
     multiworld.regions.extend(regions)
+
+    starting_world_name = options.starting_world.current_key
+    starting_world_name = starting_world_name.replace("_", " ")
+    starting_world: Region = hub_regions[starting_world_name.title()]
+    _ = menu.connect(starting_world, "Starting Homeworld")
+    _ = menu.connect(main_world, "Global Stats")
+    portals: list[Entrance] = []
+    for hub in hub_regions.items():
+        hub_name, hub_region = hub
+        for level_name in hub_names[hub_name]:
+            level_region = level_regions[level_name]
+            portals.append(hub_region.connect(
+                level_region, f"{level_name} Portal"
+            ))
+        _ = hub_region.connect(balloonist_menu, f"{hub_name} Balloonist")
+        _ = balloonist_menu.connect(
+                hub_region, f"Balloonist to {hub_name}", lambda state,
+                hub_name=hub_name: state.has(hub_name, player)
+            )
+    _ = balloonist_menu.connect(
+            hub_regions["Gnasty's World"], "Balloonist to Gnorc Gnexus",
+            lambda state: state.has_all(boss_items, player)
+    )
