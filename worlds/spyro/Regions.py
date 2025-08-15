@@ -124,6 +124,11 @@ def create_regions(world: "SpyroWorld"):
             portal_to_flyin = hub_region.create_exit(f"{level_name} Portal")
             portal_to_flyin.randomization_type = EntranceType.TWO_WAY
             portal_to_flyin.randomization_group = ENTRANCE_IN
+            portal_to_flyin.access_rule = (
+                lambda state, level_name=level_name: state.has(
+                    level_name, player
+                )
+            )
             portal_from_vortex = hub_region.create_er_target(
                 f"{level_name} Portal"
             )
@@ -133,11 +138,6 @@ def create_regions(world: "SpyroWorld"):
                 f"{level_name} Fly-in"
             )
             level_flyin_from_portal.randomization_type = EntranceType.TWO_WAY
-            level_flyin_from_portal.access_rule = (
-                lambda state, level_name=level_name: state.has(
-                    level_name, player
-                )
-            )
             level_flyin_from_portal.randomization_group = ENTRANCE_OUT
             level_vortex_to_portal = level_region.create_exit(
                 f"{level_name} Fly-in"

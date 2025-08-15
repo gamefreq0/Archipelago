@@ -12,7 +12,7 @@ the Artisans from a new save file. The goal is to reach and defeat Gnasty Gnorc.
 
 ## What items and locations get shuffled?
 
-The available items grant access to levels and homeworlds. Locations include reaching each 25% threshold for a level's
+The available items grant access to portals and homeworlds. Locations include reaching each 25% threshold for a level's
 gems, every 500 gem increment of total gems collected, dragons rescued, and eggs collected.
 
 ## Which items can be in another player's world?
