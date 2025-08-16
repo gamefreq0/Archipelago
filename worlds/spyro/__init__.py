@@ -5,10 +5,10 @@ from BaseClasses import ItemClassification
 from entrance_rando import randomize_entrances
 from ..AutoWorld import World
 from .Client import SpyroClient
-from .Items import SpyroItem, filler_items, goal_item, item_table
+from .Items import BASE_SPYRO_ITEM_ID, SpyroItem, filler_items, goal_item, item_table
 from .Items import homeworld_access, level_access, boss_items, trap_items
 from .Items import grouped_items
-from .Locations import location_table, grouped_locations
+from .Locations import BASE_SPYRO_LOCATION_ID, location_table, grouped_locations
 from .Options import SpyroOptions
 from .Regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 from .Rules import set_rules
@@ -30,7 +30,14 @@ class SpyroWorld(World):
     topology_present = True
 
     item_name_to_id = {v: k for k, v in item_table.items()}
+
+    for key, value in item_name_to_id.items():
+        item_name_to_id[key] = value + BASE_SPYRO_ITEM_ID
+
     location_name_to_id = {v: k for k, v in location_table.items()}
+
+    for key, value in location_name_to_id.items():
+        location_name_to_id[key] = value + BASE_SPYRO_LOCATION_ID
 
     item_name_groups = grouped_items
     location_name_groups = grouped_locations
