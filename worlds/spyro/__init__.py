@@ -24,7 +24,9 @@ class SpyroWorld(World):
     """
     game = "Spyro the Dragon"
     options_dataclass = SpyroOptions
-    options: SpyroOptions
+    # Following ignore is for https://github.com/python/typing/discussions/1486 reasons
+    # Hopefully, eventually this becomes unnecessary
+    options: SpyroOptions  # pyright: ignore[reportIncompatibleVariableOverride]
     topology_present = True
 
     item_name_to_id = {v: k for k, v in item_table.items()}
@@ -83,7 +85,7 @@ class SpyroWorld(World):
         total_unfilled_locations = len(
             self.multiworld.get_unfilled_locations(self.player)
         )
-        total_filled_local_locations = len(self.itempool) + 1 # Victory item
+        total_filled_local_locations = len(self.itempool) + 1  # Victory item
         trap_count = round(
             (
                 total_unfilled_locations - total_filled_local_locations
@@ -100,7 +102,7 @@ class SpyroWorld(World):
         for _ in range(junk_count):
             random_filler = self.multiworld.random.choice(filler_items)
             self.itempool += [self.create_item(random_filler)]
-        
+
         if self.options.goal == "gnasty":
             # TODO: Replace goal location with beating Gnasty
             self.get_location("Gnasty Gnorc 100% Gems").place_locked_item(
@@ -128,7 +130,7 @@ class SpyroWorld(World):
             for index, ent in enumerate(all_ents_list):
                 if ("Stone Hill" in ent.name) and (levels_start == 0):
                     levels_start = index
-                elif ("Gnasty's Loot" in ent.name):
+                elif "Gnasty's Loot" in ent.name:
                     levels_stop = index
             vanilla_pairs: list[tuple[Entrance, Entrance]] = []
             for index in range(levels_start, levels_stop, 2):
