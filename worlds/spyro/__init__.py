@@ -38,6 +38,7 @@ class SpyroWorld(World):
     def __init__(self, multiworld: "MultiWorld", player: int):
         self.goal: int | None = 0
         self.itempool: list[SpyroItem] = []
+        self.shuffled_entrance_pairings: list[tuple[str, str]] = []
         super().__init__(multiworld, player)
 
     @override
@@ -120,6 +121,7 @@ class SpyroWorld(World):
                     ENTRANCE_OUT: [ENTRANCE_IN]
                 }, False
             )
+            self.shuffled_entrance_pairings = shuffled_entrances.pairings
         else:
             all_entrances = self.get_entrances()
             all_ents_list: list[Entrance] = []
