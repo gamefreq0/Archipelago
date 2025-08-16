@@ -96,15 +96,18 @@ def create_regions(world: "SpyroWorld"):
     for region in regions:
         if region != menu:
             for location in location_table:
+                location_name = location_table[location]
                 if (region.name in location_table[location]):
                     region.locations.append(SpyroLocation(
-                        player, location_table[location], None, region
+                        player, location_name,
+                        world.location_name_to_id[location_name], region
                     ))
                 elif (region == main_world) and (
                     "00 Gems" in location_table[location]
                 ):
                     region.locations.append(SpyroLocation(
-                        player, location_table[location], None, region
+                        player, location_name,
+                        world.location_name_to_id[location_name], region
                     ))
 
     # TODO: Create regions within levels for move shuffle eventually.
