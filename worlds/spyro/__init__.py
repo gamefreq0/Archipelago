@@ -142,6 +142,10 @@ class SpyroWorld(World):
             for pair in vanilla_pairs:
                 if (pair[0].parent_region is not None) and (
                     pair[1].parent_region is not None
+                ) and (
+                    pair[0].connected_region is None
+                ) and (
+                    pair[1].connected_region is None
                 ):
                     pair[0].connect(pair[1].parent_region)
                     pair[1].connect(pair[0].parent_region)
@@ -149,3 +153,13 @@ class SpyroWorld(World):
     @override
     def set_rules(self) -> None:
         set_rules(self)
+
+    @override
+    def fill_slot_data(self) -> dict[str, int | list[tuple[str, str]] | str]:
+        return {
+            "goal": self.options.goal.value,
+            "starting_world": self.options.starting_world.value,
+            "portal_shuffle": self.options.portal_shuffle.value,
+            "entrances": self.shuffled_entrance_pairings,
+            "spyro_color": self.options.spyro_color.value
+        }
