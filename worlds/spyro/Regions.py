@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from BaseClasses import Entrance, Region, EntranceType
+from BaseClasses import Region, EntranceType
 from worlds.spyro.Items import boss_items
 
 from .Locations import SpyroLocation, location_table

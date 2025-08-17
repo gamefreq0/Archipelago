@@ -5,10 +5,11 @@ from BaseClasses import ItemClassification
 from entrance_rando import randomize_entrances
 from ..AutoWorld import World
 from .Client import SpyroClient
-from .Items import BASE_SPYRO_ITEM_ID, SpyroItem, filler_items, goal_item, item_table
+from .Items import BASE_SPYRO_ITEM_ID, SpyroItem, filler_items, goal_item
 from .Items import homeworld_access, level_access, boss_items, trap_items
-from .Items import grouped_items
-from .Locations import BASE_SPYRO_LOCATION_ID, location_table, grouped_locations
+from .Items import grouped_items, item_table
+from .Locations import BASE_SPYRO_LOCATION_ID, location_table
+from .Locations import grouped_locations
 from .Options import SpyroOptions
 from .Regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 from .Rules import set_rules
