@@ -69,7 +69,7 @@ class SpyroClient(BizHawkClient):
             color_string = ctx.slot_data["spyro_color"]
             if color_string is not None:
                 color_value: int = int(color_string, 16)
-                self.slot_data_spyro_color = color_value.to_bytes(4, "little")
+                self.slot_data_spyro_color = color_value.to_bytes(4, "big")
         try:
             to_read_list: list[tuple[int, int]] = [
                 (RAM.lastReceivedArchipelagoID, 4),
