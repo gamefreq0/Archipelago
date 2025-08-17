@@ -1,19 +1,16 @@
-from collections.abc import Sequence
 import logging
+import stat
 import struct
 
-from typing import TYPE_CHECKING
-from typing import override
-from typing import final
+from typing import override, final, TYPE_CHECKING
 
-from Utils import int32_as_bytes
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
-from .Addresses import RAM
-
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
+
+from .Addresses import RAM
 
 logger = logging.getLogger("Client")
 
@@ -56,20 +53,22 @@ class SpyroClient(BizHawkClient):
         # Slot data will hold a lot of useful data for shuffling levels and etc
         ctx.want_slot_data = True
         # Setup command processor here
-        
+
         return True
 
     @override
     async def game_watcher(self, ctx: "BizHawkClientContext") -> None:
         batched_reads: list[tuple[int, int, str]] = []
-        batched_writes: list[tuple[int, int, str]] = []
         # Detect if AP connection made, bail early if not
-        if ctx.server is None or ctx.server.socket.closed or ctx.slot_data is None or ctx.auth is None:
+        if (
+            (ctx.server is None) or (ctx.server.socket.closed)
+            or (ctx.slot_data is None) or (ctx.auth is None)
+        ):
             return
         if self.slot_data_spyro_color is None:
             color_string = ctx.slot_data["spyro_color"]
             if color_string is not None:
-                color_value: int = int(f"0x{color_string}")
+                color_value: int = int(color_string, 16)
                 self.slot_data_spyro_color = color_value.to_bytes(4, "little")
         try:
             to_read_list: list[tuple[int, int]] = [
@@ -91,7 +90,7 @@ class SpyroClient(BizHawkClient):
             to_write_menu: list[tuple[int, bytes]] = []
             to_write_balloonist: list[tuple[int, bytes]] = []
 
-            if (cur_game_state == RAM.GameStates.GAMEPLAY) and (
+            if (cur_game_state == RAM.GameStates.GAMEPLAY.value) and (
                 self.slot_data_spyro_color is not None
             ) and (
                 spyro_color.to_bytes(4, "little") != self.slot_data_spyro_color
@@ -102,27 +101,28 @@ class SpyroClient(BizHawkClient):
                 to_write_ingame.append(
                     (RAM.spyroColorFilter, spyro_color.to_bytes(4, "little"))
                 )
-            if (cur_game_state == RAM.GameStates.TITLE_SCREEN):
+            if cur_game_state == RAM.GameStates.TITLE_SCREEN.value:
+
                 starting_world_value = ctx.slot_data["starting_world"]
                 if starting_world_value is not None:
                     starting_world_value += 1
                     starting_world_value *= 10
                     to_write_menu.append(
-                        (RAM.startingLevelID, starting_world_value)
+                        (RAM.startingLevelID, starting_world_value.to_bytes(1, "little"))
                     )
-            if (cur_game_state == RAM.GameStates.GAMEPLAY) and (
+            if (cur_game_state == RAM.GameStates.GAMEPLAY.value) and (
                 cur_level_id == 10
             ):
                 to_write_ingame.append(
                     (RAM.nestorUnskippable, 0x0.to_bytes(1, "little"))
                 )
 
-            await self.WriteOnState(
+            await self.write_on_state(
                 to_write_ingame,
                 RAM.GameStates.GAMEPLAY.value.to_bytes(1, "little"),
                 ctx
             )
-            await self.WriteOnState(
+            await self.write_on_state(
                 to_write_menu,
                 RAM.GameStates.TITLE_SCREEN.value.to_bytes(1, "little"),
                 ctx
@@ -131,11 +131,11 @@ class SpyroClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             pass
 
-    async def WriteOnState(
+    async def write_on_state(
         self,
         write_list: list[tuple[int, bytes]],
         state: bytes,
-        ctx: BizHawkClientContext
+        ctx: "BizHawkClientContext"
     ) -> None:
         """Does a guarded write based on the current game state.
         write_list: a list of tuples in the form of (address, bytes)
@@ -147,7 +147,9 @@ class SpyroClient(BizHawkClient):
             to_write_list.append((item[0], item[1], "MainRAM"))
         if len(write_list) > 0:
             _ = await bizhawk.guarded_write(
-                ctx.bizhawk_ctx, to_write_list, [
+                ctx.bizhawk_ctx,
+                to_write_list,
+                [
                     (
                         RAM.curGameState, state, "MainRAM"
                     )
