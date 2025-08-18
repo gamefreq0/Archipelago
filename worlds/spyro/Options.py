@@ -1,4 +1,4 @@
-from typing import final
+from typing_extensions import final
 
 from dataclasses import dataclass
 from Options import Choice, DeathLink, PerGameCommonOptions, FreeText, Toggle

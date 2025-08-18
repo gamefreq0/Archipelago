@@ -1,4 +1,4 @@
-from typing import final, override, ClassVar
+from typing_extensions import final, override, ClassVar
 
 from BaseClasses import Entrance, MultiWorld, Tutorial
 from BaseClasses import ItemClassification

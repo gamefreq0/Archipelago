@@ -1,4 +1,4 @@
-from typing import final
+from typing_extensions import final
 from BaseClasses import Item
 
 BASE_SPYRO_ITEM_ID = 1000

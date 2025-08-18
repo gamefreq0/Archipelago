@@ -1,4 +1,4 @@
-from typing import final
+from typing_extensions import final
 from BaseClasses import Location
 
 BASE_SPYRO_LOCATION_ID = 1000

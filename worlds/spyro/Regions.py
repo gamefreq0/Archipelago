@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing_extensions import TYPE_CHECKING
 
 from BaseClasses import Region, EntranceType
 from worlds.spyro.Items import boss_items

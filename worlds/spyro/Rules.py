@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing_extensions import TYPE_CHECKING
 
 from BaseClasses import Entrance
 from worlds.generic.Rules import add_rule

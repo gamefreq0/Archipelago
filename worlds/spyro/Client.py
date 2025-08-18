@@ -1,8 +1,7 @@
 import logging
-import stat
 import struct
 
-from typing import override, final, TYPE_CHECKING
+from typing_extensions import override, final, TYPE_CHECKING
 
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
