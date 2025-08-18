@@ -119,15 +119,21 @@ for level, stats in all_stats.items():
     for count in range(stats.egg_count):
         egg_locations.append(f"{level} Egg {count + 1:d}")
 
+misc_locations: list[str] = []
+misc_locations.append("Defeated Gnasty Gnorc")
+
 location_list: list[str] = []
 for d in [
     level_gem_threshold_locations.keys(), total_gem_threshold_locations.keys(),
-    dragon_locations, egg_locations
+    dragon_locations, egg_locations, misc_locations
 ]:
     for item in d:
         location_list.append(item)
 
-location_table = dict(enumerate(location_list))
+location_id_to_name = dict(
+    enumerate(location_list, start=BASE_SPYRO_LOCATION_ID)
+)
+location_name_to_id = {v: k for k, v in location_id_to_name.items()}
 
 flight_levels = {
     "Sunny Flight",

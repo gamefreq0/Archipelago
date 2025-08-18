@@ -3,7 +3,7 @@ from typing_extensions import TYPE_CHECKING
 from BaseClasses import Region, EntranceType
 from worlds.spyro.Items import boss_items
 
-from .Locations import SpyroLocation, location_table
+from .Locations import SpyroLocation, location_name_to_id
 
 if TYPE_CHECKING:
     from . import SpyroWorld
@@ -95,20 +95,21 @@ def create_regions(world: "SpyroWorld"):
     # not all locations will be accessible from the start of the level. Oh, joy.
     for region in regions:
         if region != menu:
-            for location in location_table:
-                location_name = location_table[location]
-                if (region.name in location_table[location]):
+            for location_name, location_id in location_name_to_id.items():
+                if region.name in location_name:
                     region.locations.append(SpyroLocation(
-                        player, location_name,
-                        world.location_name_to_id[location_name], region
+                        player, location_name, location_id, region
                     ))
                 elif (region == main_world) and (
-                    "00 Gems" in location_table[location]
+                    "00 Gems" in location_name
                 ):
                     region.locations.append(SpyroLocation(
-                        player, location_name,
-                        world.location_name_to_id[location_name], region
+                        player, location_name, location_id, region
                     ))
+
+    world.get_location(
+        "Defeated Gnasty Gnorc"
+    ).parent_region = level_regions["Gnasty Gnorc"]
 
     # TODO: Create regions within levels for move shuffle eventually.
 

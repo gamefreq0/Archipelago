@@ -3,6 +3,7 @@ import struct
 
 from typing_extensions import override, final, TYPE_CHECKING
 
+from NetUtils import ClientStatus
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
@@ -10,6 +11,8 @@ if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 
 from .Addresses import RAM
+from .Locations import location_name_to_id
+from .Items import item_id_to_name
 
 logger = logging.getLogger("Client")
 
@@ -64,17 +67,35 @@ class SpyroClient(BizHawkClient):
             or (ctx.slot_data is None) or (ctx.auth is None)
         ):
             return
+        if ctx.watcher_timeout != 0.125:
+            # Hopefully this runs the first time. Good place for init stuff, if so
+            # Might break in the future, even if it does.
+            # TODO: replace with own bool
+            ctx.watcher_timeout = 0.125
+        for item in ctx.items_received:
+            match item_id_to_name[item.item]:
+                case "Victory":
+                    await ctx.send_msgs([{
+                        "cmd": "StatusUpdate",
+                        "status": ClientStatus.CLIENT_GOAL
+                    }])
+                case _:
+                    pass
         if self.slot_data_spyro_color is None:
             color_string = ctx.slot_data["spyro_color"]
             if color_string is not None:
                 color_value: int = int(color_string, 16)
-                self.slot_data_spyro_color = color_value.to_bytes(4, "big")
+                self.slot_data_spyro_color = color_value.to_bytes(
+                    4, byteorder="big"
+                )
         try:
             to_read_list: list[tuple[int, int]] = [
                 (RAM.lastReceivedArchipelagoID, 4),
                 (RAM.curGameState, 1),
                 (RAM.curLevelID, 1),
-                (RAM.spyroColorFilter, 4)
+                (RAM.spyroColorFilter, 4),
+                (RAM.gnastyAnimFlag, 1),
+                (RAM.unlockedWorlds, 6)
             ]
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
@@ -84,6 +105,18 @@ class SpyroClient(BizHawkClient):
             cur_game_state = int.from_bytes(ram_data[1], byteorder="little")
             cur_level_id = int.from_bytes(ram_data[2], byteorder="little")
             spyro_color = int.from_bytes(ram_data[3], byteorder="little")
+            gnasty_anim_flag = int.from_bytes(ram_data[4], byteorder="little")
+            unlocked_worlds = ram_data[5]
+
+            if (
+                (cur_game_state == RAM.GameStates.GAMEPLAY.value)
+                and (cur_level_id == RAM.LevelIDs.GNASTY_GNORC.value)
+                and (gnasty_anim_flag == RAM.GNASTY_DEFEATED)
+            ):
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": [location_name_to_id["Defeated Gnasty Gnorc"]]
+                }])
 
             to_write_ingame: list[tuple[int, bytes]] = []
             to_write_menu: list[tuple[int, bytes]] = []
@@ -99,6 +132,13 @@ class SpyroClient(BizHawkClient):
                 )
                 to_write_ingame.append(
                     (RAM.spyroColorFilter, spyro_color.to_bytes(4, "little"))
+                )
+            if (
+                (cur_game_state == RAM.GameStates.GAMEPLAY.value)
+                and (unlocked_worlds.count(bytes([0])) > 1)
+            ):
+                to_write_ingame.append(
+                    (RAM.unlockedWorlds, bytes([2, 2, 2, 2, 2, 2]))
                 )
             if cur_game_state == RAM.GameStates.TITLE_SCREEN.value:
 

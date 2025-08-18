@@ -5,10 +5,10 @@ from BaseClasses import ItemClassification
 from entrance_rando import randomize_entrances
 from ..AutoWorld import WebWorld, World
 from .Client import SpyroClient
-from .Items import BASE_SPYRO_ITEM_ID, SpyroItem, filler_items, goal_item
+from .Items import SpyroItem, filler_items, goal_item
 from .Items import homeworld_access, level_access, boss_items, trap_items
-from .Items import grouped_items, item_table
-from .Locations import BASE_SPYRO_LOCATION_ID, location_table
+from .Items import grouped_items, item_name_to_id
+from .Locations import location_name_to_id
 from .Locations import grouped_locations
 from .Options import SpyroOptions
 from .Regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
@@ -47,15 +47,9 @@ class SpyroWorld(World):
     options: SpyroOptions  # pyright: ignore[reportIncompatibleVariableOverride]
     topology_present = True
 
-    item_name_to_id = {v: k for k, v in item_table.items()}
+    item_name_to_id = item_name_to_id
 
-    for key, value in item_name_to_id.items():
-        item_name_to_id[key] = value + BASE_SPYRO_ITEM_ID
-
-    location_name_to_id = {v: k for k, v in location_table.items()}
-
-    for key, value in location_name_to_id.items():
-        location_name_to_id[key] = value + BASE_SPYRO_LOCATION_ID
+    location_name_to_id = location_name_to_id
 
     item_name_groups = grouped_items
     location_name_groups = grouped_locations
@@ -130,8 +124,7 @@ class SpyroWorld(World):
             self.itempool += [self.create_item(random_filler)]
 
         if self.options.goal == "gnasty":
-            # TODO: Replace goal location with beating Gnasty
-            self.get_location("Gnasty Gnorc 100% Gems").place_locked_item(
+            self.get_location("Defeated Gnasty Gnorc").place_locked_item(
                 victory
             )
 

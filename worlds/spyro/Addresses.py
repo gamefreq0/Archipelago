@@ -13,6 +13,8 @@ class RAM:
     unlockedWorlds: int = 0x758d0
     startingLevelID: int = 0x2d4f0
     """Which level you start in after the intro cutscene."""
+    gnastyAnimFlag: int = 0x160f08
+    GNASTY_DEFEATED: int = 0x08
 
     class WorldTextOffsets(Enum):
         """RAM offsets for world names"""
@@ -51,3 +53,11 @@ class RAM:
         TITLE_SCREEN = 0x0d
         CUTSCENE = 0x0e
         CREDITS = 0x0f
+
+    class LevelIDs(Enum):
+        """The internal IDs of the levels in Spyro"""
+        ARTISANS = 10
+        STONE_HILL = 11
+        PEACE_KEEPERS = 20
+        GNASTYS_WORLD = 60
+        GNASTY_GNORC = 63
