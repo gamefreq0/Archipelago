@@ -129,26 +129,30 @@ for d in [
 
 location_table = dict(enumerate(location_list))
 
-flight_levels = [
+flight_levels = {
     "Sunny Flight",
     "Night Flight",
     "Crystal Flight",
     "Wild Flight",
     "Icy Flight"
-]
-boss_levels = [
+}
+boss_levels = {
     "Toasty",
     "Doctor Shemp",
     "Blowhard",
     "Metalhead",
     "Jacques",
     "Gnasty Gnorc"
-]
-grouped_locations = {
+}
+meta_groups = {
     "flight levels": set(flight_levels),
     "boss levels": set(boss_levels)
 }
 level_groups: dict[str, set[str]] = {}
+grouped_locations: dict[str, set[str]] = {}
+for meta_group in meta_groups:
+    # Initialize these so we can just .update() them later
+    grouped_locations[meta_group] = set()
 for level_name, _ in all_stats.items():
     cur_level_list: set[str] = set()
     for location in location_list:
@@ -156,4 +160,7 @@ for level_name, _ in all_stats.items():
             cur_level_list.add(location)
     level_groups[level_name] = cur_level_list
 for level, locations in level_groups.items():
+    for meta_group, level_group in meta_groups.items():
+        if level in level_group:
+            grouped_locations[meta_group].update(locations)
     grouped_locations[level] = locations
