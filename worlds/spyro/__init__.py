@@ -1,9 +1,9 @@
-from typing import final, override
+from typing import final, override, ClassVar
 
-from BaseClasses import Entrance, MultiWorld
+from BaseClasses import Entrance, MultiWorld, Tutorial
 from BaseClasses import ItemClassification
 from entrance_rando import randomize_entrances
-from ..AutoWorld import World
+from ..AutoWorld import WebWorld, World
 from .Client import SpyroClient
 from .Items import BASE_SPYRO_ITEM_ID, SpyroItem, filler_items, goal_item
 from .Items import homeworld_access, level_access, boss_items, trap_items
@@ -16,6 +16,22 @@ from .Rules import set_rules
 
 
 @final
+class SpyroWeb(WebWorld):
+    theme = "grass"
+
+    setup_en = Tutorial(
+        "Spyro the Dragon Multiworld Setup Guide",
+        "A guide to setting up Spyro the Dragon in Archipelago",
+        "English",
+        "guide_en.md",
+        "setup/en",
+        ["gamefreq0"]
+    )
+
+    tutorials = [setup_en]
+
+
+@final
 class SpyroWorld(World):
     """
     Spyro the Dragon, originally released on the PS1 in 1998, is a 3D collectathon platform starring the titular
@@ -24,6 +40,7 @@ class SpyroWorld(World):
     to Gnorc Gnexus to torch Gnasty and save the world of dragons.
     """
     game = "Spyro the Dragon"
+    web: ClassVar[WebWorld] = SpyroWeb()
     options_dataclass = SpyroOptions
     # Following ignore is for https://github.com/python/typing/discussions/1486 reasons
     # Hopefully, eventually this becomes unnecessary
