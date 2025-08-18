@@ -127,7 +127,7 @@ for d in [
     for item in d:
         location_list.append(item)
 
-location_table = dict(enumerate(location_list, start=BASE_SPYRO_LOCATION_ID))
+location_table = dict(enumerate(location_list))
 
 flight_levels = [
     "Sunny Flight",
