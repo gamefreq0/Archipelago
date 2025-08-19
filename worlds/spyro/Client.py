@@ -10,7 +10,7 @@ from worlds._bizhawk.client import BizHawkClient
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 
-from .Addresses import RAM
+from .Addresses import RAM, menu_lookup
 from .Locations import location_name_to_id
 from .Items import item_id_to_name
 
@@ -219,37 +219,71 @@ class SpyroClient(BizHawkClient):
                         to_write_balloonist.append(
                             (RAM.artisansBalloonPointers[1], b'\x08\xf0')
                         )
-                        if (balloonist_choice != 0) and (balloonist_choice < 5):
-                            if self.ap_unlocked_worlds[balloonist_choice]:
-                                for item in self.balloonist_helper(
-                                    b'\x1f', balloonist_choice.to_bytes(
-                                        1, byteorder="little"
-                                    )
-                                ):
-                                    to_write_balloonist.append(item)
-                            else:
-                                for item in self.balloonist_helper(
-                                    b'\x00', b'\x00'
-                                ):
-                                    to_write_balloonist.append(item)
-                        elif balloonist_choice == 5:
-                            if self.boss_items.count(True) == 5:
-                                for item in self.balloonist_helper(
-                                    b'\x1f', balloonist_choice.to_bytes(
-                                        1, byteorder="little"
-                                    )
-                                ):
-                                    to_write_balloonist.append(item)
-                            else:
-                                for item in self.balloonist_helper(
-                                    b'\x00', b'\x00'
-                                ):
-                                    to_write_balloonist.append(item)
-                        else:
-                            for item in self.balloonist_helper(
-                                b'\x1f', b'\x00'
-                            ):
-                                to_write_balloonist.append(item)
+                        mapped_choice = menu_lookup(0, balloonist_choice)
+                        for item in self.set_balloonist_unlocks(
+                            mapped_choice, balloonist_choice
+                        ):
+                            to_write_balloonist.append(item)
+                    case RAM.LevelIDs.PEACE_KEEPERS.value:
+                        to_write_balloonist.append(
+                            (RAM.keepersBalloonPointers[0], b'\x01')
+                        )
+                        to_write_balloonist.append(
+                            (RAM.keepersBalloonPointers[1], b'\x08\xf0')
+                        )
+                        mapped_choice = menu_lookup(1, balloonist_choice)
+                        for item in self.set_balloonist_unlocks(
+                            mapped_choice, balloonist_choice
+                        ):
+                            to_write_balloonist.append(item)
+                    case RAM.LevelIDs.MAGIC_CRAFTERS.value:
+                        to_write_balloonist.append(
+                            (RAM.craftersBalloonPointers[0], b'\x01')
+                        )
+                        to_write_balloonist.append(
+                            (RAM.craftersBalloonPointers[1], b'\x08\xf0')
+                        )
+                        mapped_choice = menu_lookup(2, balloonist_choice)
+                        for item in self.set_balloonist_unlocks(
+                            mapped_choice, balloonist_choice
+                        ):
+                            to_write_balloonist.append(item)
+                    case RAM.LevelIDs.BEAST_MAKERS.value:
+                        to_write_balloonist.append(
+                            (RAM.makersBalloonPointers[0], b'\x01')
+                        )
+                        to_write_balloonist.append(
+                            (RAM.makersBalloonPointers[1], b'\x08\xf0')
+                        )
+                        mapped_choice = menu_lookup(3, balloonist_choice)
+                        for item in self.set_balloonist_unlocks(
+                            mapped_choice, balloonist_choice
+                        ):
+                            to_write_balloonist.append(item)
+                    case RAM.LevelIDs.DREAM_WEAVERS.value:
+                        to_write_balloonist.append(
+                            (RAM.weaversBalloonPointers[0], b'\x01')
+                        )
+                        to_write_balloonist.append(
+                            (RAM.weaversBalloonPointers[1], b'\x08\xf0')
+                        )
+                        mapped_choice = menu_lookup(4, balloonist_choice)
+                        for item in self.set_balloonist_unlocks(
+                            mapped_choice, balloonist_choice
+                        ):
+                            to_write_balloonist.append(item)
+                    case RAM.LevelIDs.GNASTYS_WORLD.value:
+                        to_write_balloonist.append(
+                            (RAM.gnastyBalloonPointers[0], b'\x01')
+                        )
+                        to_write_balloonist.append(
+                            (RAM.gnastyBalloonPointers[1], b'\x08\xf0')
+                        )
+                        mapped_choice = menu_lookup(5, balloonist_choice)
+                        for item in self.set_balloonist_unlocks(
+                            mapped_choice, balloonist_choice
+                        ):
+                            to_write_balloonist.append(item)
                     case _:
                         pass
 
@@ -276,6 +310,43 @@ class SpyroClient(BizHawkClient):
         result: list[tuple[int, bytes]] = []
         result.append((RAM.fakeTimer, allow))
         result.append((RAM.lastSelectedValidChoice, choice))
+        return result
+
+    def set_balloonist_unlocks(
+        self, mapped_choice: int, raw_choice: int
+    ) -> list[tuple[int, bytes]]:
+        result: list[tuple[int, bytes]] = []
+        if (mapped_choice != -1) and (mapped_choice < 5):
+            if self.ap_unlocked_worlds[mapped_choice]:
+                for item in self.balloonist_helper(
+                    b'\x1f', raw_choice.to_bytes(
+                        1, byteorder="little"
+                    )
+                ):
+                    result.append(item)
+            else:
+                for item in self.balloonist_helper(
+                    b'\x00', b'\x00'
+                ):
+                    result.append(item)
+        elif mapped_choice == 5:
+            if self.boss_items.count(True) == 5:
+                for item in self.balloonist_helper(
+                    b'\x1f', raw_choice.to_bytes(
+                        1, byteorder="little"
+                    )
+                ):
+                    result.append(item)
+            else:
+                for item in self.balloonist_helper(
+                    b'\x00', b'\x00'
+                ):
+                    result.append(item)
+        else:
+            for item in self.balloonist_helper(
+                b'\x1f', b'\x00'
+            ):
+                result.append(item)
         return result
 
     async def write_on_state(
