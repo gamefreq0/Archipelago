@@ -6,6 +6,14 @@ class RAM:
     unusedSpace: int = 0x0f000  # At least, it seems unused. Test...
     lastReceivedArchipelagoID: int = unusedSpace + 4
     """The ID of the last item the game has been given. Useful for save state issues and such."""
+    fakeTimer: int = unusedSpace + 8
+    lastSelectedValidChoice: int = unusedSpace + 12
+    artisansBalloonPointers: list[int] = [0x7bc04, 0x7bc08]
+    keepersBalloonPointers: list[int] = [0x7c5dc, 0x7c5e0]
+    craftersBalloonPointers: list[int] = [0x7c5d4, 0x7c5d8]
+    makersBalloonPointers: list[int] = [0x7c3c8, 0x7c3cc]
+    weaversBalloonPointers: list[int] = [0x7c5fc, 0x7c600]
+    gnastyBalloonPointers: list[int] = [0x7bb74, 0x7bb78]
     curLevelID: int = 0x7596c
     destLevelID: int = 0x758b4
     curGameState: int = 0x757d8

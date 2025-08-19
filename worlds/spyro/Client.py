@@ -118,7 +118,8 @@ class SpyroClient(BizHawkClient):
                 (RAM.curLevelID, 1),
                 (RAM.spyroColorFilter, 4),
                 (RAM.gnastyAnimFlag, 1),
-                (RAM.unlockedWorlds, 6)
+                (RAM.unlockedWorlds, 6),
+                (RAM.balloonistMenuChoice, 1)
             ]
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
@@ -130,6 +131,7 @@ class SpyroClient(BizHawkClient):
             spyro_color = int.from_bytes(ram_data[3], byteorder="little")
             gnasty_anim_flag = int.from_bytes(ram_data[4], byteorder="little")
             unlocked_worlds = ram_data[5]
+            balloonist_choice = int.from_bytes(ram_data[6], byteorder="little")
 
             if (
                 (cur_game_state == RAM.GameStates.GAMEPLAY.value)
@@ -179,6 +181,7 @@ class SpyroClient(BizHawkClient):
                     (RAM.nestorUnskippable, 0x0.to_bytes(1, "little"))
                 )
             if cur_game_state == RAM.GameStates.BALLOONIST.value:
+                # Hide world names if inaccessible
                 byte_val = b'A' if self.ap_unlocked_worlds[0] else b'\x00'
                 to_write_balloonist.append(
                     (RAM.WorldTextOffsets.ARTISANS.value, byte_val)
@@ -203,6 +206,52 @@ class SpyroClient(BizHawkClient):
                 to_write_balloonist.append(
                     (RAM.WorldTextOffsets.GNASTY.value, byte_val)
                 )
+                # Prevent access to inaccessible worlds
+                match cur_level_id:
+                    case RAM.LevelIDs.ARTISANS.value:
+                        # Change pointers to point at our reserved spot
+                        # Gotta add 1 to the upper byte, because the high bit
+                        # of the lower word is high, so it interprets the
+                        # second instruction's offset as signed negative
+                        to_write_balloonist.append(
+                            (RAM.artisansBalloonPointers[0], b'\x01')
+                        )
+                        to_write_balloonist.append(
+                            (RAM.artisansBalloonPointers[1], b'\x08\xf0')
+                        )
+                        if (balloonist_choice != 0) and (balloonist_choice < 5):
+                            if self.ap_unlocked_worlds[balloonist_choice]:
+                                for item in self.balloonist_helper(
+                                    b'\x1f', balloonist_choice.to_bytes(
+                                        1, byteorder="little"
+                                    )
+                                ):
+                                    to_write_balloonist.append(item)
+                            else:
+                                for item in self.balloonist_helper(
+                                    b'\x00', b'\x00'
+                                ):
+                                    to_write_balloonist.append(item)
+                        elif balloonist_choice == 5:
+                            if self.boss_items.count(True) == 5:
+                                for item in self.balloonist_helper(
+                                    b'\x1f', balloonist_choice.to_bytes(
+                                        1, byteorder="little"
+                                    )
+                                ):
+                                    to_write_balloonist.append(item)
+                            else:
+                                for item in self.balloonist_helper(
+                                    b'\x00', b'\x00'
+                                ):
+                                    to_write_balloonist.append(item)
+                        else:
+                            for item in self.balloonist_helper(
+                                b'\x1f', b'\x00'
+                            ):
+                                to_write_balloonist.append(item)
+                    case _:
+                        pass
 
             await self.write_on_state(
                 to_write_ingame,
@@ -222,6 +271,12 @@ class SpyroClient(BizHawkClient):
 
         except bizhawk.RequestFailedError:
             pass
+
+    def balloonist_helper(self, allow: bytes, choice: bytes) -> list[tuple[int, bytes]]:
+        result: list[tuple[int, bytes]] = []
+        result.append((RAM.fakeTimer, allow))
+        result.append((RAM.lastSelectedValidChoice, choice))
+        return result
 
     async def write_on_state(
         self,
