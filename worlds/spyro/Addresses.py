@@ -67,5 +67,14 @@ class RAM:
         ARTISANS = 10
         STONE_HILL = 11
         PEACE_KEEPERS = 20
+        MAGIC_CRAFTERS = 30
+        BEAST_MAKERS = 40
+        DREAM_WEAVERS = 50
         GNASTYS_WORLD = 60
         GNASTY_GNORC = 63
+
+
+def menu_lookup(current_world_num: int, menu_choice: int) -> int:
+    if menu_choice > current_world_num:
+        return menu_choice
+    return menu_choice - 1
