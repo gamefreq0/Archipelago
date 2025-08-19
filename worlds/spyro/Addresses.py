@@ -4,7 +4,7 @@ from enum import Enum
 class RAM:
     """A handy collection of memory values and addresses for Spyro"""
     unusedSpace: int = 0x0f000  # At least, it seems unused. Test...
-    lastReceivedArchipelagoID: int = unusedSpace + 0x4
+    lastReceivedArchipelagoID: int = unusedSpace + 4
     """The ID of the last item the game has been given. Useful for save state issues and such."""
     curLevelID: int = 0x7596c
     destLevelID: int = 0x758b4

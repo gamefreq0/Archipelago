@@ -26,6 +26,9 @@ class SpyroClient(BizHawkClient):
     local_checked_locations: set[int] = set()
     slot_data_spyro_color: bytes | None = None
 
+    ap_unlocked_worlds: list[bool] = [False, False, False, False, False]
+    boss_items: list[bool] = [False, False, False, False, False]
+
     @override
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
         spyro_id: bytes = struct.pack("<17s", b"BASCUS-94228SPYRO")
@@ -79,6 +82,26 @@ class SpyroClient(BizHawkClient):
                         "cmd": "StatusUpdate",
                         "status": ClientStatus.CLIENT_GOAL
                     }])
+                case "Artisans":
+                    self.ap_unlocked_worlds[0] = True
+                case "Peace Keepers":
+                    self.ap_unlocked_worlds[1] = True
+                case "Magic Crafters":
+                    self.ap_unlocked_worlds[2] = True
+                case "Beast Makers":
+                    self.ap_unlocked_worlds[3] = True
+                case "Dream Weavers":
+                    self.ap_unlocked_worlds[4] = True
+                case "Toasty's Stilts":
+                    self.boss_items[0] = True
+                case "Shemp's Staff":
+                    self.boss_items[1] = True
+                case "Blowhard's Beard":
+                    self.boss_items[2] = True
+                case "Metalhead's Mohawk":
+                    self.boss_items[3] = True
+                case "Jacques' Ribbon":
+                    self.boss_items[4] = True
                 case _:
                     pass
         if self.slot_data_spyro_color is None:
@@ -155,6 +178,31 @@ class SpyroClient(BizHawkClient):
                 to_write_ingame.append(
                     (RAM.nestorUnskippable, 0x0.to_bytes(1, "little"))
                 )
+            if cur_game_state == RAM.GameStates.BALLOONIST.value:
+                byte_val = b'A' if self.ap_unlocked_worlds[0] else b'\x00'
+                to_write_balloonist.append(
+                    (RAM.WorldTextOffsets.ARTISANS.value, byte_val)
+                )
+                byte_val = b'P' if self.ap_unlocked_worlds[1] else b'\x00'
+                to_write_balloonist.append(
+                    (RAM.WorldTextOffsets.KEEPERS.value, byte_val)
+                )
+                byte_val = b'M' if self.ap_unlocked_worlds[2] else b'\x00'
+                to_write_balloonist.append(
+                    (RAM.WorldTextOffsets.CRAFTERS.value, byte_val)
+                )
+                byte_val = b'B' if self.ap_unlocked_worlds[3] else b'\x00'
+                to_write_balloonist.append(
+                    (RAM.WorldTextOffsets.MAKERS.value, byte_val)
+                )
+                byte_val = b'D' if self.ap_unlocked_worlds[4] else b'\x00'
+                to_write_balloonist.append(
+                    (RAM.WorldTextOffsets.WEAVERS.value, byte_val)
+                )
+                byte_val = b'G' if self.boss_items.count(True) == 5 else b'\x00'
+                to_write_balloonist.append(
+                    (RAM.WorldTextOffsets.GNASTY.value, byte_val)
+                )
 
             await self.write_on_state(
                 to_write_ingame,
@@ -164,6 +212,11 @@ class SpyroClient(BizHawkClient):
             await self.write_on_state(
                 to_write_menu,
                 RAM.GameStates.TITLE_SCREEN.value.to_bytes(1, "little"),
+                ctx
+            )
+            await self.write_on_state(
+                to_write_balloonist,
+                RAM.GameStates.BALLOONIST.value.to_bytes(1, "little"),
                 ctx
             )
 
