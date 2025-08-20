@@ -8,12 +8,14 @@ class RAM:
     """The ID of the last item the game has been given. Useful for save state issues and such."""
     fakeTimer: int = unusedSpace + 8
     lastSelectedValidChoice: int = unusedSpace + 12
-    artisansBalloonPointers: list[int] = [0x7bc04, 0x7bc08]
-    keepersBalloonPointers: list[int] = [0x7c5dc, 0x7c5e0]
-    craftersBalloonPointers: list[int] = [0x7c5d4, 0x7c5d8]
-    makersBalloonPointers: list[int] = [0x7c3c8, 0x7c3cc]
-    weaversBalloonPointers: list[int] = [0x7c5fc, 0x7c600]
-    gnastyBalloonPointers: list[int] = [0x7bb74, 0x7bb78]
+    balloonPointers: dict[str, list[int]] = {
+        "Artisans": [0x7bc04, 0x7bc08],
+        "Peace Keepers": [0x7c5dc, 0x7c5e0],
+        "Magic Crafters": [0x7c5d4, 0x7c5d8],
+        "Beast Makers": [0x7c3c8, 0x7c3cc],
+        "Dream Weavers": [0x7c5fc, 0x7c600],
+        "Gnasty's World": [0x7bb74, 0x7bb78]
+    }
     curLevelID: int = 0x7596c
     destLevelID: int = 0x758b4
     curGameState: int = 0x757d8
@@ -23,15 +25,14 @@ class RAM:
     """Which level you start in after the intro cutscene."""
     gnastyAnimFlag: int = 0x160f08
     GNASTY_DEFEATED: int = 0x08
-
-    class WorldTextOffsets(Enum):
-        """RAM offsets for world names"""
-        ARTISANS = 0x1006c
-        KEEPERS = 0x1005c
-        CRAFTERS = 0x1004c
-        MAKERS = 0x1003c
-        WEAVERS = 0x1002c
-        GNASTY = 0x1001c
+    worldTextOffsets: dict[str, int] = {
+        "Artisans": 0x1006c,
+        "Peace Keepers": 0x1005c,
+        "Magic Crafters": 0x1004c,
+        "Beast Makers": 0x1003c,
+        "Dream Weavers": 0x1002c,
+        "Gnasty's World": 0x1001c
+    }
 
     nestorUnskippable: int = 0x1747f4
     spyroCurAnimation: int = 0x78ad0
@@ -72,6 +73,16 @@ class RAM:
         DREAM_WEAVERS = 50
         GNASTYS_WORLD = 60
         GNASTY_GNORC = 63
+
+
+    hub_names: dict[int, str] = {
+        0: "Artisans",
+        1: "Peace Keepers",
+        2: "Magic Crafters",
+        3: "Beast Makers",
+        4: "Dream Weavers",
+        5: "Gnasty's World"
+    }
 
 
 def menu_lookup(current_world_num: int, menu_choice: int) -> int:

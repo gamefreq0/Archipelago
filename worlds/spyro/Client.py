@@ -182,104 +182,42 @@ class SpyroClient(BizHawkClient):
                 )
             if cur_game_state == RAM.GameStates.BALLOONIST.value:
                 # Hide world names if inaccessible
-                byte_val = b'A' if self.ap_unlocked_worlds[0] else b'\x00'
-                to_write_balloonist.append(
-                    (RAM.WorldTextOffsets.ARTISANS.value, byte_val)
-                )
-                byte_val = b'P' if self.ap_unlocked_worlds[1] else b'\x00'
-                to_write_balloonist.append(
-                    (RAM.WorldTextOffsets.KEEPERS.value, byte_val)
-                )
-                byte_val = b'M' if self.ap_unlocked_worlds[2] else b'\x00'
-                to_write_balloonist.append(
-                    (RAM.WorldTextOffsets.CRAFTERS.value, byte_val)
-                )
-                byte_val = b'B' if self.ap_unlocked_worlds[3] else b'\x00'
-                to_write_balloonist.append(
-                    (RAM.WorldTextOffsets.MAKERS.value, byte_val)
-                )
-                byte_val = b'D' if self.ap_unlocked_worlds[4] else b'\x00'
-                to_write_balloonist.append(
-                    (RAM.WorldTextOffsets.WEAVERS.value, byte_val)
-                )
-                byte_val = b'G' if self.boss_items.count(True) == 5 else b'\x00'
-                to_write_balloonist.append(
-                    (RAM.WorldTextOffsets.GNASTY.value, byte_val)
-                )
+                for world_index, world_name in RAM.hub_names.items():
+                    byte_val = world_name[:1].encode("ASCII")
+                    if world_index != 5:
+                        if not self.ap_unlocked_worlds[world_index]:
+                            byte_val = b'\x00'
+                        to_write_balloonist.append(
+                            (RAM.worldTextOffsets[world_name], byte_val)
+                        )
+                    else:
+                        if not self.boss_items.count(True) == 5:
+                            byte_val = b'\x00'
+                        to_write_balloonist.append(
+                            (RAM.worldTextOffsets[world_name], byte_val)
+                        )
                 # Prevent access to inaccessible worlds
                 match cur_level_id:
-                    case RAM.LevelIDs.ARTISANS.value:
-                        # Change pointers to point at our reserved spot
-                        # Gotta add 1 to the upper byte, because the high bit
-                        # of the lower word is high, so it interprets the
-                        # second instruction's offset as signed negative
-                        to_write_balloonist.append(
-                            (RAM.artisansBalloonPointers[0], b'\x01')
+                    case (
+                        RAM.LevelIDs.ARTISANS.value
+                        | RAM.LevelIDs.PEACE_KEEPERS.value
+                        | RAM.LevelIDs.MAGIC_CRAFTERS.value
+                        | RAM.LevelIDs.BEAST_MAKERS.value
+                        | RAM.LevelIDs.DREAM_WEAVERS.value
+                        | RAM.LevelIDs.GNASTYS_WORLD.value
+                    ):
+                        id_to_index: int = int(cur_level_id / 10) - 1
+                        to_write_balloonist.append((
+                            RAM.balloonPointers[RAM.hub_names[id_to_index]][0],
+                            b'\x01'
+                        ))
+                        to_write_balloonist.append((
+                            RAM.balloonPointers[RAM.hub_names[id_to_index]][1],
+                            b'\x08\xf0'
+                        ))
+                        mapped_choice = menu_lookup(
+                            id_to_index, balloonist_choice
                         )
-                        to_write_balloonist.append(
-                            (RAM.artisansBalloonPointers[1], b'\x08\xf0')
-                        )
-                        mapped_choice = menu_lookup(0, balloonist_choice)
-                        for item in self.set_balloonist_unlocks(
-                            mapped_choice, balloonist_choice
-                        ):
-                            to_write_balloonist.append(item)
-                    case RAM.LevelIDs.PEACE_KEEPERS.value:
-                        to_write_balloonist.append(
-                            (RAM.keepersBalloonPointers[0], b'\x01')
-                        )
-                        to_write_balloonist.append(
-                            (RAM.keepersBalloonPointers[1], b'\x08\xf0')
-                        )
-                        mapped_choice = menu_lookup(1, balloonist_choice)
-                        for item in self.set_balloonist_unlocks(
-                            mapped_choice, balloonist_choice
-                        ):
-                            to_write_balloonist.append(item)
-                    case RAM.LevelIDs.MAGIC_CRAFTERS.value:
-                        to_write_balloonist.append(
-                            (RAM.craftersBalloonPointers[0], b'\x01')
-                        )
-                        to_write_balloonist.append(
-                            (RAM.craftersBalloonPointers[1], b'\x08\xf0')
-                        )
-                        mapped_choice = menu_lookup(2, balloonist_choice)
-                        for item in self.set_balloonist_unlocks(
-                            mapped_choice, balloonist_choice
-                        ):
-                            to_write_balloonist.append(item)
-                    case RAM.LevelIDs.BEAST_MAKERS.value:
-                        to_write_balloonist.append(
-                            (RAM.makersBalloonPointers[0], b'\x01')
-                        )
-                        to_write_balloonist.append(
-                            (RAM.makersBalloonPointers[1], b'\x08\xf0')
-                        )
-                        mapped_choice = menu_lookup(3, balloonist_choice)
-                        for item in self.set_balloonist_unlocks(
-                            mapped_choice, balloonist_choice
-                        ):
-                            to_write_balloonist.append(item)
-                    case RAM.LevelIDs.DREAM_WEAVERS.value:
-                        to_write_balloonist.append(
-                            (RAM.weaversBalloonPointers[0], b'\x01')
-                        )
-                        to_write_balloonist.append(
-                            (RAM.weaversBalloonPointers[1], b'\x08\xf0')
-                        )
-                        mapped_choice = menu_lookup(4, balloonist_choice)
-                        for item in self.set_balloonist_unlocks(
-                            mapped_choice, balloonist_choice
-                        ):
-                            to_write_balloonist.append(item)
-                    case RAM.LevelIDs.GNASTYS_WORLD.value:
-                        to_write_balloonist.append(
-                            (RAM.gnastyBalloonPointers[0], b'\x01')
-                        )
-                        to_write_balloonist.append(
-                            (RAM.gnastyBalloonPointers[1], b'\x08\xf0')
-                        )
-                        mapped_choice = menu_lookup(5, balloonist_choice)
                         for item in self.set_balloonist_unlocks(
                             mapped_choice, balloonist_choice
                         ):
