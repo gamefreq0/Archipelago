@@ -165,6 +165,18 @@ class SpyroClient(BizHawkClient):
                 to_write_ingame.append(
                     (RAM.unlockedWorlds, bytes([2, 2, 2, 2, 2, 2]))
                 )
+            if cur_game_state == RAM.GameStates.GAMEPLAY.value:
+                # Overwrite head checking code
+                if cur_level_id == RAM.LevelIDs.ARTISANS.value:
+                    for address in RAM.artisans_head_checks:
+                        to_write_ingame.append(
+                            (address, bytes(4))
+                        )
+                elif cur_level_id == RAM.LevelIDs.GNASTYS_WORLD.value:
+                    for address in RAM.gnasty_head_checks:
+                        to_write_ingame.append(
+                            (address, bytes(4))
+                        )
             if cur_game_state == RAM.GameStates.TITLE_SCREEN.value:
 
                 starting_world_value = ctx.slot_data["starting_world"]

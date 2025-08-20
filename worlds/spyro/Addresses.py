@@ -83,6 +83,18 @@ class RAM:
         4: "Dream Weavers",
         5: "Gnasty's World"
     }
+    artisans_head_checks: list[int] = [
+        0x7f48c,
+        0x7f4c8
+    ]
+    gnasty_head_checks: list[int] = [
+        0x817fc,
+        0x81810,
+        0x81848,
+        0x81884,
+        0x8189c,
+        0x818b4
+    ]
 
 
 def menu_lookup(current_world_num: int, menu_choice: int) -> int:
