@@ -23,6 +23,7 @@ class RAM:
         dragons: dict[str, tuple[int, int]]  # dragons[name] = (address, flag)
         # TODO: eggs
         gem_counter: int
+        total_gems: int
         statue_head_checks: list[int]
         child_environments: list["RAM.Environment"]
 
@@ -36,6 +37,7 @@ class RAM:
             self.has_vortex = has_vortex
             self.dragons = {}
             self.gem_counter = 0
+            self.total_gems = 0
             self.statue_head_checks = []
             self.child_environments = []
 
@@ -80,6 +82,20 @@ class RAM:
         0x8189c,
         0x818b4
     ]
+
+    hub_environments[0].total_gems = 100
+    hub_environments[1].total_gems = 200
+    hub_environments[2].total_gems = 300
+    hub_environments[3].total_gems = 300
+    hub_environments[4].total_gems = 300
+    hub_environments[5].total_gems = 200
+
+    hub_environments[0].gem_counter = 0x77420
+    hub_environments[1].gem_counter = 0x77438
+    hub_environments[2].gem_counter = 0x77450
+    hub_environments[3].gem_counter = 0x77468
+    hub_environments[4].gem_counter = 0x77480
+    hub_environments[5].gem_counter = 0x77498
 
     cur_level_id: int = 0x7596c
     dest_level_id: int = 0x758b4
@@ -133,6 +149,16 @@ class RAM:
 
 
 def menu_lookup(current_world_num: int, menu_choice: int) -> int:
+    """Replicates the same math the game uses for mapping a menu choice to the
+    homeworld destination
+
+    Args:
+        current_world_num: The index of the current homeworld
+        menu_choice: The current position of the menu cursor
+
+    Returns:
+        The index of the selected homeworld, or -1 if Stay Here is selected
+    """    
     if menu_choice > current_world_num:
         return menu_choice
     return menu_choice - 1
