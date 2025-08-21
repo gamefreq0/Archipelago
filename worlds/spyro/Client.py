@@ -194,20 +194,20 @@ class SpyroClient(BizHawkClient):
                 )
             if cur_game_state == RAM.GameStates.BALLOONIST.value:
                 # Hide world names if inaccessible
-                for world_index, world_name in RAM.hub_names.items():
-                    byte_val = world_name[:1].encode("ASCII")
-                    if world_index != 5:
-                        if not self.ap_unlocked_worlds[world_index]:
+                for index, hub in enumerate(RAM.hub_environments):
+                    byte_val = hub.name[:1].encode("ASCII")
+                    if index != 5:
+                        if not self.ap_unlocked_worlds[index]:
                             byte_val = b'\x00'
-                        to_write_balloonist.append(
-                            (RAM.worldTextOffsets[world_name], byte_val)
-                        )
+                        to_write_balloonist.append((
+                            hub.text_offset, byte_val
+                        ))
                     else:
                         if not self.boss_items.count(True) == 5:
-                            byte_val = b'\x00'
-                        to_write_balloonist.append(
-                            (RAM.worldTextOffsets[world_name], byte_val)
-                        )
+                            byte_val = b'x00'
+                        to_write_balloonist.append((
+                            hub.text_offset, byte_val
+                        ))
                 # Prevent access to inaccessible worlds
                 for index, hub in enumerate(RAM.hub_environments):
                     if cur_level_id == hub.internal_id:
