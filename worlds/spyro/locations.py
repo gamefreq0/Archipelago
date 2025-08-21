@@ -1,6 +1,8 @@
 from typing_extensions import final
 from BaseClasses import Location
 
+from .addresses import RAM
+
 BASE_SPYRO_LOCATION_ID = 1000
 
 
@@ -9,6 +11,7 @@ class SpyroLocation(Location):
     game: str = "Spyro the Dragon"
 
 
+# TODO: Remove class, duplicates stuff from addresses.RAM
 class LevelStats():
     """Contains useful info for tracking level totals
 

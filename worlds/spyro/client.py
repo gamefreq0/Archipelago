@@ -29,6 +29,14 @@ class SpyroClient(BizHawkClient):
     ap_unlocked_worlds: list[bool] = [False, False, False, False, False]
     boss_items: list[bool] = [False, False, False, False, False]
 
+    gem_counts: dict[int, int] = {}
+    """Keeps track of gem counts, indexed by level ID"""
+
+    for hub in RAM.hub_environments:
+        gem_counts[hub.internal_id] = 0
+        for level in hub.child_environments:
+            gem_counts[level.internal_id] = 0
+
     @override
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
         spyro_id: bytes = struct.pack("<17s", b"BASCUS-94228SPYRO")
@@ -121,6 +129,12 @@ class SpyroClient(BizHawkClient):
                 (RAM.unlocked_worlds, 6),
                 (RAM.balloonist_menu_choice, 1)
             ]
+            temp_translation_info: dict[int, int] = {}
+            for level_id in self.gem_counts:
+                temp_translation_info[level_id] = len(to_read_list)
+                for hub in RAM.hub_environments:
+                    if hub.internal_id == level_id:
+                        to_read_list.append((hub.gem_counter, 2))
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
             ram_data = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
@@ -132,16 +146,50 @@ class SpyroClient(BizHawkClient):
             gnasty_anim_flag = int.from_bytes(ram_data[4], byteorder="little")
             unlocked_worlds = ram_data[5]
             balloonist_choice = int.from_bytes(ram_data[6], byteorder="little")
-
+            for level_id, gem_count_index in temp_translation_info.items():
+                self.gem_counts[level_id] = int.from_bytes(
+                    ram_data[gem_count_index], byteorder="little"
+                )
+    
             if (
                 (cur_game_state == RAM.GameStates.GAMEPLAY.value)
-                and (cur_level_id == RAM.LevelIDs.GNASTY_GNORC.value)
+                and (cur_level_id == RAM.hub_environments[5].internal_id)
                 and (gnasty_anim_flag == RAM.GNASTY_DEFEATED)
             ):
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": [location_name_to_id["Defeated Gnasty Gnorc"]]
                 }])
+            for hub in RAM.hub_environments:
+                quarter_count: int = int(hub.total_gems / 4)
+                if self.gem_counts[hub.internal_id] >= quarter_count:
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": [location_name_to_id[
+                            f"{hub.name} 25% Gems"
+                        ]]
+                    }])
+                if self.gem_counts[hub.internal_id] >= (quarter_count * 2):
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": [location_name_to_id[
+                            f"{hub.name} 50% Gems"
+                        ]]
+                    }])
+                if self.gem_counts[hub.internal_id] >= (quarter_count * 3):
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": [location_name_to_id[
+                            f"{hub.name} 75% Gems"
+                        ]]
+                    }])
+                if self.gem_counts[hub.internal_id] >= hub.total_gems:
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": [location_name_to_id[
+                            f"{hub.name} 100% Gems"
+                        ]]
+                    }])
 
             to_write_ingame: list[tuple[int, bytes]] = []
             to_write_menu: list[tuple[int, bytes]] = []
