@@ -209,33 +209,29 @@ class SpyroClient(BizHawkClient):
                             (RAM.worldTextOffsets[world_name], byte_val)
                         )
                 # Prevent access to inaccessible worlds
-                match cur_level_id:
-                    case (
-                        RAM.LevelIDs.ARTISANS.value
-                        | RAM.LevelIDs.PEACE_KEEPERS.value
-                        | RAM.LevelIDs.MAGIC_CRAFTERS.value
-                        | RAM.LevelIDs.BEAST_MAKERS.value
-                        | RAM.LevelIDs.DREAM_WEAVERS.value
-                        | RAM.LevelIDs.GNASTYS_WORLD.value
-                    ):
-                        id_to_index: int = int(cur_level_id / 10) - 1
+                for index, hub in enumerate(RAM.hub_environments):
+                    if cur_level_id == hub.internal_id:
+                        # Rewrite level data pointers to point at mod's area of memory
                         to_write_balloonist.append((
-                            RAM.balloonPointers[RAM.hub_names[id_to_index]][0],
-                            b'\x01'
+                            hub.balloon_pointers[0], b'\x01'
                         ))
                         to_write_balloonist.append((
-                            RAM.balloonPointers[RAM.hub_names[id_to_index]][1],
-                            b'\x08\xf0'
+                            hub.balloon_pointers[1], b'\x08\xf0'
                         ))
-                        mapped_choice = menu_lookup(
-                            id_to_index, balloonist_choice
-                        )
+                        # Turn menu selection number into world index number
+                        mapped_choice = menu_lookup(index, balloonist_choice)
+                        # Poke last valid selected choice number to RAM
+                        # as well as poking a value to what the game
+                        # thinks is a timer, which allows selecting a
+                        # choice when it is >= 0x1f
+                        # The code is normally meant to prevent a player
+                        # from choosing an option in the menu within a few
+                        # frames of the menu opening. We abuse it for
+                        # setting conditional access instead
                         for item in self.set_balloonist_unlocks(
                             mapped_choice, balloonist_choice
                         ):
                             to_write_balloonist.append(item)
-                    case _:
-                        pass
 
             await self.write_on_state(
                 to_write_ingame,

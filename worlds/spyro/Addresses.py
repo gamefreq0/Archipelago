@@ -3,19 +3,83 @@ from enum import Enum
 
 class RAM:
     """A handy collection of memory values and addresses for Spyro"""
+
     unusedSpace: int = 0x0f000  # At least, it seems unused. Test...
     lastReceivedArchipelagoID: int = unusedSpace + 4
+
     """The ID of the last item the game has been given. Useful for save state issues and such."""
     fakeTimer: int = unusedSpace + 8
+
     lastSelectedValidChoice: int = unusedSpace + 12
-    balloonPointers: dict[str, list[int]] = {
-        "Artisans": [0x7bc04, 0x7bc08],
-        "Peace Keepers": [0x7c5dc, 0x7c5e0],
-        "Magic Crafters": [0x7c5d4, 0x7c5d8],
-        "Beast Makers": [0x7c3c8, 0x7c3cc],
-        "Dream Weavers": [0x7c5fc, 0x7c600],
-        "Gnasty's World": [0x7bb74, 0x7bb78]
-    }
+
+    class Environment():
+        """A container holding various useful pieces of data tied to a given level or homeworld"""
+        balloon_pointers: list[int]
+        name: str
+        internal_id: int
+        text_offset: int
+        has_vortex: bool
+        dragons: dict[str, tuple[int, int]]  # dragons[name] = (address, flag)
+        # TODO: eggs
+        gem_counter: int
+        statue_head_checks: list[int]
+        child_environments: list["RAM.Environment"]
+
+        def __init__(
+            self, name: str, internal_id: int, has_vortex: bool = False
+        ) -> None:
+            self.name = name
+            self.internal_id = internal_id
+            self.balloon_pointers = []
+            self.text_offset = 0
+            self.has_vortex = has_vortex
+            self.dragons = {}
+            self.gem_counter = 0
+            self.statue_head_checks = []
+            self.child_environments = []
+
+        def is_hub(self) -> bool:
+            """Whether the current environment is a homeworld"""
+            is_hub = False
+            if self.internal_id % 10 == 0:
+                is_hub = True
+            return is_hub
+
+    hub_environments: list[Environment] = []
+    hub_environments.append(Environment("Artisans", 10))
+    hub_environments.append(Environment("Peace Keepers", 20))
+    hub_environments.append(Environment("Magic Crafters", 30))
+    hub_environments.append(Environment("Beast Makers", 40))
+    hub_environments.append(Environment("Dream Weavers", 50))
+    hub_environments.append(Environment("Gnasty's World", 60))
+
+    hub_environments[0].balloon_pointers = [0x7bc04, 0x7bc08]
+    hub_environments[1].balloon_pointers = [0x7c5dc, 0x7c5e0]
+    hub_environments[2].balloon_pointers = [0x7c5d4, 0x7c5d8]
+    hub_environments[3].balloon_pointers = [0x7c3c8, 0x7c3cc]
+    hub_environments[4].balloon_pointers = [0x7c5fc, 0x7c600]
+    hub_environments[5].balloon_pointers = [0x7bb74, 0x7bb78]
+
+    hub_environments[0].text_offset = 0x1006c
+    hub_environments[1].text_offset = 0x1005c
+    hub_environments[2].text_offset = 0x1004c
+    hub_environments[3].text_offset = 0x1003c
+    hub_environments[4].text_offset = 0x1002c
+    hub_environments[5].text_offset = 0x1005c
+
+    hub_environments[0].statue_head_checks = [
+        0x7f48c,
+        0x7f4c8
+    ]
+    hub_environments[5].statue_head_checks = [
+        0x817fc,
+        0x81810,
+        0x81848,
+        0x81884,
+        0x8189c,
+        0x818b4
+    ]
+
     curLevelID: int = 0x7596c
     destLevelID: int = 0x758b4
     curGameState: int = 0x757d8
