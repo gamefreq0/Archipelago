@@ -55,7 +55,93 @@ class RAM:
     hub_environments.append(Environment("Beast Makers", 40))
     hub_environments.append(Environment("Dream Weavers", 50))
     hub_environments.append(Environment("Gnasty's World", 60))
-    
+
+
+    hub_environments[0].child_environments.append(Environment(
+        "Stone Hill", 11, True
+    ))
+    hub_environments[0].child_environments.append(Environment(
+        "Dark Hollow", 12, True
+    ))
+    hub_environments[0].child_environments.append(Environment(
+        "Town Square", 13, True
+    ))
+    hub_environments[0].child_environments.append(Environment(
+        "Toasty", 14, True
+    ))
+    hub_environments[0].child_environments.append(Environment(
+        "Sunny Flight", 15, True
+    ))
+
+
+    hub_environments[1].child_environments.append(Environment(
+        "Dry Canyon", 21, True
+    ))
+    hub_environments[1].child_environments.append(Environment(
+        "Cliff Town", 22, True
+    ))
+    hub_environments[1].child_environments.append(Environment(
+        "Ice Cavern", 23, True
+    ))
+    hub_environments[1].child_environments.append(Environment(
+        "Doctor Shemp", 24, True
+    ))
+    hub_environments[1].child_environments.append(Environment(
+        "Night Flight", 25, True
+    ))
+
+
+    hub_environments[2].child_environments.append(Environment(
+        "Alpine Ridge", 31, True
+    ))
+    hub_environments[2].child_environments.append(Environment(
+        "High Caves", 32 True
+    ))
+    hub_environments[2].child_environments.append(Environment(
+        "Wizard Peak", 33, True
+    ))
+    hub_environments[2].child_environments.append(Environment(
+        "Blowhard", 34, True
+    ))
+    hub_environments[2].child_environments.append(Environment(
+        "Crystal Flight", 35, True
+    ))
+
+
+    hub_environments[3].child_environments.append(Environment(
+        "Terrace Village", 41, True
+    ))
+    hub_environments[3].child_environments.append(Environment(
+        "Misty Bog", 42, True
+    ))
+    hub_environments[3].child_environments.append(Environment(
+        "Tree Tops", 43, True
+    ))
+    hub_environments[3].child_environments.append(Environment(
+        "Metalhead", 44, True
+    ))
+    hub_environments[3].child_environments.append(Environment(
+        "Wild Flight", 45, True
+    ))
+
+
+    hub_environments[4].child_environments.append(Environment(
+        "Dark Passage", 51, True
+    ))
+    hub_environments[4].child_environments.append(Environment(
+        "Lofty Castle", 52, True
+    ))
+    hub_environments[4].child_environments.append(Environment(
+        "Haunted Towers", 53, True
+    ))
+    hub_environments[4].child_environments.append(Environment(
+        "Jacques", 54, True
+    ))
+    hub_environments[4].child_environments.append(Environment(
+        "Icy Flight", 55, True
+    ))
+
+
     hub_environments[5].child_environments.append(Environment(
         "Gnorc Cove", 61, True
     ))
@@ -97,18 +183,76 @@ class RAM:
     ]
 
     hub_environments[0].total_gems = 100
+    hub_environments[0].child_environments[0].total_gems = 200
+    hub_environments[0].child_environments[1].total_gems = 100
+    hub_environments[0].child_environments[2].total_gems = 200
+    hub_environments[0].child_environments[3].total_gems = 100
+    hub_environments[0].child_environments[4].total_gems = 300
     hub_environments[1].total_gems = 200
+    hub_environments[1].child_environments[0].total_gems = 400
+    hub_environments[1].child_environments[1].total_gems = 400
+    hub_environments[1].child_environments[2].total_gems = 400
+    hub_environments[1].child_environments[3].total_gems = 300
+    hub_environments[1].child_environments[4].total_gems = 300
     hub_environments[2].total_gems = 300
+    hub_environments[2].child_environments[0].total_gems = 500
+    hub_environments[2].child_environments[1].total_gems = 500
+    hub_environments[2].child_environments[2].total_gems = 500
+    hub_environments[2].child_environments[3].total_gems = 400
+    hub_environments[2].child_environments[4].total_gems = 300
     hub_environments[3].total_gems = 300
+    hub_environments[3].child_environments[0].total_gems = 400
+    hub_environments[3].child_environments[1].total_gems = 500
+    hub_environments[3].child_environments[2].total_gems = 500
+    hub_environments[3].child_environments[3].total_gems = 500
+    hub_environments[3].child_environments[4].total_gems = 300
     hub_environments[4].total_gems = 300
+    hub_environments[4].child_environments[0].total_gems = 500
+    hub_environments[4].child_environments[1].total_gems = 400
+    hub_environments[4].child_environments[2].total_gems = 500
+    hub_environments[4].child_environments[3].total_gems = 500
+    hub_environments[4].child_environments[4].total_gems = 300
     hub_environments[5].total_gems = 200
+    hub_environments[5].child_environments[0].total_gems = 400
+    hub_environments[5].child_environments[1].total_gems = 400
+    hub_environments[5].child_environments[2].total_gems = 500
+    hub_environments[5].child_environments[3].total_gems = 2000
 
     hub_environments[0].gem_counter = 0x77420
+    hub_environments[0].child_environments[0].gem_counter = 0x77424
+    hub_environments[0].child_environments[1].gem_counter = 0x77428
+    hub_environments[0].child_environments[2].gem_counter = 0x7742c
+    hub_environments[0].child_environments[3].gem_counter = 0x77430
+    hub_environments[0].child_environments[4].gem_counter = 0x77434
     hub_environments[1].gem_counter = 0x77438
+    hub_environments[1].child_environments[0].gem_counter = 0x7743c
+    hub_environments[1].child_environments[1].gem_counter = 0x77440
+    hub_environments[1].child_environments[2].gem_counter = 0x77444
+    hub_environments[1].child_environments[3].gem_counter = 0x77448
+    hub_environments[1].child_environments[4].gem_counter = 0x7744c
     hub_environments[2].gem_counter = 0x77450
+    hub_environments[2].child_environments[0].gem_counter = 0x77454
+    hub_environments[2].child_environments[1].gem_counter = 0x77458
+    hub_environments[2].child_environments[2].gem_counter = 0x7745c
+    hub_environments[2].child_environments[3].gem_counter = 0x77460
+    hub_environments[2].child_environments[4].gem_counter = 0x77464
     hub_environments[3].gem_counter = 0x77468
+    hub_environments[3].child_environments[0].gem_counter = 0x7746c
+    hub_environments[3].child_environments[1].gem_counter = 0x77470
+    hub_environments[3].child_environments[2].gem_counter = 0x77474
+    hub_environments[3].child_environments[3].gem_counter = 0x77478
+    hub_environments[3].child_environments[4].gem_counter = 0x7747c
     hub_environments[4].gem_counter = 0x77480
+    hub_environments[4].child_environments[0].gem_counter = 0x77484
+    hub_environments[4].child_environments[1].gem_counter = 0x77488
+    hub_environments[4].child_environments[2].gem_counter = 0x7748c
+    hub_environments[4].child_environments[3].gem_counter = 0x77490
+    hub_environments[4].child_environments[4].gem_counter = 0x77494
     hub_environments[5].gem_counter = 0x77498
+    hub_environments[5].child_environments[0].gem_counter = 0x7749c
+    hub_environments[5].child_environments[1].gem_counter = 0x774a0
+    hub_environments[5].child_environments[2].gem_counter = 0x774a4
+    hub_environments[5].child_environments[3].gem_counter = 0x774a8
 
     cur_level_id: int = 0x7596c
     dest_level_id: int = 0x758b4
