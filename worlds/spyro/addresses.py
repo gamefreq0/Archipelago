@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
 
 class RAM:
@@ -55,6 +55,19 @@ class RAM:
     hub_environments.append(Environment("Beast Makers", 40))
     hub_environments.append(Environment("Dream Weavers", 50))
     hub_environments.append(Environment("Gnasty's World", 60))
+    
+    hub_environments[5].child_environments.append(Environment(
+        "Gnorc Cove", 61, True
+    ))
+    hub_environments[5].child_environments.append(Environment(
+        "Twilight Harbor", 62, True
+    ))
+    hub_environments[5].child_environments.append(Environment(
+        "Gnasty Gnorc", 63, True
+    ))
+    hub_environments[5].child_environments.append(Environment(
+        "Gnasty's Loot", 64, True
+    ))
 
     hub_environments[0].balloon_pointers = [0x7bc04, 0x7bc08]
     hub_environments[1].balloon_pointers = [0x7c5dc, 0x7c5e0]
@@ -118,7 +131,7 @@ class RAM:
         ROLL = 0x13
         DEATH_SPIN = 0x1e
 
-    class GameStates(Enum):
+    class GameStates(IntEnum):
         """States the Spyro game engine can be in"""
         GAMEPLAY = 0x00
         LOADING = 0x01
@@ -135,17 +148,6 @@ class RAM:
         TITLE_SCREEN = 0x0d
         CUTSCENE = 0x0e
         CREDITS = 0x0f
-
-    class LevelIDs(Enum):
-        """The internal IDs of the levels in Spyro"""
-        ARTISANS = 10
-        STONE_HILL = 11
-        PEACE_KEEPERS = 20
-        MAGIC_CRAFTERS = 30
-        BEAST_MAKERS = 40
-        DREAM_WEAVERS = 50
-        GNASTYS_WORLD = 60
-        GNASTY_GNORC = 63
 
 
 def menu_lookup(current_world_num: int, menu_choice: int) -> int:

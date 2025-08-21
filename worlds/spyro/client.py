@@ -137,6 +137,9 @@ class SpyroClient(BizHawkClient):
                 for hub in RAM.hub_environments:
                     if hub.internal_id == level_id:
                         to_read_list.append((hub.gem_counter, 2))
+                    for level in hub.child_environments:
+                        if level.internal_id == level_id:
+                            to_read_list.append((level.gem_counter, 2))
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
             ram_data = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
@@ -152,46 +155,35 @@ class SpyroClient(BizHawkClient):
                 self.gem_counts[level_id] = int.from_bytes(
                     ram_data[gem_count_index], byteorder="little"
                 )
-    
-            if (
-                (cur_game_state == RAM.GameStates.GAMEPLAY.value)
-                and (cur_level_id == RAM.hub_environments[5].internal_id)
-                and (gnasty_anim_flag == RAM.GNASTY_DEFEATED)
-            ):
-                await ctx.send_msgs([{
-                    "cmd": "LocationChecks",
-                    "locations": [location_name_to_id["Defeated Gnasty Gnorc"]]
-                }])
+            if cur_game_state == RAM.GameStates.GAMEPLAY:
+                for hub in RAM.hub_environments:
+                    for level in hub.child_environments:
+                        if (
+                            (level.name == "Gnasty Gnorc")
+                            and (cur_level_id == level.internal_id)
+                            and (gnasty_anim_flag == RAM.GNASTY_DEFEATED)
+                        ):
+                            await self.send_location_once(
+                                "Defeated Gnasty Gnorc", ctx
+                            )
             for hub in RAM.hub_environments:
                 quarter_count: int = int(hub.total_gems / 4)
                 if self.gem_counts[hub.internal_id] >= quarter_count:
-                    await ctx.send_msgs([{
-                        "cmd": "LocationChecks",
-                        "locations": [location_name_to_id[
-                            f"{hub.name} 25% Gems"
-                        ]]
-                    }])
+                    await self.send_location_once(
+                        f"{hub.name} 25% Gems", ctx
+                    )
                 if self.gem_counts[hub.internal_id] >= (quarter_count * 2):
-                    await ctx.send_msgs([{
-                        "cmd": "LocationChecks",
-                        "locations": [location_name_to_id[
-                            f"{hub.name} 50% Gems"
-                        ]]
-                    }])
+                    await self.send_location_once(
+                        f"{hub.name} 50% Gems", ctx
+                    )
                 if self.gem_counts[hub.internal_id] >= (quarter_count * 3):
-                    await ctx.send_msgs([{
-                        "cmd": "LocationChecks",
-                        "locations": [location_name_to_id[
-                            f"{hub.name} 75% Gems"
-                        ]]
-                    }])
+                    await self.send_location_once(
+                        f"{hub.name} 75% Gems", ctx
+                    )
                 if self.gem_counts[hub.internal_id] >= hub.total_gems:
-                    await ctx.send_msgs([{
-                        "cmd": "LocationChecks",
-                        "locations": [location_name_to_id[
-                            f"{hub.name} 100% Gems"
-                        ]]
-                    }])
+                    await self.send_location_once(
+                        f"{hub.name} 100% Gems", ctx
+                    )
 
             to_write_ingame: list[tuple[int, bytes]] = []
             to_write_menu: list[tuple[int, bytes]] = []
@@ -371,6 +363,25 @@ class SpyroClient(BizHawkClient):
                     )
                 ]
             )
+
+    async def send_location_once(
+        self,
+        location_name: str,
+        ctx: "BizHawkClientContext"
+    ) -> None:
+        """Send a location to the server, but only if it hasn't been sent
+        before
+
+        Args:
+            location_name: The name of the location to send
+        """
+        location_id = location_name_to_id[location_name]
+        if location_id not in ctx.checked_locations:
+            logger.info("Sending location")
+            await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": [location_id]
+                    }])
 
     def __init__(self) -> None:
         pass
