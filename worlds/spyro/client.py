@@ -7,12 +7,12 @@ from NetUtils import ClientStatus
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
+from .addresses import RAM, menu_lookup
+from .locations import location_name_to_id
+from .items import item_id_to_name
+
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
-
-from .Addresses import RAM, menu_lookup
-from .Locations import location_name_to_id
-from .Items import item_id_to_name
 
 logger = logging.getLogger("Client")
 
@@ -303,9 +303,10 @@ class SpyroClient(BizHawkClient):
         ctx: "BizHawkClientContext"
     ) -> None:
         """Does a guarded write based on the current game state.
-        write_list: a list of tuples in the form of (address, bytes)
-        state: the byte representing the game state to check for
-        ctx: the BizHawkClientContext, needed for the guarded write
+
+        Args:
+            write_list: entries in the form of (address, bytes to write)
+            state: game state
         """
         to_write_list: list[tuple[int, bytes, str]] = []
         for item in write_list:

@@ -1,9 +1,9 @@
 from typing_extensions import TYPE_CHECKING
 
 from BaseClasses import Region, EntranceType
-from worlds.spyro.Items import boss_items
+from .items import boss_items
 
-from .Locations import SpyroLocation, location_name_to_id
+from .locations import SpyroLocation, location_name_to_id
 
 if TYPE_CHECKING:
     from . import SpyroWorld

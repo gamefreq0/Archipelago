@@ -4,15 +4,15 @@ from BaseClasses import Entrance, MultiWorld, Tutorial
 from BaseClasses import ItemClassification
 from entrance_rando import randomize_entrances
 from ..AutoWorld import WebWorld, World
-from .Client import SpyroClient
-from .Items import SpyroItem, filler_items, goal_item
-from .Items import homeworld_access, level_access, boss_items, trap_items
-from .Items import grouped_items, item_name_to_id
-from .Locations import location_name_to_id
-from .Locations import grouped_locations
-from .Options import SpyroOptions
-from .Regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
-from .Rules import set_rules
+from .client import SpyroClient
+from .items import SpyroItem, filler_items, goal_item
+from .items import homeworld_access, level_access, boss_items, trap_items
+from .items import grouped_items, item_name_to_id
+from .locations import location_name_to_id
+from .locations import grouped_locations
+from .options import SpyroOptions
+from .regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
+from .rules import set_rules
 
 
 @final
