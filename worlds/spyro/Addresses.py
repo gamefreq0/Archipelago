@@ -4,13 +4,14 @@ from enum import Enum
 class RAM:
     """A handy collection of memory values and addresses for Spyro"""
 
-    unusedSpace: int = 0x0f000  # At least, it seems unused. Test...
-    lastReceivedArchipelagoID: int = unusedSpace + 4
+    unused_space: int = 0x0f000  # At least, it seems unused. Test...
 
+    last_received_archipelago_id: int = unused_space + 4
     """The ID of the last item the game has been given. Useful for save state issues and such."""
-    fakeTimer: int = unusedSpace + 8
 
-    lastSelectedValidChoice: int = unusedSpace + 12
+    fake_timer: int = unused_space + 8
+
+    last_selected_valid_choice: int = unused_space + 12
 
     class Environment():
         """A container holding various useful pieces of data tied to a given level or homeworld"""
@@ -80,27 +81,19 @@ class RAM:
         0x818b4
     ]
 
-    curLevelID: int = 0x7596c
-    destLevelID: int = 0x758b4
-    curGameState: int = 0x757d8
-    balloonistMenuChoice: int = 0x777f0
-    unlockedWorlds: int = 0x758d0
-    startingLevelID: int = 0x2d4f0
+    cur_level_id: int = 0x7596c
+    dest_level_id: int = 0x758b4
+    cur_game_state: int = 0x757d8
+    balloonist_menu_choice: int = 0x777f0
+    unlocked_worlds: int = 0x758d0
+    starting_level_id: int = 0x2d4f0
     """Which level you start in after the intro cutscene."""
-    gnastyAnimFlag: int = 0x160f08
+    gnasty_anim_flag: int = 0x160f08
     GNASTY_DEFEATED: int = 0x08
-    worldTextOffsets: dict[str, int] = {
-        "Artisans": 0x1006c,
-        "Peace Keepers": 0x1005c,
-        "Magic Crafters": 0x1004c,
-        "Beast Makers": 0x1003c,
-        "Dream Weavers": 0x1002c,
-        "Gnasty's World": 0x1001c
-    }
 
-    nestorUnskippable: int = 0x1747f4
-    spyroCurAnimation: int = 0x78ad0
-    spyroColorFilter: int = 0x78a80
+    nestor_unskippable: int = 0x1747f4
+    spyro_cur_animation: int = 0x78ad0
+    spyro_color_filter: int = 0x78a80
 
     class SpyroStates(Enum):
         """Animation states for Spyro"""
@@ -137,28 +130,6 @@ class RAM:
         DREAM_WEAVERS = 50
         GNASTYS_WORLD = 60
         GNASTY_GNORC = 63
-
-
-    hub_names: dict[int, str] = {
-        0: "Artisans",
-        1: "Peace Keepers",
-        2: "Magic Crafters",
-        3: "Beast Makers",
-        4: "Dream Weavers",
-        5: "Gnasty's World"
-    }
-    artisans_head_checks: list[int] = [
-        0x7f48c,
-        0x7f4c8
-    ]
-    gnasty_head_checks: list[int] = [
-        0x817fc,
-        0x81810,
-        0x81848,
-        0x81884,
-        0x8189c,
-        0x818b4
-    ]
 
 
 def menu_lookup(current_world_num: int, menu_choice: int) -> int:

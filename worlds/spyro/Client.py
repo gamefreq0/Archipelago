@@ -113,13 +113,13 @@ class SpyroClient(BizHawkClient):
                 )
         try:
             to_read_list: list[tuple[int, int]] = [
-                (RAM.lastReceivedArchipelagoID, 4),
-                (RAM.curGameState, 1),
-                (RAM.curLevelID, 1),
-                (RAM.spyroColorFilter, 4),
-                (RAM.gnastyAnimFlag, 1),
-                (RAM.unlockedWorlds, 6),
-                (RAM.balloonistMenuChoice, 1)
+                (RAM.last_received_archipelago_id, 4),
+                (RAM.cur_game_state, 1),
+                (RAM.cur_level_id, 1),
+                (RAM.spyro_color_filter, 4),
+                (RAM.gnasty_anim_flag, 1),
+                (RAM.unlocked_worlds, 6),
+                (RAM.balloonist_menu_choice, 1)
             ]
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
@@ -156,27 +156,28 @@ class SpyroClient(BizHawkClient):
                     self.slot_data_spyro_color, "little"
                 )
                 to_write_ingame.append(
-                    (RAM.spyroColorFilter, spyro_color.to_bytes(4, "little"))
+                    (RAM.spyro_color_filter, spyro_color.to_bytes(4, "little"))
                 )
             if (
                 (cur_game_state == RAM.GameStates.GAMEPLAY.value)
                 and (unlocked_worlds.count(bytes([0])) > 1)
             ):
                 to_write_ingame.append(
-                    (RAM.unlockedWorlds, bytes([2, 2, 2, 2, 2, 2]))
+                    (RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2]))
                 )
             if cur_game_state == RAM.GameStates.GAMEPLAY.value:
                 # Overwrite head checking code
-                if cur_level_id == RAM.LevelIDs.ARTISANS.value:
-                    for address in RAM.artisans_head_checks:
-                        to_write_ingame.append(
-                            (address, bytes(4))
-                        )
-                elif cur_level_id == RAM.LevelIDs.GNASTYS_WORLD.value:
-                    for address in RAM.gnasty_head_checks:
-                        to_write_ingame.append(
-                            (address, bytes(4))
-                        )
+                for hub in RAM.hub_environments:
+                    if (
+                        (hub.internal_id == cur_level_id)
+                        and (len(hub.statue_head_checks) > 0)
+                    ):
+                        for address in hub.statue_head_checks:
+                            # NOP out the conditional branches
+                            # This forces the statue heads to always open
+                            to_write_ingame.append(
+                                (address, bytes(4))
+                            )
             if cur_game_state == RAM.GameStates.TITLE_SCREEN.value:
 
                 starting_world_value = ctx.slot_data["starting_world"]
@@ -184,13 +185,13 @@ class SpyroClient(BizHawkClient):
                     starting_world_value += 1
                     starting_world_value *= 10
                     to_write_menu.append(
-                        (RAM.startingLevelID, starting_world_value.to_bytes(1, "little"))
+                        (RAM.starting_level_id, starting_world_value.to_bytes(1, "little"))
                     )
             if (cur_game_state == RAM.GameStates.GAMEPLAY.value) and (
                 cur_level_id == 10
             ):
                 to_write_ingame.append(
-                    (RAM.nestorUnskippable, 0x0.to_bytes(1, "little"))
+                    (RAM.nestor_unskippable, 0x0.to_bytes(1, "little"))
                 )
             if cur_game_state == RAM.GameStates.BALLOONIST.value:
                 # Hide world names if inaccessible
@@ -254,8 +255,8 @@ class SpyroClient(BizHawkClient):
 
     def balloonist_helper(self, allow: bytes, choice: bytes) -> list[tuple[int, bytes]]:
         result: list[tuple[int, bytes]] = []
-        result.append((RAM.fakeTimer, allow))
-        result.append((RAM.lastSelectedValidChoice, choice))
+        result.append((RAM.fake_timer, allow))
+        result.append((RAM.last_selected_valid_choice, choice))
         return result
 
     def set_balloonist_unlocks(
@@ -315,7 +316,7 @@ class SpyroClient(BizHawkClient):
                 to_write_list,
                 [
                     (
-                        RAM.curGameState, state, "MainRAM"
+                        RAM.cur_game_state, state, "MainRAM"
                     )
                 ]
             )
