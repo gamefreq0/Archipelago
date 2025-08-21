@@ -65,7 +65,7 @@ class RAM:
     hub_environments[2].text_offset = 0x1004c
     hub_environments[3].text_offset = 0x1003c
     hub_environments[4].text_offset = 0x1002c
-    hub_environments[5].text_offset = 0x1005c
+    hub_environments[5].text_offset = 0x1001c
 
     hub_environments[0].statue_head_checks = [
         0x7f48c,
