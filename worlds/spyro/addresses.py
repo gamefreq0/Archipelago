@@ -26,6 +26,8 @@ class RAM:
         total_gems: int
         statue_head_checks: list[int]
         child_environments: list["RAM.Environment"]
+        portal_surface_types: list[int]
+        portal_dest_level_ids: list[int]
 
         def __init__(
             self, name: str, internal_id: int, has_vortex: bool = False
@@ -40,6 +42,8 @@ class RAM:
             self.total_gems = 0
             self.statue_head_checks = []
             self.child_environments = []
+            self.portal_surface_types = []
+            self.portal_dest_level_ids = []
 
         def is_hub(self) -> bool:
             """Whether the current environment is a homeworld"""
@@ -168,6 +172,45 @@ class RAM:
     hub_environments[3].text_offset = 0x1003c
     hub_environments[4].text_offset = 0x1002c
     hub_environments[5].text_offset = 0x1001c
+
+    hub_environments[0].portal_dest_level_ids.append(0xc12b4)  # Stone Hill
+    hub_environments[0].portal_dest_level_ids.append(0xc12a8)  # Dark Hollow
+    hub_environments[0].portal_dest_level_ids.append(0xc12c0)  # Town Square
+    hub_environments[0].portal_dest_level_ids.append(0xc192c)  # Toasty
+    hub_environments[0].portal_dest_level_ids.append(0xc12cc)  # Sunny Flight
+
+    hub_environments[1].portal_dest_level_ids.append(0xbfc48)  # Dry Canyon
+    hub_environments[1].portal_dest_level_ids.append(0xbfc54)  # Cliff Town
+    hub_environments[1].portal_dest_level_ids.append(0xbfc60)  # Ice Cavern
+    hub_environments[1].portal_dest_level_ids.append(0xbfc6c)  # Doctor Shemp
+    hub_environments[1].portal_dest_level_ids.append(0xbfc78)  # Night Flight
+
+    hub_environments[2].portal_dest_level_ids.append(0xc627c)  # Alpine Ridge
+    hub_environments[2].portal_dest_level_ids.append(0xc6294)  # High Caves
+    hub_environments[2].portal_dest_level_ids.append(0xc6288)  # Wizard Peak
+    hub_environments[2].portal_dest_level_ids.append(0xc6264)  # Blowhard
+    hub_environments[2].portal_dest_level_ids.append(0xc6270)  # Crystal Flight
+
+    hub_environments[3].portal_dest_level_ids.append(0xb558c)  # Terrace Village
+    hub_environments[3].portal_dest_level_ids.append(0xb5574)  # Misty Bog
+    hub_environments[3].portal_dest_level_ids.append(0xb5580)  # Tree Tops
+    hub_environments[3].portal_dest_level_ids.append(0xb5568)  # Metalhead
+    hub_environments[3].portal_dest_level_ids.append(0xb5598)  # Wild Flight
+
+    hub_environments[4].portal_dest_level_ids.append(0xc5ecc)  # Dark Passage
+    hub_environments[4].portal_dest_level_ids.append(0xc5ee4)  # Lofty Castle
+    hub_environments[4].portal_dest_level_ids.append(0xc5efc)  # Haunted Towers
+    hub_environments[4].portal_dest_level_ids.append(0xc5ed8)  # Jacques
+    hub_environments[4].portal_dest_level_ids.append(0xc5ef0)  # Icy Flight
+
+    hub_environments[5].portal_dest_level_ids.append(0xa69d8)  # Gnorc Cove
+    hub_environments[5].portal_dest_level_ids.append(0xa69b4)  # Twilight Harbor
+    hub_environments[5].portal_dest_level_ids.append(0xa69c0)  # Gnasty Gnorc
+    hub_environments[5].portal_dest_level_ids.append(0xa69cc)  # Gnasty's Loot
+
+    for hub in hub_environments:
+        for dest_offset in hub.portal_dest_level_ids:
+            hub.portal_surface_types.append(dest_offset - 4)
 
     hub_environments[0].statue_head_checks = [
         0x7f48c,
