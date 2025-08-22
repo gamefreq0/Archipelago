@@ -176,7 +176,7 @@ class RAM:
     hub_environments[0].portal_dest_level_ids.append(0xc12b4)  # Stone Hill
     hub_environments[0].portal_dest_level_ids.append(0xc12a8)  # Dark Hollow
     hub_environments[0].portal_dest_level_ids.append(0xc12c0)  # Town Square
-    hub_environments[0].portal_dest_level_ids.append(0xc192c)  # Toasty
+    hub_environments[0].portal_dest_level_ids.append(0xc129c)  # Toasty
     hub_environments[0].portal_dest_level_ids.append(0xc12cc)  # Sunny Flight
 
     hub_environments[1].portal_dest_level_ids.append(0xbfc48)  # Dry Canyon
