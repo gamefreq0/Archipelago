@@ -184,6 +184,24 @@ class SpyroClient(BizHawkClient):
                     await self.send_location_once(
                         f"{hub.name} 100% Gems", ctx
                     )
+                for level in hub.child_environments:
+                    quarter_count: int = int(level.total_gems / 4)
+                    if self.gem_counts[level.internal_id] >= quarter_count:
+                        await self.send_location_once(
+                            f"{level.name} 25% Gems", ctx
+                        )
+                    if self.gem_counts[level.internal_id] >= (quarter_count * 2):
+                        await self.send_location_once(
+                            f"{level.name} 50% Gems", ctx
+                        )
+                    if self.gem_counts[level.internal_id] >= (quarter_count * 3):
+                        await self.send_location_once(
+                            f"{level.name} 75% Gems", ctx
+                        )
+                    if self.gem_counts[level.internal_id] >= level.total_gems:
+                        await self.send_location_once(
+                            f"{level.name} 100% Gems", ctx
+                        )
 
             to_write_ingame: list[tuple[int, bytes]] = []
             to_write_menu: list[tuple[int, bytes]] = []
