@@ -118,7 +118,11 @@ class SpyroClient(BizHawkClient):
                 case "Jacques' Ribbon":
                     self.boss_items[4] = True
                 case _:
-                    pass
+                    item_name = item_id_to_name[item.item]
+                    for hub in RAM.hub_environments:
+                        for level in hub.child_environments:
+                            if level.name == item_name:
+                                self.portal_accesses[level.name] = True
         if self.slot_data_spyro_color is None:
             color_string = ctx.slot_data["spyro_color"]
             if color_string is not None:
