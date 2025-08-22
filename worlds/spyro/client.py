@@ -4,6 +4,7 @@ import struct
 from typing_extensions import override, final, TYPE_CHECKING
 
 from NetUtils import ClientStatus
+from settings import Bool
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
@@ -32,9 +33,13 @@ class SpyroClient(BizHawkClient):
     gem_counts: dict[int, int] = {}
     """Keeps track of gem counts, indexed by level ID"""
 
+    portal_accesses: dict[str, bool] = {}
+    """Keeps track of portal access, indexed by level name"""
+
     for hub in RAM.hub_environments:
         gem_counts[hub.internal_id] = 0
         for level in hub.child_environments:
+            portal_accesses[level.name] = False
             gem_counts[level.internal_id] = 0
 
     @override
@@ -238,6 +243,20 @@ class SpyroClient(BizHawkClient):
                             to_write_ingame.append(
                                 (address, bytes(4))
                             )
+            # Lock inaccessible portals
+            if cur_game_state == RAM.GameStates.GAMEPLAY:
+                for hub in RAM.hub_environments:
+                    if cur_level_id == hub.internal_id:
+                        for index, level in enumerate(hub.child_environments):
+                            if self.portal_accesses[level.name]:
+                                to_write_ingame.append((
+                                    hub.portal_surface_types[index], b'\x06'
+                                ))
+                            else:
+                                to_write_ingame.append((
+                                    hub.portal_surface_types[index], b'\x00'
+                                ))
+
             if cur_game_state == RAM.GameStates.TITLE_SCREEN:
 
                 starting_world_value = ctx.slot_data["starting_world"]
@@ -395,7 +414,6 @@ class SpyroClient(BizHawkClient):
         """
         location_id = location_name_to_id[location_name]
         if location_id not in ctx.checked_locations:
-            logger.info("Sending location")
             await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": [location_id]
