@@ -265,7 +265,7 @@ class SpyroClient(BizHawkClient):
                         ))
                     else:
                         if not self.boss_items.count(True) == 5:
-                            byte_val = b'x00'
+                            byte_val = b'\x00'
                         to_write_balloonist.append((
                             hub.text_offset, byte_val
                         ))
