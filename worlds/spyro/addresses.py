@@ -95,7 +95,7 @@ class RAM:
         "Alpine Ridge", 31, True
     ))
     hub_environments[2].child_environments.append(Environment(
-        "High Caves", 32 True
+        "High Caves", 32, True
     ))
     hub_environments[2].child_environments.append(Environment(
         "Wizard Peak", 33, True
