@@ -195,3 +195,10 @@ _speedups.html
 .LSOverride
 Thumbs.db
 [Dd]esktop.ini
+
+# pipenv stuff
+Pipfile
+Pipfile.lock
+
+# IDE specific stuff
+pyproject.toml
