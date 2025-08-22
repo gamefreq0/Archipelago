@@ -207,7 +207,7 @@ class SpyroClient(BizHawkClient):
             to_write_menu: list[tuple[int, bytes]] = []
             to_write_balloonist: list[tuple[int, bytes]] = []
 
-            if (cur_game_state == RAM.GameStates.GAMEPLAY.value) and (
+            if (cur_game_state == RAM.GameStates.GAMEPLAY) and (
                 self.slot_data_spyro_color is not None
             ) and (
                 spyro_color.to_bytes(4, "little") != self.slot_data_spyro_color
@@ -219,13 +219,13 @@ class SpyroClient(BizHawkClient):
                     (RAM.spyro_color_filter, spyro_color.to_bytes(4, "little"))
                 )
             if (
-                (cur_game_state == RAM.GameStates.GAMEPLAY.value)
+                (cur_game_state == RAM.GameStates.GAMEPLAY)
                 and (unlocked_worlds.count(bytes([0])) > 1)
             ):
                 to_write_ingame.append(
                     (RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2]))
                 )
-            if cur_game_state == RAM.GameStates.GAMEPLAY.value:
+            if cur_game_state == RAM.GameStates.GAMEPLAY:
                 # Overwrite head checking code
                 for hub in RAM.hub_environments:
                     if (
@@ -238,7 +238,7 @@ class SpyroClient(BizHawkClient):
                             to_write_ingame.append(
                                 (address, bytes(4))
                             )
-            if cur_game_state == RAM.GameStates.TITLE_SCREEN.value:
+            if cur_game_state == RAM.GameStates.TITLE_SCREEN:
 
                 starting_world_value = ctx.slot_data["starting_world"]
                 if starting_world_value is not None:
@@ -247,13 +247,13 @@ class SpyroClient(BizHawkClient):
                     to_write_menu.append(
                         (RAM.starting_level_id, starting_world_value.to_bytes(1, "little"))
                     )
-            if (cur_game_state == RAM.GameStates.GAMEPLAY.value) and (
+            if (cur_game_state == RAM.GameStates.GAMEPLAY) and (
                 cur_level_id == 10
             ):
                 to_write_ingame.append(
                     (RAM.nestor_unskippable, 0x0.to_bytes(1, "little"))
                 )
-            if cur_game_state == RAM.GameStates.BALLOONIST.value:
+            if cur_game_state == RAM.GameStates.BALLOONIST:
                 # Hide world names if inaccessible
                 for index, hub in enumerate(RAM.hub_environments):
                     byte_val = hub.name[:1].encode("ASCII")
@@ -296,17 +296,17 @@ class SpyroClient(BizHawkClient):
 
             await self.write_on_state(
                 to_write_ingame,
-                RAM.GameStates.GAMEPLAY.value.to_bytes(1, "little"),
+                RAM.GameStates.GAMEPLAY.to_bytes(1, "little"),
                 ctx
             )
             await self.write_on_state(
                 to_write_menu,
-                RAM.GameStates.TITLE_SCREEN.value.to_bytes(1, "little"),
+                RAM.GameStates.TITLE_SCREEN.to_bytes(1, "little"),
                 ctx
             )
             await self.write_on_state(
                 to_write_balloonist,
-                RAM.GameStates.BALLOONIST.value.to_bytes(1, "little"),
+                RAM.GameStates.BALLOONIST.to_bytes(1, "little"),
                 ctx
             )
 
