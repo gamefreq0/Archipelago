@@ -41,10 +41,10 @@ class SpyroWorld(World):
     location_name_groups = grouped_locations
 
     def __init__(self, multiworld: "MultiWorld", player: int):
+        super().__init__(multiworld, player)
         self.goal: int | None = 0
         self.itempool: list[SpyroItem] = []
         self.shuffled_entrance_pairings: list[tuple[str, str]] = []
-        super().__init__(multiworld, player)
 
     @override
     def generate_early(self) -> None:
