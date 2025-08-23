@@ -1,5 +1,6 @@
 from typing_extensions import final, override, ClassVar
 
+from logging import warning
 from BaseClasses import Entrance, MultiWorld
 from BaseClasses import ItemClassification
 from Options import OptionError
@@ -57,6 +58,24 @@ class SpyroWorld(World):
                     self.options.spyro_color.value
                 }" is not a valid RGBA color.'
             ) from exc
+        if self.options.goal == self.options.goal.option_loot:
+            raise OptionError(
+                f"{
+                    self.player_name
+                } set goal to loot, but loot goal doesn't work yet."
+            )
+        if self.options.portal_shuffle.value == 1:
+            raise OptionError(
+                f"{
+                    self.player_name
+                } enabled portal shuffle, but portal shuffle doesn't work yet."
+            )
+        if self.options.death_link.value == 1:
+            warning(
+                f"Deathlink for {
+                    self.game
+                } doesn't work yet. Option will be ignored"
+            )
 
     @override
     def create_regions(self) -> None:
