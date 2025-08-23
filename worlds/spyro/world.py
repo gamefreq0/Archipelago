@@ -2,6 +2,7 @@ from typing_extensions import final, override, ClassVar
 
 from BaseClasses import Entrance, MultiWorld
 from BaseClasses import ItemClassification
+from Options import OptionError
 from entrance_rando import randomize_entrances
 from ..AutoWorld import WebWorld, World
 from .web import SpyroWeb
@@ -48,6 +49,14 @@ class SpyroWorld(World):
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
         self.itempool = []
+        try:
+            _: int = int(self.options.spyro_color.value, 16)
+        except ValueError as exc:
+            raise OptionError(
+                f'{self.player_name}\'s spyro_color value of "{
+                    self.options.spyro_color.value
+                }" is not a valid RGBA color.'
+            ) from exc
 
     @override
     def create_regions(self) -> None:
