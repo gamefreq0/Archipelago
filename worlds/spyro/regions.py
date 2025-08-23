@@ -6,7 +6,7 @@ from .items import boss_items
 from .locations import SpyroLocation, location_name_to_id
 
 if TYPE_CHECKING:
-    from . import SpyroWorld
+    from .world import SpyroWorld
 
 ENTRANCE_IN: int = 0x0
 ENTRANCE_OUT: int = 0x1
@@ -91,8 +91,9 @@ def create_regions(world: "SpyroWorld"):
         level_name, level_region = level
         regions.append(level_region)
 
-    # Add matching locations to their level region. This will be very manual if move shuffle becomes a thing, because
-    # not all locations will be accessible from the start of the level. Oh, joy.
+    # Add matching locations to their level region. This will be very manual
+    # if move shuffle becomes a thing, because not all locations will be
+    # accessible from the start of the level. Oh, joy.
     for region in regions:
         if region != menu:
             for location_name, location_id in location_name_to_id.items():

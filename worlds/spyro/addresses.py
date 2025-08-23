@@ -1,6 +1,9 @@
+from typing_extensions import final
+
 from enum import Enum, IntEnum
 
 
+@final
 class RAM:
     """A handy collection of memory values and addresses for Spyro"""
 
@@ -60,7 +63,6 @@ class RAM:
     hub_environments.append(Environment("Dream Weavers", 50))
     hub_environments.append(Environment("Gnasty's World", 60))
 
-
     hub_environments[0].child_environments.append(Environment(
         "Stone Hill", 11, True
     ))
@@ -76,7 +78,6 @@ class RAM:
     hub_environments[0].child_environments.append(Environment(
         "Sunny Flight", 15, True
     ))
-
 
     hub_environments[1].child_environments.append(Environment(
         "Dry Canyon", 21, True
@@ -94,7 +95,6 @@ class RAM:
         "Night Flight", 25, True
     ))
 
-
     hub_environments[2].child_environments.append(Environment(
         "Alpine Ridge", 31, True
     ))
@@ -110,7 +110,6 @@ class RAM:
     hub_environments[2].child_environments.append(Environment(
         "Crystal Flight", 35, True
     ))
-
 
     hub_environments[3].child_environments.append(Environment(
         "Terrace Village", 41, True
@@ -128,7 +127,6 @@ class RAM:
         "Wild Flight", 45, True
     ))
 
-
     hub_environments[4].child_environments.append(Environment(
         "Dark Passage", 51, True
     ))
@@ -144,7 +142,6 @@ class RAM:
     hub_environments[4].child_environments.append(Environment(
         "Icy Flight", 55, True
     ))
-
 
     hub_environments[5].child_environments.append(Environment(
         "Gnorc Cove", 61, True
@@ -347,7 +344,7 @@ def menu_lookup(current_world_num: int, menu_choice: int) -> int:
 
     Returns:
         The index of the selected homeworld, or -1 if Stay Here is selected
-    """    
+    """
     if menu_choice > current_world_num:
         return menu_choice
     return menu_choice - 1

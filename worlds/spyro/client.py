@@ -4,7 +4,6 @@ import struct
 from typing_extensions import override, final, TYPE_CHECKING
 
 from NetUtils import ClientStatus
-from settings import Bool
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
@@ -176,16 +175,16 @@ class SpyroClient(BizHawkClient):
                                 "Defeated Gnasty Gnorc", ctx
                             )
             for hub in RAM.hub_environments:
-                quarter_count: int = int(hub.total_gems / 4)
-                if self.gem_counts[hub.internal_id] >= quarter_count:
+                hub_quarter_count: int = int(hub.total_gems / 4)
+                if self.gem_counts[hub.internal_id] >= hub_quarter_count:
                     await self.send_location_once(
                         f"{hub.name} 25% Gems", ctx
                     )
-                if self.gem_counts[hub.internal_id] >= (quarter_count * 2):
+                if self.gem_counts[hub.internal_id] >= (hub_quarter_count * 2):
                     await self.send_location_once(
                         f"{hub.name} 50% Gems", ctx
                     )
-                if self.gem_counts[hub.internal_id] >= (quarter_count * 3):
+                if self.gem_counts[hub.internal_id] >= (hub_quarter_count * 3):
                     await self.send_location_once(
                         f"{hub.name} 75% Gems", ctx
                     )
@@ -336,7 +335,9 @@ class SpyroClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             pass
 
-    def balloonist_helper(self, allow: bytes, choice: bytes) -> list[tuple[int, bytes]]:
+    def balloonist_helper(
+        self, allow: bytes, choice: bytes
+    ) -> list[tuple[int, bytes]]:
         result: list[tuple[int, bytes]] = []
         result.append((RAM.fake_timer, allow))
         result.append((RAM.last_selected_valid_choice, choice))
