@@ -46,6 +46,7 @@ class LevelStats():
         self.has_vortex = has_vortex
         self.reached_vortex = False
 
+
 total_treasure: int = 14000
 
 homeworld_stats = {
