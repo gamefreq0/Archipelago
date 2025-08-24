@@ -54,6 +54,7 @@ class RAM:
             return is_hub
 
     hub_environments: list[Environment] = []
+    
     hub_environments.append(Environment("Artisans", 10))
     hub_environments.append(Environment("Peace Keepers", 20))
     hub_environments.append(Environment("Magic Crafters", 30))
