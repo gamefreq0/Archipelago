@@ -187,15 +187,9 @@ class SpyroClient(BizHawkClient):
 
             for hub in RAM.hub_environments:
                 hub_quarter_count: int = int(hub.total_gems / 4)
-
-                if self.gem_counts[hub.internal_id] >= hub_quarter_count:
-                    await self.send_location_once(f"{hub.name} 25% Gems", ctx)
-                if self.gem_counts[hub.internal_id] >= (hub_quarter_count * 2):
-                    await self.send_location_once(f"{hub.name} 50% Gems", ctx)
-                if self.gem_counts[hub.internal_id] >= (hub_quarter_count * 3):
-                    await self.send_location_once(f"{hub.name} 75% Gems", ctx)
-                if self.gem_counts[hub.internal_id] >= hub.total_gems:
-                    await self.send_location_once(f"{hub.name} 100% Gems", ctx)
+                for index in range(1, 5):
+                    if self.gem_counts[hub.internal_id] >= (hub_quarter_count * index):
+                        await self.send_location_once(f"{hub.name} {25 * index}% Gems", ctx)
 
                 for level in hub.child_environments:
                     if (level.has_vortex) and (self.vortexes_reached[level.internal_id] == 1):
@@ -203,14 +197,9 @@ class SpyroClient(BizHawkClient):
 
                     quarter_count: int = int(level.total_gems / 4)
 
-                    if self.gem_counts[level.internal_id] >= quarter_count:
-                        await self.send_location_once(f"{level.name} 25% Gems", ctx)
-                    if self.gem_counts[level.internal_id] >= (quarter_count * 2):
-                        await self.send_location_once(f"{level.name} 50% Gems", ctx)
-                    if self.gem_counts[level.internal_id] >= (quarter_count * 3):
-                        await self.send_location_once(f"{level.name} 75% Gems", ctx)
-                    if self.gem_counts[level.internal_id] >= level.total_gems:
-                        await self.send_location_once(f"{level.name} 100% Gems", ctx)
+                    for index in range(1, 5):
+                        if self.gem_counts[level.internal_id] >= (quarter_count * index):
+                            await self.send_location_once(f"{level.name} {25 * index}% Gems", ctx)
 
             to_write_ingame: list[tuple[int, bytes]] = []
             to_write_menu: list[tuple[int, bytes]] = []
