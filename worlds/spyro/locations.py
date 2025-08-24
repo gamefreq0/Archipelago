@@ -150,6 +150,13 @@ for gem_count in range(500, total_treasure + 1, 500):
 # TODO: Create table of dragon names. Ugh. Can't take easy way out with numbers like with gems.
 dragon_locations: list[str] = []
 
+vortex_locations: list[str] = []
+
+for hub in RAM.hub_environments:
+    for level in hub.child_environments:
+        if level.has_vortex:
+            vortex_locations.append(f"{level.name} Vortex")
+
 # TODO: Restructure this bit based on eggs structure in RAM.Environments
 egg_locations: list[str] = []
 
@@ -169,7 +176,8 @@ for d in [
     # total_gem_threshold_locations.keys(),
     # dragon_locations
     # egg_locations,
-    misc_locations
+    vortex_locations,
+    misc_locations,
 ]:
     for item in d:
         location_list.append(item)
