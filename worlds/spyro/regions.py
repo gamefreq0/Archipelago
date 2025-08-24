@@ -72,9 +72,11 @@ def create_regions(world: "SpyroWorld"):
     # Start of level/world regions. Anywhere accessible upon spawning within.
     hub_regions: dict[str, Region] = {}
     level_regions: dict[str, Region] = {}
+    
     for hub in hub_names.items():
         hub_name, level_names = hub
         hub_regions[hub_name] = Region(hub_name, player, multiworld)
+        
         for level_name in level_names:
             level_regions[level_name] = Region(level_name, player, multiworld)
 
@@ -90,6 +92,7 @@ def create_regions(world: "SpyroWorld"):
     for hub in hub_regions.items():
         hub_name, hub_region = hub
         regions.append(hub_region)
+    
     for level in level_regions.items():
         level_name, level_region = level
         regions.append(level_region)
@@ -119,6 +122,7 @@ def create_regions(world: "SpyroWorld"):
     _ = menu.connect(main_world, "Global Stats")
     for hub in hub_regions.items():
         hub_name, hub_region = hub
+        
         for level_name in hub_names[hub_name]:
             level_region = level_regions[level_name]
             portal_to_flyin = hub_region.create_exit(f"{level_name} Portal")
@@ -134,12 +138,15 @@ def create_regions(world: "SpyroWorld"):
             level_vortex_to_portal = level_region.create_exit(f"{level_name} Fly-in")
             level_vortex_to_portal.randomization_type = EntranceType.TWO_WAY
             level_vortex_to_portal.randomization_group = ENTRANCE_OUT
+            
         _ = hub_region.connect(balloonist_menu, f"{hub_name} Balloonist")
+        
         if "Gnasty" not in hub_name:
             _ = balloonist_menu.connect(
                     hub_region, f"Balloonist to {hub_name}", lambda state,
                     hub_name=hub_name: state.has(hub_name, player)
             )
+            
     _ = balloonist_menu.connect(
             hub_regions["Gnasty's World"], "Balloonist to Gnorc Gnexus",
             lambda state: state.has_all(boss_items, player)
