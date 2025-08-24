@@ -144,6 +144,7 @@ for gem_count in range(500, total_treasure + 1, 500):
 # TODO: Create table of dragon names. Ugh. Can't take easy way out with numbers like with gems.
 dragon_locations: list[str] = []
 
+# TODO: Restructure this bit based on eggs structure in RAM.Environments
 egg_locations: list[str] = []
 
 for level, stats in all_stats.items():
