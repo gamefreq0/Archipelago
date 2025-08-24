@@ -98,19 +98,11 @@ def create_regions(world: "SpyroWorld"):
         if region != menu:
             for location_name, location_id in location_name_to_id.items():
                 if region.name in location_name:
-                    region.locations.append(SpyroLocation(
-                        player, location_name, location_id, region
-                    ))
-                elif (region == main_world) and (
-                    "00 Gems" in location_name
-                ):
-                    region.locations.append(SpyroLocation(
-                        player, location_name, location_id, region
-                    ))
+                    region.locations.append(SpyroLocation(player, location_name, location_id, region))
+                elif (region == main_world) and ("00 Gems" in location_name):
+                    region.locations.append(SpyroLocation(player, location_name, location_id, region))
 
-    world.get_location(
-        "Defeated Gnasty Gnorc"
-    ).parent_region = level_regions["Gnasty Gnorc"]
+    world.get_location("Defeated Gnasty Gnorc").parent_region = level_regions["Gnasty Gnorc"]
 
     # TODO: Create regions within levels for move shuffle eventually.
 
@@ -129,24 +121,14 @@ def create_regions(world: "SpyroWorld"):
             portal_to_flyin = hub_region.create_exit(f"{level_name} Portal")
             portal_to_flyin.randomization_type = EntranceType.TWO_WAY
             portal_to_flyin.randomization_group = ENTRANCE_IN
-            portal_to_flyin.access_rule = (
-                lambda state, level_name=level_name: state.has(
-                    level_name, player
-                )
-            )
-            portal_from_vortex = hub_region.create_er_target(
-                f"{level_name} Portal"
-            )
+            portal_to_flyin.access_rule = (lambda state, level_name=level_name: state.has(level_name, player))
+            portal_from_vortex = hub_region.create_er_target(f"{level_name} Portal")
             portal_from_vortex.randomization_type = EntranceType.TWO_WAY
             portal_from_vortex.randomization_group = ENTRANCE_IN
-            level_flyin_from_portal = level_region.create_er_target(
-                f"{level_name} Fly-in"
-            )
+            level_flyin_from_portal = level_region.create_er_target(f"{level_name} Fly-in")
             level_flyin_from_portal.randomization_type = EntranceType.TWO_WAY
             level_flyin_from_portal.randomization_group = ENTRANCE_OUT
-            level_vortex_to_portal = level_region.create_exit(
-                f"{level_name} Fly-in"
-            )
+            level_vortex_to_portal = level_region.create_exit(f"{level_name} Fly-in")
             level_vortex_to_portal.randomization_type = EntranceType.TWO_WAY
             level_vortex_to_portal.randomization_group = ENTRANCE_OUT
         _ = hub_region.connect(balloonist_menu, f"{hub_name} Balloonist")

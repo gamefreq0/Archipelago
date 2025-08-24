@@ -1,6 +1,7 @@
+from logging import warning
+
 from typing_extensions import final, override, ClassVar
 
-from logging import warning
 from BaseClasses import Entrance, MultiWorld
 from BaseClasses import ItemClassification
 from Options import OptionError
@@ -81,9 +82,7 @@ class SpyroWorld(World):
             classification = ItemClassification.trap
         else:
             classification = ItemClassification.progression
-        return SpyroItem(
-            name, classification, self.item_name_to_id[name], self.player
-        )
+        return SpyroItem(name, classification, self.item_name_to_id[name], self.player)
 
     def create_event(self, event: str) -> SpyroItem:
         """Generate item with no ID, for use with generation-time logic
@@ -94,16 +93,12 @@ class SpyroWorld(World):
         Returns:
             The generated SpyroItem
         """
-        return SpyroItem(
-            event, ItemClassification.progression, None, self.player
-        )
+        return SpyroItem(event, ItemClassification.progression, None, self.player)
 
     @override
     def create_items(self) -> None:
         for name in homeworld_access:
-            if name == self.options.starting_world.get_option_name(
-                self.options.starting_world.value
-            ):
+            if name == self.options.starting_world.get_option_name(self.options.starting_world.value):
                 self.push_precollected(self.create_item(name))
             else:
                 self.itempool += [self.create_item(name)]
@@ -114,15 +109,9 @@ class SpyroWorld(World):
         victory = self.create_item(goal_item[0])
 
         trap_percentage = 0.05
-        total_unfilled_locations = len(
-            self.multiworld.get_unfilled_locations(self.player)
-        )
+        total_unfilled_locations = len(self.multiworld.get_unfilled_locations(self.player))
         total_filled_local_locations = len(self.itempool) + 1  # Victory item
-        trap_count = round(
-            (
-                total_unfilled_locations - total_filled_local_locations
-            ) * trap_percentage
-        )
+        trap_count = round((total_unfilled_locations - total_filled_local_locations) * trap_percentage)
         total_filled_local_locations += trap_count
 
         for _ in range(trap_count):
@@ -136,21 +125,17 @@ class SpyroWorld(World):
             self.itempool += [self.create_item(random_filler)]
 
         if self.options.goal == "gnasty":
-            self.get_location("Defeated Gnasty Gnorc").place_locked_item(
-                victory
-            )
+            self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
 
         self.multiworld.itempool += self.itempool
 
     @override
     def connect_entrances(self) -> None:
         if self.options.portal_shuffle:
-            shuffled_entrances = randomize_entrances(
-                self, True, {
+            shuffled_entrances = randomize_entrances(self, True, {
                     ENTRANCE_IN: [ENTRANCE_OUT],
                     ENTRANCE_OUT: [ENTRANCE_IN]
-                }, False
-            )
+            }, False)
             self.shuffled_entrance_pairings = shuffled_entrances.pairings
         else:
             all_entrances = self.get_entrances()
@@ -166,16 +151,12 @@ class SpyroWorld(World):
                     levels_stop = index
             vanilla_pairs: list[tuple[Entrance, Entrance]] = []
             for index in range(levels_start, levels_stop, 2):
-                vanilla_pairs.append(
-                    (all_ents_list[index], all_ents_list[index + 1])
-                )
+                vanilla_pairs.append((all_ents_list[index], all_ents_list[index + 1]))
             for pair in vanilla_pairs:
-                if (pair[0].parent_region is not None) and (
-                    pair[1].parent_region is not None
-                ) and (
-                    pair[0].connected_region is None
-                ) and (
-                    pair[1].connected_region is None
+                if ((pair[0].parent_region is not None)
+                    and (pair[1].parent_region is not None)
+                    and (pair[0].connected_region is None)
+                    and (pair[1].connected_region is None)
                 ):
                     pair[0].connect(pair[1].parent_region)
                     pair[1].connect(pair[0].parent_region)
