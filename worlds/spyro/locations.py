@@ -102,12 +102,14 @@ for d in [
     all_stats.update(d)
 
 level_gem_threshold_locations: dict[str, int] = {}
-for level, stats in all_stats.items():
-    quarter_gems = int(stats.treasure_count / 4)
-    level_gem_threshold_locations[f"{level} 25% Gems"] = quarter_gems
-    level_gem_threshold_locations[f"{level} 50% Gems"] = quarter_gems * 2
-    level_gem_threshold_locations[f"{level} 75% Gems"] = quarter_gems * 3
-    level_gem_threshold_locations[f"{level} 100% Gems"] = quarter_gems * 4
+for hub in RAM.hub_environments:
+    quarter_gems_hub = int(hub.total_gems / 4)
+    for index in range(1, 5):
+        level_gem_threshold_locations[f"{hub.name} {index * 25}% Gems"] = quarter_gems_hub * index
+    for level in hub.child_environments:
+        quarter_gems_level = int(level.total_gems / 4)
+        for index in range(1, 5):
+            level_gem_threshold_locations[f"{level.name} {index * 25}% Gems"] = quarter_gems_level * index
 
 total_gem_threshold_locations: dict[str, int] = {}
 for gem_count in range(500, total_treasure + 1, 500):
