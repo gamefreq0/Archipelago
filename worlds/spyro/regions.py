@@ -1,4 +1,7 @@
-from typing_extensions import TYPE_CHECKING
+try:
+    from typing import TYPE_CHECKING
+except ImportError:
+    from typing_extensions import TYPE_CHECKING
 
 from BaseClasses import Region, EntranceType
 from .items import boss_items
