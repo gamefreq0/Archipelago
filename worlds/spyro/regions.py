@@ -7,7 +7,7 @@ from BaseClasses import Region, EntranceType
 from .items import boss_items
 
 from .locations import SpyroLocation, location_name_to_id
-from .addresses import RAM
+from .addresses import RAM, Environment
 
 if TYPE_CHECKING:
     from .world import SpyroWorld
@@ -27,6 +27,8 @@ def create_regions(world: "SpyroWorld"):
     # Start of level/world regions. Anywhere accessible upon spawning within.
     hub_regions: dict[str, Region] = {}
     level_regions: dict[str, Region] = {}
+
+    hub: Environment
 
     for hub in RAM.hub_environments:
         hub_regions[hub.name] = Region(hub.name, player, multiworld)
@@ -73,7 +75,7 @@ def create_regions(world: "SpyroWorld"):
     _ = menu.connect(main_world, "Global Stats")
     for hub in RAM.hub_environments:
         hub_region = hub_regions[hub.name]
-        level: RAM.Environment
+        level: Environment
         for level in hub.child_environments:
             level_region = level_regions[level.name]
             portal_to_flyin = hub_region.create_exit(f"{level.name} Portal")
