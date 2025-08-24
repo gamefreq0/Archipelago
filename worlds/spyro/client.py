@@ -1,7 +1,10 @@
 import logging
 import struct
 
-from typing_extensions import override, final, TYPE_CHECKING
+try:
+    from typing import override, final, TYPE_CHECKING
+except ImportError:
+    from typing_extensions import override, final, TYPE_CHECKING
 
 from NetUtils import ClientStatus
 import worlds._bizhawk as bizhawk
