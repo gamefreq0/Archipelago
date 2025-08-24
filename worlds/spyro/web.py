@@ -1,4 +1,7 @@
-from typing_extensions import final
+try:
+    from typing import final
+except ImportError:
+    from typing_extensions import final
 
 from BaseClasses import Tutorial
 from ..AutoWorld import WebWorld
