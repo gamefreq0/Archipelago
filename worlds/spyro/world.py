@@ -1,9 +1,13 @@
 from logging import warning
 
+from typing import TYPE_CHECKING
 try:
     from typing import final, override, ClassVar
 except ImportError:
-    from typing_extensions import final, override, ClassVar
+    if TYPE_CHECKING:
+        from typing import final, override, ClassVar
+    else:
+        from typing_extensions import final, override, ClassVar
 
 from BaseClasses import Entrance, MultiWorld
 from BaseClasses import ItemClassification

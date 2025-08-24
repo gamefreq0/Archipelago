@@ -1,9 +1,13 @@
 from enum import IntEnum
 
+from typing import TYPE_CHECKING
 try:
     from typing import final
 except ImportError:
-    from typing_extensions import final
+    if TYPE_CHECKING:
+        from typing import final
+    else:
+        from typing_extensions import final
 
 
 @final
