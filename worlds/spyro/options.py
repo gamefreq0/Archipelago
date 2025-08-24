@@ -1,5 +1,13 @@
 from dataclasses import dataclass
-from typing_extensions import final
+
+from typing import TYPE_CHECKING
+try:
+    from typing import final
+except ImportError:
+    if TYPE_CHECKING:
+        from typing import final
+    else:
+        from typing_extensions import final
 
 from Options import Choice, DeathLink, PerGameCommonOptions, FreeText, Toggle
 
@@ -21,6 +29,7 @@ class GoalOption(Choice):
 @final
 class StartingHomeworldOption(Choice):
     """Choose which homeworld to start in.
+
     Options are:
     artisans
     peace_keepers
@@ -41,6 +50,7 @@ class StartingHomeworldOption(Choice):
 @final
 class PortalShuffleOption(Toggle):
     """If enabled, where a portal leads to is shuffled."""
+
     display_name = "Portal Shuffle"
     default = False
 
@@ -48,6 +58,7 @@ class PortalShuffleOption(Toggle):
 @final
 class SpyroColorOption(FreeText):
     """Choose a color to tint Spyro, in RGBA format.
+
     Note that a value of FFFFFF00 will result in the vanilla colors.
     """
 

@@ -1,4 +1,12 @@
-from typing_extensions import final
+from typing import TYPE_CHECKING
+try:
+    from typing import final
+except ImportError:
+    if TYPE_CHECKING:
+        from typing import final
+    else:
+        from typing_extensions import final
+
 from BaseClasses import Location
 
 from .addresses import RAM
@@ -43,7 +51,14 @@ class LevelStats():
         self.reached_vortex = False
 
 
-total_treasure: int = 14000
+total_treasure: int = 0
+
+for hub in RAM.hub_environments:
+    total_treasure += hub.total_gems
+
+    for level in hub.child_environments:
+        total_treasure += level.total_gems
+
 homeworld_stats = {
     "Artisans": LevelStats(0, 100, 4, False),
     "Peace Keepers": LevelStats(1, 200, 3, False),
@@ -52,6 +67,7 @@ homeworld_stats = {
     "Dream Weavers": LevelStats(0, 300, 3, False),
     "Gnasty's World": LevelStats(0, 200, 2, False)
 }
+
 artisans_stats = {
     "Stone Hill": LevelStats(1, 200, 4),
     "Dark Hollow": LevelStats(0, 100, 3),
@@ -59,6 +75,7 @@ artisans_stats = {
     "Toasty": LevelStats(0, 100, 1),
     "Sunny Flight": LevelStats(0, 300, 0, False)
 }
+
 keepers_stats = {
     "Dry Canyon": LevelStats(1, 400, 4),
     "Cliff Town": LevelStats(1, 400, 3),
@@ -66,6 +83,7 @@ keepers_stats = {
     "Doctor Shemp": LevelStats(0, 300, 1),
     "Night Flight": LevelStats(0, 300, 0, False)
 }
+
 crafters_stats = {
     "Alpine Ridge": LevelStats(1, 500, 4),
     "High Caves": LevelStats(2, 500, 3),
@@ -73,6 +91,7 @@ crafters_stats = {
     "Blowhard": LevelStats(0, 400, 1),
     "Crystal Flight": LevelStats(0, 300, 0, False)
 }
+
 makers_stats = {
     "Terrace Village": LevelStats(0, 400, 2),
     "Misty Bog": LevelStats(0, 500, 4),
@@ -80,6 +99,7 @@ makers_stats = {
     "Metalhead": LevelStats(0, 500, 1),
     "Wild Flight": LevelStats(0, 300, 0, False),
 }
+
 weavers_stats = {
     "Dark Passage": LevelStats(0, 500, 5),
     "Lofty Castle": LevelStats(0, 400, 3),
@@ -87,6 +107,7 @@ weavers_stats = {
     "Jacques": LevelStats(0, 500, 2),
     "Icy Flight": LevelStats(0, 300, 0, False)
 }
+
 gnasty_stats = {
     "Gnorc Cove": LevelStats(0, 400, 2),
     "Twilight Harbor": LevelStats(0, 400, 2),
@@ -95,28 +116,50 @@ gnasty_stats = {
 }
 
 all_stats: dict[str, LevelStats] = {}
+
 for d in [
-        homeworld_stats, artisans_stats, keepers_stats, crafters_stats,
-        makers_stats, weavers_stats, gnasty_stats
-        ]:
+        homeworld_stats,
+        artisans_stats,
+        keepers_stats,
+        crafters_stats,
+        makers_stats,
+        weavers_stats,
+        gnasty_stats
+]:
     all_stats.update(d)
 
 level_gem_threshold_locations: dict[str, int] = {}
-for level, stats in all_stats.items():
-    quarter_gems = int(stats.treasure_count / 4)
-    level_gem_threshold_locations[f"{level} 25% Gems"] = quarter_gems
-    level_gem_threshold_locations[f"{level} 50% Gems"] = quarter_gems * 2
-    level_gem_threshold_locations[f"{level} 75% Gems"] = quarter_gems * 3
-    level_gem_threshold_locations[f"{level} 100% Gems"] = quarter_gems * 4
+
+for hub in RAM.hub_environments:
+    quarter_gems_hub = int(hub.total_gems / 4)
+
+    for index in range(1, 5):
+        level_gem_threshold_locations[f"{hub.name} {index * 25}% Gems"] = quarter_gems_hub * index
+
+    for level in hub.child_environments:
+        quarter_gems_level = int(level.total_gems / 4)
+
+        for index in range(1, 5):
+            level_gem_threshold_locations[f"{level.name} {index * 25}% Gems"] = quarter_gems_level * index
 
 total_gem_threshold_locations: dict[str, int] = {}
+
 for gem_count in range(500, total_treasure + 1, 500):
-    total_gem_threshold_locations[f"{gem_count:,d} Gems"] = gem_count
+    total_gem_threshold_locations[f"{gem_count} Gems"] = gem_count
 
 # TODO: Create table of dragon names. Ugh. Can't take easy way out with numbers like with gems.
 dragon_locations: list[str] = []
 
+vortex_locations: list[str] = []
+
+for hub in RAM.hub_environments:
+    for level in hub.child_environments:
+        if level.has_vortex:
+            vortex_locations.append(f"{level.name} Vortex")
+
+# TODO: Restructure this bit based on eggs structure in RAM.Environments
 egg_locations: list[str] = []
+
 for level, stats in all_stats.items():
     for count in range(stats.egg_count):
         egg_locations.append(f"{level} Egg {count + 1:d}")
@@ -125,12 +168,16 @@ misc_locations: list[str] = []
 misc_locations.append("Defeated Gnasty Gnorc")
 
 location_list: list[str] = []
+
 for d in [
     # TODO: reimplement total gem thresholds, dragon locations, egg locations
     # total gems needs logic, the rest need client-side stuff
-    level_gem_threshold_locations.keys(),  # total_gem_threshold_locations.keys(),
-    # dragon_locations, egg_locations,
-    misc_locations
+    level_gem_threshold_locations.keys(),
+    # total_gem_threshold_locations.keys(),
+    # dragon_locations
+    # egg_locations,
+    vortex_locations,
+    misc_locations,
 ]:
     for item in d:
         location_list.append(item)
@@ -145,6 +192,7 @@ flight_levels = {
     "Wild Flight",
     "Icy Flight"
 }
+
 boss_levels = {
     "Toasty",
     "Doctor Shemp",
@@ -153,23 +201,32 @@ boss_levels = {
     "Jacques",
     "Gnasty Gnorc"
 }
+
 meta_groups = {
-    "flight levels": set(flight_levels),
-    "boss levels": set(boss_levels)
+    "Flight Levels": set(flight_levels),
+    "Boss Levels": set(boss_levels)
 }
+
 level_groups: dict[str, set[str]] = {}
 grouped_locations: dict[str, set[str]] = {}
+
 for meta_group in meta_groups:
     # Initialize these so we can just .update() them later
     grouped_locations[meta_group] = set()
-for level_name, _ in all_stats.items():
-    cur_level_list: set[str] = set()
-    for location in location_list:
-        if level_name in location:
-            cur_level_list.add(location)
-    level_groups[level_name] = cur_level_list
+
+for hub in RAM.hub_environments:
+    for level in hub.child_environments:
+        cur_level_set: set[str] = set()
+
+        for location in location_list:
+            if level.name in location:
+                cur_level_set.add(location)
+
+        level_groups[level.name] = cur_level_set
+
 for level, locations in level_groups.items():
     for meta_group, level_group in meta_groups.items():
         if level in level_group:
             grouped_locations[meta_group].update(locations)
+
     grouped_locations[level] = locations

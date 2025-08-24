@@ -1,5 +1,14 @@
-from typing_extensions import final
+from typing import TYPE_CHECKING
+try:
+    from typing import final
+except ImportError:
+    if TYPE_CHECKING:
+        from typing import final
+    else:
+        from typing_extensions import final
+
 from BaseClasses import Item
+from .addresses import RAM
 
 BASE_SPYRO_ITEM_ID = 1000
 
@@ -9,44 +18,15 @@ class SpyroItem(Item):
     game: str = "Spyro the Dragon"
 
 
-homeworld_access = [
-    "Artisans",
-    "Peace Keepers",
-    "Magic Crafters",
-    "Beast Makers",
-    "Dream Weavers"
-]
-level_access = [
-    "Stone Hill",
-    "Dark Hollow",
-    "Town Square",
-    "Toasty",
-    "Sunny Flight",
-    "Dry Canyon",
-    "Cliff Town",
-    "Ice Cavern",
-    "Doctor Shemp",
-    "Night Flight",
-    "Alpine Ridge",
-    "High Caves",
-    "Wizard Peak",
-    "Blowhard",
-    "Crystal Flight",
-    "Terrace Village",
-    "Misty Bog",
-    "Tree Tops",
-    "Metalhead",
-    "Wild Flight",
-    "Dark Passage",
-    "Lofty Castle",
-    "Haunted Towers",
-    "Jacques",
-    "Icy Flight",
-    "Gnorc Cove",
-    "Twilight Harbor",
-    "Gnasty Gnorc",
-    "Gnasty's Loot"
-]
+homeworld_access: list[str] = []
+level_access: list[str] = []
+
+for hub in RAM.hub_environments:
+    if hub.name != "Gnasty's World":
+        homeworld_access.append(hub.name)
+    for level in hub.child_environments:
+        level_access.append(level.name)
+
 boss_items = [
     "Toasty's Stilts",
     "Shemp's Staff",
@@ -54,12 +34,15 @@ boss_items = [
     "Metalhead's Mohawk",
     "Jacques' Ribbon"
 ]
+
 goal_item = ["Victory"]
+
 trap_items = [
     "Flop Trap",
     "Roll Trap",
     "Faint Trap"
 ]
+
 filler_items = [
     "Extra Life",
     "Butterfly"

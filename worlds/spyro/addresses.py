@@ -1,6 +1,61 @@
 from enum import IntEnum
 
-from typing_extensions import final
+from typing import TYPE_CHECKING
+try:
+    from typing import final
+except ImportError:
+    if TYPE_CHECKING:
+        from typing import final
+    else:
+        from typing_extensions import final
+
+
+def internal_id_to_offset(internal_id: int) -> int:
+    """Translates internal ID to zero-indexed offset in the overall environment"""
+    homeworld_index = int(internal_id / 10) - 1
+    homeworld_offset = internal_id % 10
+    return (homeworld_index * 6) + homeworld_offset
+
+
+class Environment():
+    """A container holding various useful pieces of data tied to a given level or homeworld"""
+    balloon_pointers: list[int]
+    name: str
+    internal_id: int
+    text_offset: int
+    has_vortex: bool
+    dragons: dict[str, tuple[int, int]]  # dragons[name] = (address, flag)
+    # TODO: eggs
+    gem_counter: int
+    total_gems: int
+    statue_head_checks: list[int]
+    child_environments: list["Environment"]
+    portal_surface_types: list[int]
+    portal_dest_level_ids: list[int]
+    VORTEX_BASE_POINTER: int = 0x7a6a8
+    vortex_pointer: int
+
+    def __init__(self, name: str, internal_id: int, has_vortex: bool = False) -> None:
+        self.name = name
+        self.internal_id = internal_id
+        self.balloon_pointers = []
+        self.text_offset = 0
+        self.has_vortex = has_vortex
+        self.dragons = {}
+        self.gem_counter = 0
+        self.total_gems = 0
+        self.statue_head_checks = []
+        self.child_environments = []
+        self.portal_surface_types = []
+        self.portal_dest_level_ids = []
+        self.vortex_pointer = self.VORTEX_BASE_POINTER + internal_id_to_offset(self.internal_id)
+
+    def is_hub(self) -> bool:
+        """Whether the current environment is a homeworld"""
+        is_hub = False
+        if self.internal_id % 10 == 0:
+            is_hub = True
+        return is_hub
 
 
 @final
@@ -16,44 +71,8 @@ class RAM:
 
     last_selected_valid_choice: int = unused_space + 12
 
-    class Environment():
-        """A container holding various useful pieces of data tied to a given level or homeworld"""
-        balloon_pointers: list[int]
-        name: str
-        internal_id: int
-        text_offset: int
-        has_vortex: bool
-        dragons: dict[str, tuple[int, int]]  # dragons[name] = (address, flag)
-        # TODO: eggs
-        gem_counter: int
-        total_gems: int
-        statue_head_checks: list[int]
-        child_environments: list["RAM.Environment"]
-        portal_surface_types: list[int]
-        portal_dest_level_ids: list[int]
-
-        def __init__(self, name: str, internal_id: int, has_vortex: bool = False) -> None:
-            self.name = name
-            self.internal_id = internal_id
-            self.balloon_pointers = []
-            self.text_offset = 0
-            self.has_vortex = has_vortex
-            self.dragons = {}
-            self.gem_counter = 0
-            self.total_gems = 0
-            self.statue_head_checks = []
-            self.child_environments = []
-            self.portal_surface_types = []
-            self.portal_dest_level_ids = []
-
-        def is_hub(self) -> bool:
-            """Whether the current environment is a homeworld"""
-            is_hub = False
-            if self.internal_id % 10 == 0:
-                is_hub = True
-            return is_hub
-
     hub_environments: list[Environment] = []
+
     hub_environments.append(Environment("Artisans", 10))
     hub_environments.append(Environment("Peace Keepers", 20))
     hub_environments.append(Environment("Magic Crafters", 30))
@@ -65,35 +84,35 @@ class RAM:
     hub_environments[0].child_environments.append(Environment("Dark Hollow", 12, True))
     hub_environments[0].child_environments.append(Environment("Town Square", 13, True))
     hub_environments[0].child_environments.append(Environment("Toasty", 14, True))
-    hub_environments[0].child_environments.append(Environment("Sunny Flight", 15, True))
+    hub_environments[0].child_environments.append(Environment("Sunny Flight", 15))
 
     hub_environments[1].child_environments.append(Environment("Dry Canyon", 21, True))
     hub_environments[1].child_environments.append(Environment("Cliff Town", 22, True))
     hub_environments[1].child_environments.append(Environment("Ice Cavern", 23, True))
     hub_environments[1].child_environments.append(Environment("Doctor Shemp", 24, True))
-    hub_environments[1].child_environments.append(Environment("Night Flight", 25, True))
+    hub_environments[1].child_environments.append(Environment("Night Flight", 25))
 
     hub_environments[2].child_environments.append(Environment("Alpine Ridge", 31, True))
     hub_environments[2].child_environments.append(Environment("High Caves", 32, True))
     hub_environments[2].child_environments.append(Environment("Wizard Peak", 33, True))
     hub_environments[2].child_environments.append(Environment("Blowhard", 34, True))
-    hub_environments[2].child_environments.append(Environment("Crystal Flight", 35, True))
+    hub_environments[2].child_environments.append(Environment("Crystal Flight", 35))
 
     hub_environments[3].child_environments.append(Environment("Terrace Village", 41, True))
     hub_environments[3].child_environments.append(Environment("Misty Bog", 42, True))
     hub_environments[3].child_environments.append(Environment("Tree Tops", 43, True))
     hub_environments[3].child_environments.append(Environment("Metalhead", 44, True))
-    hub_environments[3].child_environments.append(Environment("Wild Flight", 45, True))
+    hub_environments[3].child_environments.append(Environment("Wild Flight", 45))
 
     hub_environments[4].child_environments.append(Environment("Dark Passage", 51, True))
     hub_environments[4].child_environments.append(Environment("Lofty Castle", 52, True))
     hub_environments[4].child_environments.append(Environment("Haunted Towers", 53, True))
     hub_environments[4].child_environments.append(Environment("Jacques", 54, True))
-    hub_environments[4].child_environments.append(Environment("Icy Flight", 55, True))
+    hub_environments[4].child_environments.append(Environment("Icy Flight", 55))
 
     hub_environments[5].child_environments.append(Environment("Gnorc Cove", 61, True))
     hub_environments[5].child_environments.append(Environment("Twilight Harbor", 62, True))
-    hub_environments[5].child_environments.append(Environment("Gnasty Gnorc", 63, True))
+    hub_environments[5].child_environments.append(Environment("Gnasty Gnorc", 63))
     hub_environments[5].child_environments.append(Environment("Gnasty's Loot", 64, True))
 
     hub_environments[0].balloon_pointers = [0x7bc04, 0x7bc08]
@@ -145,7 +164,9 @@ class RAM:
     hub_environments[5].portal_dest_level_ids.append(0xa69c0)  # Gnasty Gnorc
     hub_environments[5].portal_dest_level_ids.append(0xa69cc)  # Gnasty's Loot
 
+    hub: Environment
     for hub in hub_environments:
+        dest_offset: int
         for dest_offset in hub.portal_dest_level_ids:
             hub.portal_surface_types.append(dest_offset - 4)
 
