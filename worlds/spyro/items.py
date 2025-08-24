@@ -8,6 +8,7 @@ except ImportError:
         from typing_extensions import final
 
 from BaseClasses import Item
+from .addresses import RAM
 
 BASE_SPYRO_ITEM_ID = 1000
 
@@ -17,45 +18,14 @@ class SpyroItem(Item):
     game: str = "Spyro the Dragon"
 
 
-homeworld_access = [
-    "Artisans",
-    "Peace Keepers",
-    "Magic Crafters",
-    "Beast Makers",
-    "Dream Weavers"
-]
+homeworld_access: list[str] = []
+level_access: list[str] = []
 
-level_access = [
-    "Stone Hill",
-    "Dark Hollow",
-    "Town Square",
-    "Toasty",
-    "Sunny Flight",
-    "Dry Canyon",
-    "Cliff Town",
-    "Ice Cavern",
-    "Doctor Shemp",
-    "Night Flight",
-    "Alpine Ridge",
-    "High Caves",
-    "Wizard Peak",
-    "Blowhard",
-    "Crystal Flight",
-    "Terrace Village",
-    "Misty Bog",
-    "Tree Tops",
-    "Metalhead",
-    "Wild Flight",
-    "Dark Passage",
-    "Lofty Castle",
-    "Haunted Towers",
-    "Jacques",
-    "Icy Flight",
-    "Gnorc Cove",
-    "Twilight Harbor",
-    "Gnasty Gnorc",
-    "Gnasty's Loot"
-]
+for hub in RAM.hub_environments:
+    if hub.name != "Gnasty's World":
+        homeworld_access.append(hub.name)
+    for level in hub.child_environments:
+        level_access.append(level.name)
 
 boss_items = [
     "Toasty's Stilts",
