@@ -1,6 +1,9 @@
 from enum import IntEnum
 
-from typing_extensions import final
+try:
+    from typing import final
+except ImportError:
+    from typing_extensions import final
 
 
 @final
