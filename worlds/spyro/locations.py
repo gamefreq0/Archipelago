@@ -189,8 +189,8 @@ boss_levels = {
 }
 
 meta_groups = {
-    "flight levels": set(flight_levels),
-    "boss levels": set(boss_levels)
+    "Flight Levels": set(flight_levels),
+    "Boss Levels": set(boss_levels)
 }
 
 level_groups: dict[str, set[str]] = {}
@@ -200,14 +200,15 @@ for meta_group in meta_groups:
     # Initialize these so we can just .update() them later
     grouped_locations[meta_group] = set()
 
-for level_name, _ in all_stats.items():
-    cur_level_list: set[str] = set()
+for hub in RAM.hub_environments:
+    for level in hub.child_environments:
+        cur_level_set: set[str] = set()
 
-    for location in location_list:
-        if level_name in location:
-            cur_level_list.add(location)
+        for location in location_list:
+            if level.name in location:
+                cur_level_set.add(location)
 
-    level_groups[level_name] = cur_level_list
+        level_groups[level.name] = cur_level_set
 
 for level, locations in level_groups.items():
     for meta_group, level_group in meta_groups.items():
