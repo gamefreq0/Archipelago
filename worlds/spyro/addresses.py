@@ -38,6 +38,8 @@ class RAM:
         child_environments: list["RAM.Environment"]
         portal_surface_types: list[int]
         portal_dest_level_ids: list[int]
+        VORTEX_BASE_POINTER: int = 0x7a6a8
+        vortex_pointer: int
 
         def __init__(self, name: str, internal_id: int, has_vortex: bool = False) -> None:
             self.name = name
@@ -52,6 +54,13 @@ class RAM:
             self.child_environments = []
             self.portal_surface_types = []
             self.portal_dest_level_ids = []
+            self.vortex_pointer = self.VORTEX_BASE_POINTER + self.internal_id_to_vortex_offset(self.internal_id)
+
+        def internal_id_to_vortex_offset(self, internal_id: int) -> int:
+            """Translates internal ID to offset from vortex base pointer"""
+            homeworld_index = int(internal_id / 10) - 1
+            homeworld_offset = internal_id % 10
+            return (homeworld_index * 5) + homeworld_offset
 
         def is_hub(self) -> bool:
             """Whether the current environment is a homeworld"""
