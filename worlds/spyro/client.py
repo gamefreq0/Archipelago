@@ -98,11 +98,11 @@ class SpyroClient(BizHawkClient):
             item_name = item_id_to_name[item.item]
             
             if item_name in goal_item:
-                    await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+                await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
             elif item_name in homeworld_access:
                 self.ap_unlocked_worlds.add(item_name)
             elif item_name in boss_items:
-                    self.boss_items.add(item_id_to_name[item.item])
+                self.boss_items.add(item_id_to_name[item.item])
             else:
                 for hub in RAM.hub_environments:
                     for level in hub.child_environments:
