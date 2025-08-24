@@ -12,7 +12,7 @@ from worlds._bizhawk.client import BizHawkClient
 
 from .addresses import RAM, menu_lookup
 from .locations import location_name_to_id
-from .items import item_id_to_name
+from .items import item_id_to_name, boss_items, homeworld_access, goal_item
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -95,35 +95,31 @@ class SpyroClient(BizHawkClient):
             ctx.watcher_timeout = 0.125
         
         for item in ctx.items_received:
-            match item_id_to_name[item.item]:
-                case "Victory":
+            item_name = item_id_to_name[item.item]
+            
+            if item_name in goal_item:
                     await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
-                case "Artisans":
-                    self.ap_unlocked_worlds[0] = True
-                case "Peace Keepers":
-                    self.ap_unlocked_worlds[1] = True
-                case "Magic Crafters":
-                    self.ap_unlocked_worlds[2] = True
-                case "Beast Makers":
-                    self.ap_unlocked_worlds[3] = True
-                case "Dream Weavers":
-                    self.ap_unlocked_worlds[4] = True
-                case "Toasty's Stilts":
+            elif item_name in homeworld_access:
+                match item_name:
+                    case "Artisans":
+                        self.ap_unlocked_worlds[0] = True
+                    case "Peace Keepers":
+                        self.ap_unlocked_worlds[1] = True
+                    case "Magic Crafters":
+                        self.ap_unlocked_worlds[2] = True
+                    case "Beast Makers":
+                        self.ap_unlocked_worlds[3] = True
+                    case "Dream Weavers":
+                        self.ap_unlocked_worlds[4] = True
+                    case _:
+                        raise ValueError("How did you get here?!?")
+            elif item_name in boss_items:
                     self.boss_items.add(item_id_to_name[item.item])
-                case "Shemp's Staff":
-                    self.boss_items.add(item_id_to_name[item.item])
-                case "Blowhard's Beard":
-                    self.boss_items.add(item_id_to_name[item.item])
-                case "Metalhead's Mohawk":
-                    self.boss_items.add(item_id_to_name[item.item])
-                case "Jacques' Ribbon":
-                    self.boss_items.add(item_id_to_name[item.item])
-                case _:
-                    item_name = item_id_to_name[item.item]
-                    for hub in RAM.hub_environments:
-                        for level in hub.child_environments:
-                            if level.name == item_name:
-                                self.portal_accesses[level.name] = True
+            else:
+                for hub in RAM.hub_environments:
+                    for level in hub.child_environments:
+                        if level.name == item_name:
+                            self.portal_accesses[level.name] = True
         
         if self.slot_data_spyro_color is None:
             color_string = ctx.slot_data["spyro_color"]
