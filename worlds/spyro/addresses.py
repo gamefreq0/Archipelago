@@ -82,35 +82,35 @@ class RAM:
     hub_environments[0].child_environments.append(Environment("Dark Hollow", 12, True))
     hub_environments[0].child_environments.append(Environment("Town Square", 13, True))
     hub_environments[0].child_environments.append(Environment("Toasty", 14, True))
-    hub_environments[0].child_environments.append(Environment("Sunny Flight", 15, True))
+    hub_environments[0].child_environments.append(Environment("Sunny Flight", 15))
 
     hub_environments[1].child_environments.append(Environment("Dry Canyon", 21, True))
     hub_environments[1].child_environments.append(Environment("Cliff Town", 22, True))
     hub_environments[1].child_environments.append(Environment("Ice Cavern", 23, True))
     hub_environments[1].child_environments.append(Environment("Doctor Shemp", 24, True))
-    hub_environments[1].child_environments.append(Environment("Night Flight", 25, True))
+    hub_environments[1].child_environments.append(Environment("Night Flight", 25))
 
     hub_environments[2].child_environments.append(Environment("Alpine Ridge", 31, True))
     hub_environments[2].child_environments.append(Environment("High Caves", 32, True))
     hub_environments[2].child_environments.append(Environment("Wizard Peak", 33, True))
     hub_environments[2].child_environments.append(Environment("Blowhard", 34, True))
-    hub_environments[2].child_environments.append(Environment("Crystal Flight", 35, True))
+    hub_environments[2].child_environments.append(Environment("Crystal Flight", 35))
 
     hub_environments[3].child_environments.append(Environment("Terrace Village", 41, True))
     hub_environments[3].child_environments.append(Environment("Misty Bog", 42, True))
     hub_environments[3].child_environments.append(Environment("Tree Tops", 43, True))
     hub_environments[3].child_environments.append(Environment("Metalhead", 44, True))
-    hub_environments[3].child_environments.append(Environment("Wild Flight", 45, True))
+    hub_environments[3].child_environments.append(Environment("Wild Flight", 45))
 
     hub_environments[4].child_environments.append(Environment("Dark Passage", 51, True))
     hub_environments[4].child_environments.append(Environment("Lofty Castle", 52, True))
     hub_environments[4].child_environments.append(Environment("Haunted Towers", 53, True))
     hub_environments[4].child_environments.append(Environment("Jacques", 54, True))
-    hub_environments[4].child_environments.append(Environment("Icy Flight", 55, True))
+    hub_environments[4].child_environments.append(Environment("Icy Flight", 55))
 
     hub_environments[5].child_environments.append(Environment("Gnorc Cove", 61, True))
     hub_environments[5].child_environments.append(Environment("Twilight Harbor", 62, True))
-    hub_environments[5].child_environments.append(Environment("Gnasty Gnorc", 63, True))
+    hub_environments[5].child_environments.append(Environment("Gnasty Gnorc", 63))
     hub_environments[5].child_environments.append(Environment("Gnasty's Loot", 64, True))
 
     hub_environments[0].balloon_pointers = [0x7bc04, 0x7bc08]
