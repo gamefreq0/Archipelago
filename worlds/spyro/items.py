@@ -16,6 +16,7 @@ homeworld_access = [
     "Beast Makers",
     "Dream Weavers"
 ]
+
 level_access = [
     "Stone Hill",
     "Dark Hollow",
@@ -47,6 +48,7 @@ level_access = [
     "Gnasty Gnorc",
     "Gnasty's Loot"
 ]
+
 boss_items = [
     "Toasty's Stilts",
     "Shemp's Staff",
@@ -54,12 +56,15 @@ boss_items = [
     "Metalhead's Mohawk",
     "Jacques' Ribbon"
 ]
+
 goal_item = ["Victory"]
+
 trap_items = [
     "Flop Trap",
     "Roll Trap",
     "Faint Trap"
 ]
+
 filler_items = [
     "Extra Life",
     "Butterfly"
