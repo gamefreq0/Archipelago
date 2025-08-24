@@ -14,7 +14,7 @@ from NetUtils import ClientStatus
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
-from .addresses import RAM, menu_lookup
+from .addresses import RAM, menu_lookup, Environment, internal_id_to_offset
 from .locations import location_name_to_id
 from .items import item_id_to_name, boss_items, homeworld_access, goal_item
 
@@ -39,13 +39,16 @@ class SpyroClient(BizHawkClient):
     gem_counts: dict[int, int] = {}
     """Keeps track of gem counts, indexed by level ID"""
 
+    vortexes_reached: dict[int, int] = {}
+    """Keeps track of reached vortices, indexed by level ID"""
+
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
-    hub: RAM.Environment
+    hub: Environment
     for hub in RAM.hub_environments:
         gem_counts[hub.internal_id] = 0
-        level: RAM.Environment
+        level: Environment
         for level in hub.child_environments:
             portal_accesses[level.name] = False
             gem_counts[level.internal_id] = 0
@@ -132,16 +135,19 @@ class SpyroClient(BizHawkClient):
                 (RAM.balloonist_menu_choice, 1)
             ]
 
-            temp_translation_info: dict[int, int] = {}
+            gem_counter_offset = len(to_read_list)
 
-            for level_id in self.gem_counts:
-                temp_translation_info[level_id] = len(to_read_list)
-                for hub in RAM.hub_environments:
-                    if hub.internal_id == level_id:
-                        to_read_list.append((hub.gem_counter, 2))
-                    for level in hub.child_environments:
-                        if level.internal_id == level_id:
-                            to_read_list.append((level.gem_counter, 2))
+            for hub in RAM.hub_environments:
+                to_read_list.append((hub.gem_counter, 2))
+                for level in hub.child_environments:
+                    to_read_list.append((level.gem_counter, 2))
+
+            vortex_offset = len(to_read_list)
+
+            for hub in RAM.hub_environments:
+                to_read_list.append((hub.vortex_pointer, 2))  # These never get set, but needed to keep offsets right
+                for level in hub.child_environments:
+                    to_read_list.append((level.vortex_pointer, 2))
 
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
@@ -156,8 +162,18 @@ class SpyroClient(BizHawkClient):
             unlocked_worlds = ram_data[5]
             balloonist_choice = int.from_bytes(ram_data[6], byteorder="little")
 
-            for level_id, gem_count_index in temp_translation_info.items():
-                self.gem_counts[level_id] = int.from_bytes(ram_data[gem_count_index], byteorder="little")
+            for hub in RAM.hub_environments:
+                ram_data_offset = gem_counter_offset + internal_id_to_offset(hub.internal_id)
+                self.gem_counts[hub.internal_id] = int.from_bytes(ram_data[ram_data_offset], byteorder="little")
+
+                for level in hub.child_environments:
+                    ram_data_offset = gem_counter_offset + internal_id_to_offset(level.internal_id)
+                    self.gem_counts[level.internal_id] = int.from_bytes(ram_data[ram_data_offset], byteorder="little")
+
+            for hub in RAM.hub_environments:
+                for level in hub.child_environments:
+                    ram_data_offset = vortex_offset + internal_id_to_offset(level.internal_id)
+                    self.vortexes_reached[level.internal_id] = int.from_bytes(ram_data[ram_data_offset], byteorder="little")
 
             if cur_game_state == RAM.GameStates.GAMEPLAY:
                 for hub in RAM.hub_environments:
@@ -182,6 +198,9 @@ class SpyroClient(BizHawkClient):
                     await self.send_location_once(f"{hub.name} 100% Gems", ctx)
 
                 for level in hub.child_environments:
+                    if (level.has_vortex) and (self.vortexes_reached[level.internal_id] == 1):
+                        await self.send_location_once(f"{level.name} Vortex", ctx)
+
                     quarter_count: int = int(level.total_gems / 4)
 
                     if self.gem_counts[level.internal_id] >= quarter_count:
@@ -366,6 +385,17 @@ class SpyroClient(BizHawkClient):
 
         if location_id not in ctx.checked_locations:
             await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [location_id]}])
+
+    def little_bytes(self, bytes_in: bytes) -> int:
+        """Returns an int from the given little-endian bytes
+
+        Args:
+            bytes_in: the sequence of bytes to interpret
+
+        Returns:
+            Little-endian-interpreted int
+        """
+        return int.from_bytes(bytes_in, byteorder="little")
 
     def __init__(self) -> None:
         pass

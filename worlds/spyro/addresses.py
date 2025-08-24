@@ -10,6 +10,54 @@ except ImportError:
         from typing_extensions import final
 
 
+def internal_id_to_offset(internal_id: int) -> int:
+    """Translates internal ID to zero-indexed offset in the overall environment"""
+    homeworld_index = int(internal_id / 10) - 1
+    homeworld_offset = internal_id % 10
+    return (homeworld_index * 6) + homeworld_offset
+
+
+class Environment():
+    """A container holding various useful pieces of data tied to a given level or homeworld"""
+    balloon_pointers: list[int]
+    name: str
+    internal_id: int
+    text_offset: int
+    has_vortex: bool
+    dragons: dict[str, tuple[int, int]]  # dragons[name] = (address, flag)
+    # TODO: eggs
+    gem_counter: int
+    total_gems: int
+    statue_head_checks: list[int]
+    child_environments: list["Environment"]
+    portal_surface_types: list[int]
+    portal_dest_level_ids: list[int]
+    VORTEX_BASE_POINTER: int = 0x7a6a8
+    vortex_pointer: int
+
+    def __init__(self, name: str, internal_id: int, has_vortex: bool = False) -> None:
+        self.name = name
+        self.internal_id = internal_id
+        self.balloon_pointers = []
+        self.text_offset = 0
+        self.has_vortex = has_vortex
+        self.dragons = {}
+        self.gem_counter = 0
+        self.total_gems = 0
+        self.statue_head_checks = []
+        self.child_environments = []
+        self.portal_surface_types = []
+        self.portal_dest_level_ids = []
+        self.vortex_pointer = self.VORTEX_BASE_POINTER + internal_id_to_offset(self.internal_id)
+
+    def is_hub(self) -> bool:
+        """Whether the current environment is a homeworld"""
+        is_hub = False
+        if self.internal_id % 10 == 0:
+            is_hub = True
+        return is_hub
+
+
 @final
 class RAM:
     """A handy collection of memory values and addresses for Spyro"""
@@ -22,52 +70,6 @@ class RAM:
     fake_timer: int = unused_space + 8
 
     last_selected_valid_choice: int = unused_space + 12
-
-    class Environment():
-        """A container holding various useful pieces of data tied to a given level or homeworld"""
-        balloon_pointers: list[int]
-        name: str
-        internal_id: int
-        text_offset: int
-        has_vortex: bool
-        dragons: dict[str, tuple[int, int]]  # dragons[name] = (address, flag)
-        # TODO: eggs
-        gem_counter: int
-        total_gems: int
-        statue_head_checks: list[int]
-        child_environments: list["RAM.Environment"]
-        portal_surface_types: list[int]
-        portal_dest_level_ids: list[int]
-        VORTEX_BASE_POINTER: int = 0x7a6a8
-        vortex_pointer: int
-
-        def __init__(self, name: str, internal_id: int, has_vortex: bool = False) -> None:
-            self.name = name
-            self.internal_id = internal_id
-            self.balloon_pointers = []
-            self.text_offset = 0
-            self.has_vortex = has_vortex
-            self.dragons = {}
-            self.gem_counter = 0
-            self.total_gems = 0
-            self.statue_head_checks = []
-            self.child_environments = []
-            self.portal_surface_types = []
-            self.portal_dest_level_ids = []
-            self.vortex_pointer = self.VORTEX_BASE_POINTER + self.internal_id_to_vortex_offset(self.internal_id)
-
-        def internal_id_to_vortex_offset(self, internal_id: int) -> int:
-            """Translates internal ID to offset from vortex base pointer"""
-            homeworld_index = int(internal_id / 10) - 1
-            homeworld_offset = internal_id % 10
-            return (homeworld_index * 5) + homeworld_offset
-
-        def is_hub(self) -> bool:
-            """Whether the current environment is a homeworld"""
-            is_hub = False
-            if self.internal_id % 10 == 0:
-                is_hub = True
-            return is_hub
 
     hub_environments: list[Environment] = []
 
