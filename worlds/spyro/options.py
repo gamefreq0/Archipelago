@@ -25,6 +25,7 @@ class GoalOption(Choice):
 @final
 class StartingHomeworldOption(Choice):
     """Choose which homeworld to start in.
+    
     Options are:
     artisans
     peace_keepers
@@ -45,6 +46,7 @@ class StartingHomeworldOption(Choice):
 @final
 class PortalShuffleOption(Toggle):
     """If enabled, where a portal leads to is shuffled."""
+    
     display_name = "Portal Shuffle"
     default = False
 
@@ -52,6 +54,7 @@ class PortalShuffleOption(Toggle):
 @final
 class SpyroColorOption(FreeText):
     """Choose a color to tint Spyro, in RGBA format.
+    
     Note that a value of FFFFFF00 will result in the vanilla colors.
     """
 
