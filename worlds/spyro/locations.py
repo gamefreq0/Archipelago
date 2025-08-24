@@ -145,7 +145,7 @@ for hub in RAM.hub_environments:
 total_gem_threshold_locations: dict[str, int] = {}
 
 for gem_count in range(500, total_treasure + 1, 500):
-    total_gem_threshold_locations[f"{gem_count:,d} Gems"] = gem_count
+    total_gem_threshold_locations[f"{gem_count} Gems"] = gem_count
 
 # TODO: Create table of dragon names. Ugh. Can't take easy way out with numbers like with gems.
 dragon_locations: list[str] = []
