@@ -154,26 +154,26 @@ class SpyroClient(BizHawkClient):
 
             ram_data = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
 
-            recv_index = int.from_bytes(ram_data[0], byteorder="little")
-            cur_game_state = int.from_bytes(ram_data[1], byteorder="little")
-            cur_level_id = int.from_bytes(ram_data[2], byteorder="little")
-            spyro_color = int.from_bytes(ram_data[3], byteorder="little")
-            gnasty_anim_flag = int.from_bytes(ram_data[4], byteorder="little")
+            recv_index = self.little_bytes(ram_data[0])
+            cur_game_state = self.little_bytes(ram_data[1])
+            cur_level_id = self.little_bytes(ram_data[2])
+            spyro_color = self.little_bytes(ram_data[3])
+            gnasty_anim_flag = self.little_bytes(ram_data[4])
             unlocked_worlds = ram_data[5]
-            balloonist_choice = int.from_bytes(ram_data[6], byteorder="little")
+            balloonist_choice = self.little_bytes(ram_data[6])
 
             for hub in RAM.hub_environments:
                 ram_data_offset = gem_counter_offset + internal_id_to_offset(hub.internal_id)
-                self.gem_counts[hub.internal_id] = int.from_bytes(ram_data[ram_data_offset], byteorder="little")
+                self.gem_counts[hub.internal_id] = self.little_bytes(ram_data[ram_data_offset])
 
                 for level in hub.child_environments:
                     ram_data_offset = gem_counter_offset + internal_id_to_offset(level.internal_id)
-                    self.gem_counts[level.internal_id] = int.from_bytes(ram_data[ram_data_offset], byteorder="little")
+                    self.gem_counts[level.internal_id] = self.little_bytes(ram_data[ram_data_offset])
 
             for hub in RAM.hub_environments:
                 for level in hub.child_environments:
                     ram_data_offset = vortex_offset + internal_id_to_offset(level.internal_id)
-                    self.vortexes_reached[level.internal_id] = int.from_bytes(ram_data[ram_data_offset], byteorder="little")
+                    self.vortexes_reached[level.internal_id] = self.little_bytes(ram_data[ram_data_offset])
 
             if cur_game_state == RAM.GameStates.GAMEPLAY:
                 for hub in RAM.hub_environments:
@@ -221,7 +221,7 @@ class SpyroClient(BizHawkClient):
                 and (self.slot_data_spyro_color is not None)
                 and (spyro_color.to_bytes(4, "little") != self.slot_data_spyro_color)
             ):
-                spyro_color = int.from_bytes(self.slot_data_spyro_color, "little")
+                spyro_color = self.little_bytes(self.slot_data_spyro_color)
                 to_write_ingame.append((RAM.spyro_color_filter, spyro_color.to_bytes(4, "little")))
 
             if (
