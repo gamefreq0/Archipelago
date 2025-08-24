@@ -29,7 +29,7 @@ class SpyroClient(BizHawkClient):
     local_checked_locations: set[int] = set()
     slot_data_spyro_color: bytes | None = None
 
-    ap_unlocked_worlds: list[bool] = [False, False, False, False, False]
+    ap_unlocked_worlds: set[str] = set()
     boss_items: set[str] = set()
 
     gem_counts: dict[int, int] = {}
@@ -100,19 +100,7 @@ class SpyroClient(BizHawkClient):
             if item_name in goal_item:
                     await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
             elif item_name in homeworld_access:
-                match item_name:
-                    case "Artisans":
-                        self.ap_unlocked_worlds[0] = True
-                    case "Peace Keepers":
-                        self.ap_unlocked_worlds[1] = True
-                    case "Magic Crafters":
-                        self.ap_unlocked_worlds[2] = True
-                    case "Beast Makers":
-                        self.ap_unlocked_worlds[3] = True
-                    case "Dream Weavers":
-                        self.ap_unlocked_worlds[4] = True
-                    case _:
-                        raise ValueError("How did you get here?!?")
+                self.ap_unlocked_worlds.add(item_name)
             elif item_name in boss_items:
                     self.boss_items.add(item_id_to_name[item.item])
             else:
@@ -254,15 +242,18 @@ class SpyroClient(BizHawkClient):
                 
             if cur_game_state == RAM.GameStates.BALLOONIST:
                 # Hide world names if inaccessible
-                for index, hub in enumerate(RAM.hub_environments):
+                for hub in RAM.hub_environments:
                     byte_val = hub.name[:1].encode("ASCII")
-                    if index != 5:
-                        if not self.ap_unlocked_worlds[index]:
+                    
+                    if hub.name != "Gnasty's World":
+                        if hub.name not in self.ap_unlocked_worlds:
                             byte_val = b'\x00'
+                        
                         to_write_balloonist.append((hub.text_offset, byte_val))
                     else:
                         if not len(self.boss_items) == 5:
                             byte_val = b'\x00'
+                        
                         to_write_balloonist.append((hub.text_offset, byte_val))
                 
                 # Prevent access to inaccessible worlds
@@ -313,14 +304,19 @@ class SpyroClient(BizHawkClient):
 
     def set_balloonist_unlocks(self, mapped_choice: int, raw_choice: int) -> list[tuple[int, bytes]]:
         result: list[tuple[int, bytes]] = []
-        if (mapped_choice != -1) and (mapped_choice < 5):
-            if self.ap_unlocked_worlds[mapped_choice]:
+        
+        hub_name:str = "Stay Here" # default in case it's -1, which is Stay Here anyway.
+        if mapped_choice != -1:
+            hub_name = RAM.hub_environments[mapped_choice].name
+        
+        if (hub_name != "Stay Here") and (hub_name != "Gnasty's World"):
+            if hub_name in self.ap_unlocked_worlds:
                 for item in self.balloonist_helper(b'\x1f', raw_choice.to_bytes(1, byteorder="little")):
                     result.append(item)
             else:
                 for item in self.balloonist_helper(b'\x00', b'\x00'):
                     result.append(item)
-        elif mapped_choice == 5:
+        elif hub_name == "Gnasty's World":
             if len(self.boss_items) == 5:
                 for item in self.balloonist_helper(b'\x1f', raw_choice.to_bytes(1, byteorder="little")):
                     result.append(item)
@@ -330,6 +326,7 @@ class SpyroClient(BizHawkClient):
         else:
             for item in self.balloonist_helper(b'\x1f', b'\x00'):
                 result.append(item)
+
         return result
 
     async def write_on_state(
