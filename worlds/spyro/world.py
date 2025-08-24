@@ -54,27 +54,19 @@ class SpyroWorld(World):
             _: int = int(self.options.spyro_color.value, 16)
         except ValueError as exc:
             raise OptionError(
-                f'{self.player_name}\'s spyro_color value of "{
-                    self.options.spyro_color.value
-                }" is not a valid RGBA color.'
+                f'{self.player_name}\'s spyro_color value of "{self.options.spyro_color.value}" is not a valid RGBA color.'
             ) from exc
         if self.options.goal == self.options.goal.option_loot:
             raise OptionError(
-                f"{
-                    self.player_name
-                } set goal to loot, but loot goal doesn't work yet."
+                f"{self.player_name} set goal to loot, but loot goal doesn't work yet."
             )
         if self.options.portal_shuffle.value == 1:
             raise OptionError(
-                f"{
-                    self.player_name
-                } enabled portal shuffle, but portal shuffle doesn't work yet."
+                f"{self.player_name} enabled portal shuffle, but portal shuffle doesn't work yet."
             )
         if self.options.death_link.value == 1:
             warning(
-                f"Deathlink for {
-                    self.game
-                } doesn't work yet. Option will be ignored"
+                f"Deathlink for {self.game} doesn't work yet. Option will be ignored"
             )
 
     @override
