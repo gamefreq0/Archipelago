@@ -34,8 +34,7 @@ class LevelStats():
     reached_vortex: bool
 
     def __init__(
-        self, egg_count: int = 0, treasure_count: int = 0,
-        dragon_count: int = 0, has_vortex: bool = True
+        self, egg_count: int = 0, treasure_count: int = 0, dragon_count: int = 0, has_vortex: bool = True
     ) -> None:
         self.egg_count = egg_count
         self.treasure_count = treasure_count
@@ -136,9 +135,7 @@ for d in [
     for item in d:
         location_list.append(item)
 
-location_id_to_name = dict(
-    enumerate(location_list, start=BASE_SPYRO_LOCATION_ID)
-)
+location_id_to_name = dict(enumerate(location_list, start=BASE_SPYRO_LOCATION_ID))
 location_name_to_id = {v: k for k, v in location_id_to_name.items()}
 
 flight_levels = {
