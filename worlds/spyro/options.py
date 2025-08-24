@@ -1,5 +1,9 @@
 from dataclasses import dataclass
-from typing_extensions import final
+
+try:
+    from typing import final
+except ImportError:
+    from typing_extensions import final
 
 from Options import Choice, DeathLink, PerGameCommonOptions, FreeText, Toggle
 
