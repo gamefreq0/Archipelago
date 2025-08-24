@@ -218,8 +218,8 @@ class SpyroClient(BizHawkClient):
                 to_write_ingame.append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
 
             if cur_game_state == RAM.GameStates.GAMEPLAY:
-                # Overwrite head checking code
                 for hub in RAM.hub_environments:
+                    # Overwrite head checking code
                     if (
                         (hub.internal_id == cur_level_id)
                         and (len(hub.statue_head_checks) > 0)
@@ -228,6 +228,10 @@ class SpyroClient(BizHawkClient):
                             # NOP out the conditional branches
                             # This forces the statue heads to always open
                             to_write_ingame.append((address, bytes(4)))
+
+                    # Prevent Tuco's warp-to-level shenanigans by setting egg minimum to -1
+                    if hub.name == "Magic Crafters":
+                        to_write_ingame.append((RAM.tuco_egg_minimum, b'\xff\xff'))
 
             # Lock inaccessible portals
             if cur_game_state == RAM.GameStates.GAMEPLAY:

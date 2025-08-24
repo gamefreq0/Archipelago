@@ -268,6 +268,7 @@ class RAM:
     GNASTY_DEFEATED: int = 0x08
 
     nestor_unskippable: int = 0x1747f4
+    tuco_egg_minimum: int = 0x8492c
     spyro_cur_animation: int = 0x78ad0
     spyro_color_filter: int = 0x78a80
 
