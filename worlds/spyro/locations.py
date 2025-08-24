@@ -51,7 +51,13 @@ class LevelStats():
         self.reached_vortex = False
 
 
-total_treasure: int = 14000
+total_treasure: int = 0
+
+for hub in RAM.hub_environments:
+    total_treasure += hub.total_gems
+
+    for level in hub.child_environments:
+        total_treasure += level.total_gems
 
 homeworld_stats = {
     "Artisans": LevelStats(0, 100, 4, False),
