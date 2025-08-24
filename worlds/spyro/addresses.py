@@ -57,7 +57,7 @@ class RAM:
             return is_hub
 
     hub_environments: list[Environment] = []
-    
+
     hub_environments.append(Environment("Artisans", 10))
     hub_environments.append(Environment("Peace Keepers", 20))
     hub_environments.append(Environment("Magic Crafters", 30))
@@ -149,7 +149,9 @@ class RAM:
     hub_environments[5].portal_dest_level_ids.append(0xa69c0)  # Gnasty Gnorc
     hub_environments[5].portal_dest_level_ids.append(0xa69cc)  # Gnasty's Loot
 
+    hub: Environment
     for hub in hub_environments:
+        dest_offset: int
         for dest_offset in hub.portal_dest_level_ids:
             hub.portal_surface_types.append(dest_offset - 4)
 
