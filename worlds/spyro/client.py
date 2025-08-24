@@ -87,8 +87,6 @@ class SpyroClient(BizHawkClient):
 
     @override
     async def game_watcher(self, ctx: "BizHawkClientContext") -> None:
-        # TODO: Add helper function for sending locations, to prevent
-        # DDOSing the AP server late game
         batched_reads: list[tuple[int, int, str]] = []
         # Detect if AP connection made, bail early if not
         if (
