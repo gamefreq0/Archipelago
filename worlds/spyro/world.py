@@ -55,7 +55,8 @@ class SpyroWorld(World):
             _: int = int(self.options.spyro_color.value, 16)
         except ValueError as exc:
             raise OptionError(
-                f'{self.player_name}\'s spyro_color value of "{self.options.spyro_color.value}" is not a valid RGBA color.'
+                f"{self.player_name}'s spyro_color value of " +
+                f'"{self.options.spyro_color.value}" is not a valid RGBA color.'
             ) from exc
         if self.options.goal == self.options.goal.option_loot:
             raise OptionError(
