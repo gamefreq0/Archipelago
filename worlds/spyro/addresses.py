@@ -1,6 +1,9 @@
 from enum import IntEnum
 
-from typing_extensions import final
+try:
+    from typing import final
+except ImportError:
+    from typing_extensions import final
 
 
 @final
@@ -54,6 +57,7 @@ class RAM:
             return is_hub
 
     hub_environments: list[Environment] = []
+    
     hub_environments.append(Environment("Artisans", 10))
     hub_environments.append(Environment("Peace Keepers", 20))
     hub_environments.append(Environment("Magic Crafters", 30))

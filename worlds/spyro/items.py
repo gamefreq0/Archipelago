@@ -1,4 +1,8 @@
-from typing_extensions import final
+try:
+    from typing import final
+except ImportError:
+    from typing_extensions import final
+
 from BaseClasses import Item
 
 BASE_SPYRO_ITEM_ID = 1000
@@ -16,6 +20,7 @@ homeworld_access = [
     "Beast Makers",
     "Dream Weavers"
 ]
+
 level_access = [
     "Stone Hill",
     "Dark Hollow",
@@ -47,6 +52,7 @@ level_access = [
     "Gnasty Gnorc",
     "Gnasty's Loot"
 ]
+
 boss_items = [
     "Toasty's Stilts",
     "Shemp's Staff",
@@ -54,12 +60,15 @@ boss_items = [
     "Metalhead's Mohawk",
     "Jacques' Ribbon"
 ]
+
 goal_item = ["Victory"]
+
 trap_items = [
     "Flop Trap",
     "Roll Trap",
     "Faint Trap"
 ]
+
 filler_items = [
     "Extra Life",
     "Butterfly"
