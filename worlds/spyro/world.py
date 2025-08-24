@@ -67,11 +67,6 @@ class SpyroWorld(World):
                 f'"{self.options.spyro_color.value}" is not a valid RGBA color.'
             ) from exc
 
-        if self.options.goal == self.options.goal.option_loot:
-            raise OptionError(
-                f"{self.player_name} set goal to loot, but loot goal doesn't work yet."
-            )
-
         if self.options.portal_shuffle.value == 1:
             raise OptionError(
                 f"{self.player_name} enabled portal shuffle, but portal shuffle doesn't work yet."
@@ -142,6 +137,8 @@ class SpyroWorld(World):
 
         if self.options.goal == "gnasty":
             self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
+        elif self.options.goal == "loot":
+            self.get_location("Gnasty's Loot Vortex").place_locked_item(victory)
 
         self.multiworld.itempool += self.itempool
 
