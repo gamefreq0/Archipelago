@@ -54,6 +54,7 @@ class SpyroWorld(World):
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
         self.itempool = []
+        
         try:
             _: int = int(self.options.spyro_color.value, 16)
         except ValueError as exc:
@@ -61,14 +62,17 @@ class SpyroWorld(World):
                 f"{self.player_name}'s spyro_color value of " +
                 f'"{self.options.spyro_color.value}" is not a valid RGBA color.'
             ) from exc
+        
         if self.options.goal == self.options.goal.option_loot:
             raise OptionError(
                 f"{self.player_name} set goal to loot, but loot goal doesn't work yet."
             )
+        
         if self.options.portal_shuffle.value == 1:
             raise OptionError(
                 f"{self.player_name} enabled portal shuffle, but portal shuffle doesn't work yet."
             )
+        
         if self.options.death_link.value == 1:
             warning(
                 f"Deathlink for {self.game} doesn't work yet. Option will be ignored"
@@ -86,6 +90,7 @@ class SpyroWorld(World):
             classification = ItemClassification.trap
         else:
             classification = ItemClassification.progression
+            
         return SpyroItem(name, classification, self.item_name_to_id[name], self.player)
 
     def create_event(self, event: str) -> SpyroItem:
@@ -106,10 +111,13 @@ class SpyroWorld(World):
                 self.push_precollected(self.create_item(name))
             else:
                 self.itempool += [self.create_item(name)]
+        
         for name in level_access:
             self.itempool += [self.create_item(name)]
+        
         for name in boss_items:
             self.itempool += [self.create_item(name)]
+        
         victory = self.create_item(goal_item[0])
 
         trap_percentage = 0.05
@@ -136,26 +144,37 @@ class SpyroWorld(World):
     @override
     def connect_entrances(self) -> None:
         if self.options.portal_shuffle:
-            shuffled_entrances = randomize_entrances(self, True, {
+            shuffled_entrances = randomize_entrances(
+                self, 
+                True, 
+                {
                     ENTRANCE_IN: [ENTRANCE_OUT],
                     ENTRANCE_OUT: [ENTRANCE_IN]
-            }, False)
+                }, 
+                False
+            )
             self.shuffled_entrance_pairings = shuffled_entrances.pairings
         else:
             all_entrances = self.get_entrances()
             all_ents_list: list[Entrance] = []
+            
             for entrance in all_entrances:
                 all_ents_list.append(entrance)
+                
             levels_start: int = 0
             levels_stop: int = 0
+            
             for index, ent in enumerate(all_ents_list):
                 if ("Stone Hill" in ent.name) and (levels_start == 0):
                     levels_start = index
                 elif "Gnasty's Loot" in ent.name:
                     levels_stop = index
+                    
             vanilla_pairs: list[tuple[Entrance, Entrance]] = []
+            
             for index in range(levels_start, levels_stop, 2):
                 vanilla_pairs.append((all_ents_list[index], all_ents_list[index + 1]))
+                
             for pair in vanilla_pairs:
                 if (
                     (pair[0].parent_region is not None)
