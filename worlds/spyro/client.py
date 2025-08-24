@@ -30,7 +30,7 @@ class SpyroClient(BizHawkClient):
     slot_data_spyro_color: bytes | None = None
 
     ap_unlocked_worlds: list[bool] = [False, False, False, False, False]
-    boss_items: list[bool] = [False, False, False, False, False]
+    boss_items: set[str] = set()
 
     gem_counts: dict[int, int] = {}
     """Keeps track of gem counts, indexed by level ID"""
@@ -109,15 +109,15 @@ class SpyroClient(BizHawkClient):
                 case "Dream Weavers":
                     self.ap_unlocked_worlds[4] = True
                 case "Toasty's Stilts":
-                    self.boss_items[0] = True
+                    self.boss_items.add(item_id_to_name[item.item])
                 case "Shemp's Staff":
-                    self.boss_items[1] = True
+                    self.boss_items.add(item_id_to_name[item.item])
                 case "Blowhard's Beard":
-                    self.boss_items[2] = True
+                    self.boss_items.add(item_id_to_name[item.item])
                 case "Metalhead's Mohawk":
-                    self.boss_items[3] = True
+                    self.boss_items.add(item_id_to_name[item.item])
                 case "Jacques' Ribbon":
-                    self.boss_items[4] = True
+                    self.boss_items.add(item_id_to_name[item.item])
                 case _:
                     item_name = item_id_to_name[item.item]
                     for hub in RAM.hub_environments:
@@ -265,7 +265,7 @@ class SpyroClient(BizHawkClient):
                             byte_val = b'\x00'
                         to_write_balloonist.append((hub.text_offset, byte_val))
                     else:
-                        if not self.boss_items.count(True) == 5:
+                        if not len(self.boss_items) == 5:
                             byte_val = b'\x00'
                         to_write_balloonist.append((hub.text_offset, byte_val))
                 
@@ -325,7 +325,7 @@ class SpyroClient(BizHawkClient):
                 for item in self.balloonist_helper(b'\x00', b'\x00'):
                     result.append(item)
         elif mapped_choice == 5:
-            if self.boss_items.count(True) == 5:
+            if len(self.boss_items) == 5:
                 for item in self.balloonist_helper(b'\x1f', raw_choice.to_bytes(1, byteorder="little")):
                     result.append(item)
             else:
