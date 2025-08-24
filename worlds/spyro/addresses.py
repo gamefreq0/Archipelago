@@ -1,6 +1,6 @@
-from typing_extensions import final
+from enum import IntEnum
 
-from enum import Enum, IntEnum
+from typing_extensions import final
 
 
 @final

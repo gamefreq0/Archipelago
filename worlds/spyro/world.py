@@ -153,7 +153,8 @@ class SpyroWorld(World):
             for index in range(levels_start, levels_stop, 2):
                 vanilla_pairs.append((all_ents_list[index], all_ents_list[index + 1]))
             for pair in vanilla_pairs:
-                if ((pair[0].parent_region is not None)
+                if (
+                    (pair[0].parent_region is not None)
                     and (pair[1].parent_region is not None)
                     and (pair[0].connected_region is None)
                     and (pair[1].connected_region is None)
