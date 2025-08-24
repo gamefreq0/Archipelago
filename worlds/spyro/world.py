@@ -1,6 +1,9 @@
 from logging import warning
 
-from typing_extensions import final, override, ClassVar
+try:
+    from typing import final, override, ClassVar
+except ImportError:
+    from typing_extensions import final, override, ClassVar
 
 from BaseClasses import Entrance, MultiWorld
 from BaseClasses import ItemClassification
