@@ -25,7 +25,7 @@ class Environment():
     text_offset: int
     has_vortex: bool
     dragons: dict[str, tuple[int, int]]  # dragons[name] = (address, flag)
-    # TODO: eggs
+    eggs: dict[str, tuple[int, int]]  # eggs[name] = (address, flag)
     gem_counter: int
     total_gems: int
     statue_head_checks: list[int]
@@ -42,6 +42,7 @@ class Environment():
         self.text_offset = 0
         self.has_vortex = has_vortex
         self.dragons = {}
+        self.eggs = {}
         self.gem_counter = 0
         self.total_gems = 0
         self.statue_head_checks = []
