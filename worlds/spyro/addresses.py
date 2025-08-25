@@ -68,9 +68,11 @@ class RAM:
     last_received_archipelago_id: int = unused_space + 4
     """The ID of the last item the game has been given. Useful for save state issues and such."""
 
-    fake_timer: int = unused_space + 8
+    switched_portal_dest: int = unused_space + 8
 
-    last_selected_valid_choice: int = unused_space + 12
+    fake_timer: int = unused_space + 12
+
+    last_selected_valid_choice: int = unused_space + 16
 
     hub_environments: list[Environment] = []
 
