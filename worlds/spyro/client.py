@@ -45,10 +45,10 @@ class SpyroClient(BizHawkClient):
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
-    hub: Environment
+    hub: Environment = RAM.hub_environments[0]
     for hub in RAM.hub_environments:
         gem_counts[hub.internal_id] = 0
-        level: Environment
+        level: Environment = hub.child_environments[0]
         for level in hub.child_environments:
             portal_accesses[level.name] = False
             gem_counts[level.internal_id] = 0
