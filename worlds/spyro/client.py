@@ -230,7 +230,7 @@ class SpyroClient(BizHawkClient):
                             to_write_ingame.append((address, bytes(4)))
 
                     # Prevent Tuco's warp-to-level shenanigans by setting egg minimum to -1
-                    if hub.name == "Magic Crafters":
+                    if hub.name == "Magic Crafters" and hub.internal_id == cur_level_id:
                         to_write_ingame.append((RAM.tuco_egg_minimum, b'\xff\xff'))
 
             # Lock inaccessible portals
