@@ -164,9 +164,9 @@ class RAM:
     hub_environments[5].portal_dest_level_ids.append(0xa69c0)  # Gnasty Gnorc
     hub_environments[5].portal_dest_level_ids.append(0xa69cc)  # Gnasty's Loot
 
-    hub: Environment
+    hub: Environment = Environment("", 0)
     for hub in hub_environments:
-        dest_offset: int
+        dest_offset: int = 0
         for dest_offset in hub.portal_dest_level_ids:
             hub.portal_surface_types.append(dest_offset - 4)
 
