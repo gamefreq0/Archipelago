@@ -92,17 +92,6 @@ class SpyroWorld(World):
 
         return SpyroItem(name, classification, self.item_name_to_id[name], self.player)
 
-    def create_event(self, event: str) -> SpyroItem:
-        """Generate item with no ID, for use with generation-time logic
-
-        Args:
-            event: Event item name
-
-        Returns:
-            The generated SpyroItem
-        """
-        return SpyroItem(event, ItemClassification.progression, None, self.player)
-
     @override
     def create_items(self) -> None:
         for name in homeworld_access:

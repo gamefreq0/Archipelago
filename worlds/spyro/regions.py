@@ -3,8 +3,8 @@ try:
 except ImportError:
     from typing_extensions import TYPE_CHECKING
 
-from BaseClasses import Region, EntranceType
-from .items import boss_items
+from BaseClasses import ItemClassification, Region, EntranceType
+from .items import SpyroItem, boss_items
 
 from .locations import SpyroLocation, location_name_to_id
 from .addresses import RAM, Environment
@@ -104,3 +104,38 @@ def create_regions(world: "SpyroWorld"):
             hub_regions["Gnasty's World"], "Balloonist to Gnorc Gnexus",
             lambda state: state.has_all(boss_items, player)
     )
+
+    for hub in RAM.hub_environments:
+        # TODO: Redo this bit with logic for individual gem colors, for move shuffle
+        # Add number of virtual gems to a hub's region based on that hub's total gems
+        for gem_index in range(0, hub.total_gems, 100):
+            add_event_location(
+                world,
+                hub_regions[hub.name],
+                f"{hub.name} 100 Gems set {int(gem_index / 100) + 1}",
+                "100 Gems"
+            )
+
+        for level in hub.child_environments:
+            # Add number of virtual gems to a level's region based on that level's total gems
+            for gem_index in range(0, level.total_gems, 100):
+                add_event_location(
+                    world,
+                    level_regions[level.name],
+                    f"{level.name} 100 Gems set {int(gem_index / 100) + 1}",
+                    "100 Gems"
+                )
+
+
+def add_event_location(world: "SpyroWorld", region: Region, name: str, event_name: str) -> None:
+    """Add a virtual, named location to a given region, containing a given event item
+
+    Args:
+        world: The world this is called from, for getting the current player
+        region: The region to add the virtual location to
+        name: The name of the virtual location
+        event_name: The name of the event item to place at the location
+    """
+    location: SpyroLocation = SpyroLocation(world.player, name, None, region)
+    region.locations.append(location)
+    location.place_locked_item(SpyroItem(event_name, ItemClassification.progression, None, world.player))

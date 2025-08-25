@@ -258,6 +258,7 @@ class RAM:
     cur_level_id: int = 0x7596c
     dest_level_id: int = 0x758b4
     cur_game_state: int = 0x757d8
+    total_gem_count: int = 0x75860
     balloonist_menu_choice: int = 0x777f0
     unlocked_worlds: int = 0x758d0
 
@@ -268,6 +269,7 @@ class RAM:
     GNASTY_DEFEATED: int = 0x08
 
     nestor_unskippable: int = 0x1747f4
+    tuco_egg_minimum: int = 0x8492c
     spyro_cur_animation: int = 0x78ad0
     spyro_color_filter: int = 0x78a80
 
