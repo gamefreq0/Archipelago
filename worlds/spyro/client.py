@@ -15,7 +15,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
 from .addresses import RAM, menu_lookup, Environment, internal_id_to_offset
-from .locations import location_name_to_id
+from .locations import location_name_to_id, total_treasure
 from .items import item_id_to_name, boss_items, homeworld_access, goal_item
 
 if TYPE_CHECKING:
@@ -130,7 +130,8 @@ class SpyroClient(BizHawkClient):
                 (RAM.spyro_color_filter, 4),
                 (RAM.gnasty_anim_flag, 1),
                 (RAM.unlocked_worlds, 6),
-                (RAM.balloonist_menu_choice, 1)
+                (RAM.balloonist_menu_choice, 1),
+                (RAM.total_gem_count, 4)
             ]
 
             gem_counter_offset = len(to_read_list)
@@ -159,6 +160,7 @@ class SpyroClient(BizHawkClient):
             gnasty_anim_flag = self.little_bytes(ram_data[4])
             unlocked_worlds = ram_data[5]
             balloonist_choice = self.little_bytes(ram_data[6])
+            total_gems_collected = self.little_bytes(ram_data[7])
 
             for hub in RAM.hub_environments:
                 ram_data_offset = gem_counter_offset + internal_id_to_offset(hub.internal_id)
@@ -183,21 +185,28 @@ class SpyroClient(BizHawkClient):
                         ):
                             await self.send_location_once("Defeated Gnasty Gnorc", ctx)
 
-            for hub in RAM.hub_environments:
-                hub_quarter_count: int = int(hub.total_gems / 4)
-                for index in range(1, 5):
-                    if self.gem_counts[hub.internal_id] >= (hub_quarter_count * index):
-                        await self.send_location_once(f"{hub.name} {25 * index}% Gems", ctx)
-
-                for level in hub.child_environments:
-                    if (level.has_vortex) and (self.vortexes_reached[level.internal_id] == 1):
-                        await self.send_location_once(f"{level.name} Vortex", ctx)
-
-                    quarter_count: int = int(level.total_gems / 4)
-
+            if cur_game_state == RAM.GameStates.GAMEPLAY:
+                # Send 1/4 gem threshold checks
+                for hub in RAM.hub_environments:
+                    hub_quarter_count: int = int(hub.total_gems / 4)
                     for index in range(1, 5):
-                        if self.gem_counts[level.internal_id] >= (quarter_count * index):
-                            await self.send_location_once(f"{level.name} {25 * index}% Gems", ctx)
+                        if self.gem_counts[hub.internal_id] >= (hub_quarter_count * index):
+                            await self.send_location_once(f"{hub.name} {25 * index}% Gems", ctx)
+
+                    for level in hub.child_environments:
+                        if (level.has_vortex) and (self.vortexes_reached[level.internal_id] == 1):
+                            await self.send_location_once(f"{level.name} Vortex", ctx)
+
+                        quarter_count: int = int(level.total_gems / 4)
+
+                        for index in range(1, 5):
+                            if self.gem_counts[level.internal_id] >= (quarter_count * index):
+                                await self.send_location_once(f"{level.name} {25 * index}% Gems", ctx)
+
+                # Send 500 increment total gem threhshold checks
+                for gem_threshold in range(500, total_treasure + 1, 500):
+                    if total_gems_collected >= gem_threshold:
+                        await self.send_location_once(f"{gem_threshold} Gems", ctx)
 
             to_write_ingame: list[tuple[int, bytes]] = []
             to_write_menu: list[tuple[int, bytes]] = []

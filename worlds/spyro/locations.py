@@ -53,6 +53,7 @@ class LevelStats():
 
 total_treasure: int = 0
 
+# TODO: Remove this in favor of dynamically calculating during gen, based on excluded levels/hubs
 for hub in RAM.hub_environments:
     total_treasure += hub.total_gems
 
@@ -173,7 +174,7 @@ for d in [
     # TODO: reimplement total gem thresholds, dragon locations, egg locations
     # total gems needs logic, the rest need client-side stuff
     level_gem_threshold_locations,
-    # total_gem_threshold_locations,
+    total_gem_threshold_locations,
     # dragon_locations
     # egg_locations,
     vortex_locations,
