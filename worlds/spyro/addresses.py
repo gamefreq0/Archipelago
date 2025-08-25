@@ -258,6 +258,7 @@ class RAM:
     cur_level_id: int = 0x7596c
     dest_level_id: int = 0x758b4
     cur_game_state: int = 0x757d8
+    total_gem_count: int = 0x75860
     balloonist_menu_choice: int = 0x777f0
     unlocked_worlds: int = 0x758d0
 
