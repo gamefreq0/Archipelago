@@ -67,11 +67,6 @@ class SpyroWorld(World):
                 f'"{self.options.spyro_color.value}" is not a valid RGBA color.'
             ) from exc
 
-        if self.options.portal_shuffle.value == 1:
-            raise OptionError(
-                f"{self.player_name} enabled portal shuffle, but portal shuffle doesn't work yet."
-            )
-
         if self.options.death_link.value == 1:
             warning(
                 f"Deathlink for {self.game} doesn't work yet. Option will be ignored"
