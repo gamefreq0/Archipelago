@@ -128,24 +128,24 @@ for d in [
 ]:
     all_stats.update(d)
 
-level_gem_threshold_locations: dict[str, int] = {}
+level_gem_threshold_locations: list[str] = []
 
 for hub in RAM.hub_environments:
     quarter_gems_hub = int(hub.total_gems / 4)
 
     for index in range(1, 5):
-        level_gem_threshold_locations[f"{hub.name} {index * 25}% Gems"] = quarter_gems_hub * index
+        level_gem_threshold_locations.append(f"{hub.name} {index * 25}% Gems")
 
     for level in hub.child_environments:
         quarter_gems_level = int(level.total_gems / 4)
 
         for index in range(1, 5):
-            level_gem_threshold_locations[f"{level.name} {index * 25}% Gems"] = quarter_gems_level * index
+            level_gem_threshold_locations.append(f"{level.name} {index * 25}% Gems")
 
-total_gem_threshold_locations: dict[str, int] = {}
+total_gem_threshold_locations: list[str] = []
 
 for gem_count in range(500, total_treasure + 1, 500):
-    total_gem_threshold_locations[f"{gem_count} Gems"] = gem_count
+    total_gem_threshold_locations.append(f"{gem_count} Gems")
 
 # TODO: Create table of dragon names. Ugh. Can't take easy way out with numbers like with gems.
 dragon_locations: list[str] = []
@@ -172,8 +172,8 @@ location_list: list[str] = []
 for d in [
     # TODO: reimplement total gem thresholds, dragon locations, egg locations
     # total gems needs logic, the rest need client-side stuff
-    level_gem_threshold_locations.keys(),
-    # total_gem_threshold_locations.keys(),
+    level_gem_threshold_locations,
+    # total_gem_threshold_locations,
     # dragon_locations
     # egg_locations,
     vortex_locations,
