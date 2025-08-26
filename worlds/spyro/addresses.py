@@ -34,6 +34,7 @@ class Environment():
     portal_dest_level_ids: list[int]
     VORTEX_BASE_POINTER: int = 0x7a6a8
     vortex_pointer: int
+    vortex_moby_pointer: int
 
     def __init__(self, name: str, internal_id: int, has_vortex: bool = False) -> None:
         self.name = name
@@ -50,6 +51,7 @@ class Environment():
         self.portal_surface_types = []
         self.portal_dest_level_ids = []
         self.vortex_pointer = self.VORTEX_BASE_POINTER + internal_id_to_offset(self.internal_id)
+        self.vortex_moby_pointer = 0
 
     def is_hub(self) -> bool:
         """Whether the current environment is a homeworld"""
@@ -258,12 +260,45 @@ class RAM:
     hub_environments[5].child_environments[2].gem_counter = 0x774a4
     hub_environments[5].child_environments[3].gem_counter = 0x774a8
 
+    hub_environments[0].child_environments[0].vortex_moby_pointer = 0x177330
+    hub_environments[0].child_environments[1].vortex_moby_pointer = 0x1339ac
+    hub_environments[0].child_environments[2].vortex_moby_pointer = 0x17d644
+    hub_environments[0].child_environments[3].vortex_moby_pointer = 0x1738ac
+
+    hub_environments[1].child_environments[0].vortex_moby_pointer = 0x169444
+    hub_environments[1].child_environments[1].vortex_moby_pointer = 0x16f978
+    hub_environments[1].child_environments[2].vortex_moby_pointer = 0x16b454
+    hub_environments[1].child_environments[3].vortex_moby_pointer = 0x16ba44
+
+    hub_environments[2].child_environments[0].vortex_moby_pointer = 0x17bbec
+    hub_environments[2].child_environments[1].vortex_moby_pointer = 0x17e188
+    hub_environments[2].child_environments[2].vortex_moby_pointer = 0x179ce4
+    hub_environments[2].child_environments[3].vortex_moby_pointer = 0x1396e4
+
+    hub_environments[3].child_environments[0].vortex_moby_pointer = 0x179020
+    hub_environments[3].child_environments[1].vortex_moby_pointer = 0x17b68c
+    hub_environments[3].child_environments[2].vortex_moby_pointer = 0x17ce24
+    hub_environments[3].child_environments[3].vortex_moby_pointer = 0x173fc4
+
+    hub_environments[4].child_environments[0].vortex_moby_pointer = 0x178950
+    hub_environments[4].child_environments[1].vortex_moby_pointer = 0x15a3d8
+    hub_environments[4].child_environments[2].vortex_moby_pointer = 0x176964
+    hub_environments[4].child_environments[3].vortex_moby_pointer = 0x16deb0
+
+    hub_environments[5].child_environments[0].vortex_moby_pointer = 0x174884
+    hub_environments[5].child_environments[1].vortex_moby_pointer = 0x17c298
+    # Gnasty Gnorc has no vortex, skip
+    hub_environments[5].child_environments[3].vortex_moby_pointer = 0x14da14
+
     cur_level_id: int = 0x7596c
     dest_level_id: int = 0x758b4
     cur_game_state: int = 0x757d8
     total_gem_count: int = 0x75860
     balloonist_menu_choice: int = 0x777f0
     unlocked_worlds: int = 0x758d0
+
+    last_touched_whirlwind: int = 0x78c7c
+    """Holds a pointer to the moby object for the last touched whirlwind."""
 
     starting_level_id: int = 0x2d4f0
     """Which level you start in after the intro cutscene."""
