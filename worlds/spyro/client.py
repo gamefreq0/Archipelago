@@ -48,7 +48,6 @@ class SpyroClient(BizHawkClient):
 
     ap_unlocked_worlds: set[str] = set()
     boss_items: set[str] = set()
-    last_known_level_id: int = 0
 
     gem_counts: dict[int, int] = {}
     """Keeps track of gem counts, indexed by level ID"""
@@ -154,6 +153,7 @@ class SpyroClient(BizHawkClient):
                 (RAM.total_gem_count, 4),
                 (RAM.switched_portal_dest, 1),
                 (RAM.spyro_cur_animation, 1),
+                (RAM.last_touched_whirlwind, 3),
             ]
 
             gem_counter_offset = len(to_read_list)
@@ -181,6 +181,7 @@ class SpyroClient(BizHawkClient):
             total_gems_collected = self.little_bytes(ram_data[7])
             did_portal_switch = self.little_bytes(ram_data[8])
             spyro_anim = self.little_bytes(ram_data[9])
+            last_whirlwind_pointer = self.little_bytes(ram_data[10])
 
             for env_id in self.env_by_id:
                 ram_data_offset = gem_counter_offset + internal_id_to_offset(env_id)
@@ -204,10 +205,6 @@ class SpyroClient(BizHawkClient):
                     for index in range(1, 5):
                         if self.gem_counts[env.internal_id] >= (quarter_count * index):
                             await self.send_location_once(f"{env.name} {25 * index}% Gems", ctx)
-
-                    # Send vortex locations
-                    if (env.has_vortex) and (self.vortexes_reached[env.internal_id] == 1):
-                        await self.send_location_once(f"{env.name} Vortex", ctx)
 
                 # Send 500 increment total gem threhshold checks
                 for gem_threshold in range(500, total_treasure + 1, 500):
@@ -255,22 +252,22 @@ class SpyroClient(BizHawkClient):
                     and not (self.env_by_id[cur_level_id].is_hub())
                 ):
                     to_write_ingame.append((RAM.switched_portal_dest, b'\x00'))
-                    # Reset current level ID to last known good one
-                    if self.last_known_level_id not in (0, cur_level_id):
-                        to_write_ingame.append(
-                            (RAM.cur_level_id, self.last_known_level_id.to_bytes(1, byteorder="little"))
-                        )
 
-                # If portal shuffle on, begin doing checks for setting vortex exit portal
-                if len(self.slot_data_mapped_entrances) > 0:
-                    # Modify current level ID inside whirlwind, to change exit via vortex
-                    # TODO: This breaks whirlwinds in levels, except the vortex
-                    if (
-                        (did_portal_switch == 0)
-                        and (spyro_anim == RAM.SpyroStates.WHIRLWIND)
-                        and not (self.env_by_id[cur_level_id].is_hub())
-                    ):
-                        self.last_known_level_id == cur_level_id
+                if (
+                    (spyro_anim == RAM.SpyroStates.WHIRLWIND)
+                    and (did_portal_switch == 0)
+                    and (not self.env_by_id[cur_level_id].is_hub())
+                    and (last_whirlwind_pointer == self.env_by_id[cur_level_id].vortex_moby_pointer)
+                ):
+                    # We're in a whirlwind, haven't modified the current level ID, we're in a level,
+                    # and we're touching the vortex
+                    # Send vortex location
+                    await self.send_location_once(f"{self.env_by_id[cur_level_id].name} Vortex", ctx)
+
+                    # If portal shuffle on, begin doing checks for setting vortex exit portal
+                    if len(self.slot_data_mapped_entrances) > 0:
+                        # Modify current level ID to point at portal's vanilla level, to make the game think we're
+                        # leaving that other level, causing us to exit from that portal in that homeworld
                         to_write_ingame.append((RAM.switched_portal_dest, b'\x01'))
                         hub_entrance_portal_name: str = ""
                         cur_level_env: Environment = self.env_by_id[cur_level_id]
