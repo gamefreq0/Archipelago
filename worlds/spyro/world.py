@@ -9,7 +9,7 @@ except ImportError:
     else:
         from typing_extensions import final, override, ClassVar
 
-from BaseClasses import Entrance, MultiWorld
+from BaseClasses import Entrance, MultiWorld, Region
 from BaseClasses import ItemClassification
 from Options import OptionError
 from entrance_rando import randomize_entrances
@@ -23,6 +23,7 @@ from .locations import grouped_locations
 from .options import SpyroOptions
 from .regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 from .rules import set_rules
+from .addresses import RAM
 
 
 @final
@@ -128,22 +129,91 @@ class SpyroWorld(World):
 
     @override
     def connect_entrances(self) -> None:
-        if self.options.portal_shuffle:
-            shuffled_entrances = randomize_entrances(
-                self,
-                True,
-                {
-                    ENTRANCE_IN: [ENTRANCE_OUT],
-                    ENTRANCE_OUT: [ENTRANCE_IN]
-                },
-                False
-            )
-            self.shuffled_entrance_pairings = shuffled_entrances.pairings
+        if not hasattr(self.multiworld, "generation_is_fake"):  # If not in UT gen, do the rest
+            if self.options.portal_shuffle:
+                shuffled_entrances = randomize_entrances(
+                    self,
+                    True,
+                    {
+                        ENTRANCE_IN: [ENTRANCE_OUT],
+                        ENTRANCE_OUT: [ENTRANCE_IN]
+                    },
+                    False
+                )
+                self.shuffled_entrance_pairings = shuffled_entrances.pairings
+            else:
+                all_entrances = self.get_entrances()
+                all_ents_list: list[Entrance] = []
+
+                for entrance in all_entrances:
+                    all_ents_list.append(entrance)
+
+                levels_start: int = 0
+                levels_stop: int = 0
+
+                for index, ent in enumerate(all_ents_list):
+                    if ("Stone Hill" in ent.name) and (levels_start == 0):
+                        levels_start = index
+                    elif "Gnasty's Loot" in ent.name:
+                        levels_stop = index
+
+                vanilla_pairs: list[tuple[Entrance, Entrance]] = []
+
+                for index in range(levels_start, levels_stop, 2):
+                    vanilla_pairs.append((all_ents_list[index], all_ents_list[index + 1]))
+
+                for pair in vanilla_pairs:
+                    if (
+                        (pair[0].parent_region is not None)
+                        and (pair[1].parent_region is not None)
+                        and (pair[0].connected_region is None)
+                        and (pair[1].connected_region is None)
+                    ):
+                        pair[0].connect(pair[1].parent_region)
+                        pair[1].connect(pair[0].parent_region)
+
+    @override
+    def set_rules(self) -> None:
+        set_rules(self)
+
+    @override
+    def fill_slot_data(self) -> dict[str, int | list[tuple[str, str]] | str]:
+        return {
+            "goal": self.options.goal.value,
+            "starting_world": self.options.starting_world.value,
+            "portal_shuffle": self.options.portal_shuffle.value,
+            "entrances": self.shuffled_entrance_pairings,
+            "spyro_color": self.options.spyro_color.value
+        }
+
+    def interpret_slot_data(self, slot_data: dict[str, any]) -> None:
+        """Method called by UT, where we can handle deferred logic stuff
+
+        Args:
+            slot_data: Holds slot data, indexed by name of the piece of data
+        """
+        # Connect starting homeworld to menu region
+        regions: dict[str, Region] = self.multiworld.regions.region_cache[self.player]
+        entrances: dict[str, Entrance] = self.multiworld.regions.entrance_cache[self.player]
+
+        starting_homeworld_index: int = slot_data["starting_world"]
+        starting_homeworld = RAM.hub_environments[starting_homeworld_index].name
+        starting_region: Region = regions[starting_homeworld]
+        menu: Region = regions["Menu"]
+
+        _ = menu.connect(starting_region, "Starting Homeworld")
+
+        # Connect entrances
+        if slot_data["portal_shuffle"] == 1:
+            pairings: list[tuple[str, str]] = slot_data["entrances"]
+            for pairing in pairings:
+                entrances[pairing[0]].connect(entrances[pairing[1]].parent_region)
+                entrances[pairing[1]].connect(entrances[pairing[0]].parent_region)
         else:
-            all_entrances = self.get_entrances()
+            all_entrances = entrances
             all_ents_list: list[Entrance] = []
 
-            for entrance in all_entrances:
+            for entrance in all_entrances.values():
                 all_ents_list.append(entrance)
 
             levels_start: int = 0
@@ -169,17 +239,3 @@ class SpyroWorld(World):
                 ):
                     pair[0].connect(pair[1].parent_region)
                     pair[1].connect(pair[0].parent_region)
-
-    @override
-    def set_rules(self) -> None:
-        set_rules(self)
-
-    @override
-    def fill_slot_data(self) -> dict[str, int | list[tuple[str, str]] | str]:
-        return {
-            "goal": self.options.goal.value,
-            "starting_world": self.options.starting_world.value,
-            "portal_shuffle": self.options.portal_shuffle.value,
-            "entrances": self.shuffled_entrance_pairings,
-            "spyro_color": self.options.spyro_color.value
-        }

@@ -67,11 +67,13 @@ def create_regions(world: "SpyroWorld"):
 
     multiworld.regions.extend(regions)
 
-    starting_world_name = options.starting_world.current_key
-    starting_world_name = starting_world_name.replace("_", " ")
-    starting_world: Region = hub_regions[starting_world_name.title()]
+    if not hasattr(world.multiworld, "generation_is_fake"):  # If not UT gen, connect as normal
+        starting_world_name = options.starting_world.current_key
+        starting_world_name = starting_world_name.replace("_", " ")
+        starting_world: Region = hub_regions[starting_world_name.title()]
 
-    _ = menu.connect(starting_world, "Starting Homeworld")
+        _ = menu.connect(starting_world, "Starting Homeworld")
+
     _ = menu.connect(main_world, "Global Stats")
     for hub in RAM.hub_environments:
         hub_region = hub_regions[hub.name]
