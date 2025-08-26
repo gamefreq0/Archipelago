@@ -48,6 +48,7 @@ class SpyroClient(BizHawkClient):
 
     ap_unlocked_worlds: set[str] = set()
     boss_items: set[str] = set()
+    last_known_level_id: int = 0
 
     gem_counts: dict[int, int] = {}
     """Keeps track of gem counts, indexed by level ID"""
@@ -152,6 +153,7 @@ class SpyroClient(BizHawkClient):
                 (RAM.balloonist_menu_choice, 1),
                 (RAM.total_gem_count, 4),
                 (RAM.switched_portal_dest, 1),
+                (RAM.spyro_cur_animation, 1),
             ]
 
             gem_counter_offset = len(to_read_list)
@@ -178,6 +180,7 @@ class SpyroClient(BizHawkClient):
             balloonist_choice = self.little_bytes(ram_data[6])
             total_gems_collected = self.little_bytes(ram_data[7])
             did_portal_switch = self.little_bytes(ram_data[8])
+            spyro_anim = self.little_bytes(ram_data[9])
 
             for env_id in self.env_by_id:
                 ram_data_offset = gem_counter_offset + internal_id_to_offset(env_id)
@@ -230,12 +233,12 @@ class SpyroClient(BizHawkClient):
             ):
                 to_write_ingame.append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
 
-            # If exiting level, and portal shuffle on, change cur_level_id to portal's vanilla level's internal ID
+            # If exiting level from menu, and portal shuffle on,
+            # change cur_level_id to portal's vanilla level's internal ID
             if cur_game_state == RAM.GameStates.EXITING_LEVEL:
                 if (did_portal_switch == 0) and (len(self.slot_data_mapped_entrances) > 0):
                     # Turn flag on so we don't remap more than once
                     to_write_exiting.append((RAM.switched_portal_dest, b'\x01'))
-
                     hub_entrance_portal_name: str = ""
                     cur_level_env: Environment = self.env_by_id[cur_level_id]
                     hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name)
@@ -245,9 +248,35 @@ class SpyroClient(BizHawkClient):
                     )
 
             if cur_game_state == RAM.GameStates.GAMEPLAY:
-                # Reset this for tracking on next level exit
-                if did_portal_switch == 1:
+                # Reset this for tracking on next level exit. Can't switch in whirlwind, might be exiting via vortex
+                if (
+                    (did_portal_switch == 1)
+                    and (spyro_anim != RAM.SpyroStates.WHIRLWIND)
+                    and not (self.env_by_id[cur_level_id].is_hub())
+                ):
                     to_write_ingame.append((RAM.switched_portal_dest, b'\x00'))
+                    # Reset current level ID to last known good one
+                    if self.last_known_level_id not in (0, cur_level_id):
+                        to_write_ingame.append(
+                            (RAM.cur_level_id, self.last_known_level_id.to_bytes(1, byteorder="little"))
+                        )
+
+                # If portal shuffle on, begin doing checks for setting vortex exit portal
+                if len(self.slot_data_mapped_entrances) > 0:
+                    # Modify current level ID inside whirlwind, to change exit via vortex
+                    # TODO: This breaks whirlwinds in levels, except the vortex
+                    if (
+                        (did_portal_switch == 0)
+                        and (spyro_anim == RAM.SpyroStates.WHIRLWIND)
+                        and not (self.env_by_id[cur_level_id].is_hub())
+                    ):
+                        self.last_known_level_id == cur_level_id
+                        to_write_ingame.append((RAM.switched_portal_dest, b'\x01'))
+                        hub_entrance_portal_name: str = ""
+                        cur_level_env: Environment = self.env_by_id[cur_level_id]
+                        hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name)
+                        id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
+                        to_write_ingame.append((RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little")))
 
                 env = self.env_by_id[cur_level_id]
 
@@ -266,13 +295,19 @@ class SpyroClient(BizHawkClient):
                 if env.name == "Magic Crafters":
                     to_write_ingame.append((RAM.tuco_egg_minimum, b'\xff\xff'))
 
-                # Lock inaccessible portals
                 if env.is_hub():
                     for index, level in enumerate(env.child_environments):
+                        # Lock inaccessible portals
                         if self.portal_accesses[level.name]:
                             to_write_ingame.append((env.portal_surface_types[index], b'\x06'))
                         else:
                             to_write_ingame.append((env.portal_surface_types[index], b'\x00'))
+
+                        # Modify portal destinations
+                        portal_dest_id: int = self.env_by_name[self.lookup_portal_leads_to(level.name)].internal_id
+                        to_write_ingame.append(
+                            (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
+                        )
 
             if cur_game_state == RAM.GameStates.TITLE_SCREEN:
                 starting_world_value = ctx.slot_data["starting_world"]
@@ -428,6 +463,29 @@ class SpyroClient(BizHawkClient):
             Little-endian-interpreted int
         """
         return int.from_bytes(bytes_in, byteorder="little")
+
+    def lookup_portal_leads_to(self, portal_entering: str) -> str:
+        """Given the name of a portal a player is entering, return the level the portal should lead to
+
+        Args:
+            portal_entering: The portal being walked into
+
+        Returns:
+            The name of the level the portal should lead to
+        """
+        # Iterate through mapped entrances to find pairing for lookup
+        flyin_level_name: str = ""
+        for entrance in self.slot_data_mapped_entrances:
+            if portal_entering in entrance[1]:
+                flyin_level_name = entrance[0]
+
+        stripped_flyin_name: str = ""
+        # Find level name that matches part of the pairing's name
+        for env_name in self.env_by_name:
+            if env_name in flyin_level_name:
+                stripped_flyin_name = env_name
+
+        return stripped_flyin_name
 
     def lookup_portal_exit(self, level_exiting_from: str) -> str:
         """Given the name of a level exiting from, return the corresponding name of the entrance portal
