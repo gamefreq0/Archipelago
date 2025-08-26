@@ -37,6 +37,8 @@ boss_items = [
 
 goal_item = ["Victory"]
 
+# TODO: useful items: progressive Sparx?
+
 trap_items = [
     "Flop Trap",
     "Roll Trap",
