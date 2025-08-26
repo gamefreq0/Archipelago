@@ -361,8 +361,10 @@ class SpyroClient(BizHawkClient):
         result: list[tuple[int, bytes]] = []
 
         hub_name: str = "Stay Here"  # default in case it's -1, which is Stay Here anyway.
+        hub_id: int = 0
         if mapped_choice != -1:
-            hub_name = RAM.hub_environments[mapped_choice].name
+            hub_id = (mapped_choice + 1) * 10
+            hub_name = self.env_by_id[hub_id].name
 
         if (hub_name != "Stay Here") and (hub_name != "Gnasty's World"):
             if hub_name in self.ap_unlocked_worlds:
