@@ -280,6 +280,7 @@ class RAM:
         """Animation states for Spyro"""
         STANDING = 0x00
         FLOP = 0x06
+        WHIRLWIND = 0x11
         ROLL = 0x13
         DEATH_SPIN = 0x1e
 
