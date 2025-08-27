@@ -150,7 +150,7 @@ class SpyroWorld(World):
 
     @override
     def generate_early(self) -> None:
-        self.goal = self.options.goal.get_option_name(self.options.goal.value)
+        self.goal = self.options.goal.get_option_name(self.options.goal.value).lower()
         self.itempool = []
         self.starting_world = self.options.starting_world.value
         self.spyro_color = self.options.spyro_color.value
