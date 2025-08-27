@@ -215,6 +215,39 @@ class SpyroWorld(World):
     def connect_entrances(self) -> None:
         if not hasattr(self.multiworld, "generation_is_fake"):  # If not in UT gen, do the rest
             if self.portal_shuffle:
+                # Ensure vanilla connection on goal level
+                goal_level: str = ""
+                if self.goal == "gnasty":
+                    goal_level = "Gnasty Gnorc"
+                elif self.goal == "loot":
+                    goal_level = "Gnasty's Loot"
+
+                gnasty_hub = self.get_region("Gnasty's World")
+                goal_level_region = self.get_region(goal_level)
+
+                # Iterate through hub and level's exits to grab pair of dangling exits
+                for named_exit in gnasty_hub.exits:
+                    if goal_level in named_exit.name:
+                        dangling_exit_hub = named_exit
+                for named_exit in goal_level_region.exits:
+                    if goal_level in named_exit.name:
+                        dangling_exit_level = named_exit
+
+                # Iterate through hub and level's entrances to grab pair of dangling entrances
+                for entrance in gnasty_hub.entrances:
+                    if goal_level in entrance.name:
+                        dangling_entrance_hub = entrance
+                for entrance in goal_level_region.entrances:
+                    if goal_level in entrance.name:
+                        dangling_entrance_level = entrance
+
+                # Actually connect the two pairs. Generic ER is confusing
+                dangling_entrance_hub.parent_region = dangling_exit_level.parent_region
+                dangling_entrance_level.parent_region = dangling_exit_hub.parent_region
+                dangling_exit_hub.connected_region = dangling_entrance_level.connected_region
+                dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
+
+                # Create shuffled connections with GER call
                 shuffled_entrances = randomize_entrances(
                     self,
                     True,
@@ -224,12 +257,14 @@ class SpyroWorld(World):
                     },
                     False
                 )
+
+                # Save results for filling slot data later
                 self.shuffled_entrance_pairings = shuffled_entrances.pairings
+
             else:
-                all_entrances = self.get_entrances()
                 all_ents_list: list[Entrance] = []
 
-                for entrance in all_entrances:
+                for entrance in self.get_entrances():
                     all_ents_list.append(entrance)
 
                 levels_start: int = 0
@@ -289,6 +324,40 @@ class SpyroWorld(World):
 
         # Connect entrances
         if slot_data["portal_shuffle"] == 1:
+
+            # Ensure vanilla connection on goal level
+            goal_level: str = ""
+            if slot_data["goal"] == "gnasty":
+                goal_level = "Gnasty Gnorc"
+            elif slot_data["goal"] == "loot":
+                goal_level = "Gnasty's Loot"
+
+            gnasty_hub = regions["Gnasty's World"]
+            goal_level_region = regions[goal_level]
+
+            # Iterate through hub and level's exits to grab pair of dangling exits
+            for named_exit in gnasty_hub.exits:
+                if goal_level in named_exit.name:
+                    dangling_exit_hub = named_exit
+            for named_exit in goal_level_region.exits:
+                if goal_level in named_exit.name:
+                    dangling_exit_level = named_exit
+
+            # Iterate through hub and level's entrances to grab pair of dangling entrances
+            for entrance in gnasty_hub.entrances:
+                if goal_level in entrance.name:
+                    dangling_entrance_hub = entrance
+            for entrance in goal_level_region.entrances:
+                if goal_level in entrance.name:
+                    dangling_entrance_level = entrance
+
+            # Generic ER is so confusing
+            dangling_entrance_hub.parent_region = dangling_exit_level.parent_region
+            dangling_entrance_level.parent_region = dangling_exit_hub.parent_region
+            dangling_exit_hub.connected_region = dangling_entrance_level.connected_region
+            dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
+
+            # Connect remaining ER entrances
             pairings: list[tuple[str, str]] = slot_data["entrances"]
             for pairing in pairings:
                 entrances[pairing[0]].connect(entrances[pairing[1]].parent_region)
