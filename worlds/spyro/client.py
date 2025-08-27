@@ -299,11 +299,13 @@ class SpyroClient(BizHawkClient):
                         else:
                             to_write_ingame.append((env.portal_surface_types[index], b'\x00'))
 
-                        # Modify portal destinations
-                        portal_dest_id: int = self.env_by_name[self.lookup_portal_leads_to(level.name)].internal_id
-                        to_write_ingame.append(
-                            (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
-                        )
+                        # If portal shuffle is on
+                        if len(self.slot_data_mapped_entrances) > 0:
+                            # Modify portal destinations
+                            portal_dest_id: int = self.env_by_name[self.lookup_portal_leads_to(level.name)].internal_id
+                            to_write_ingame.append(
+                                (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
+                            )
 
             if cur_game_state == RAM.GameStates.TITLE_SCREEN:
                 starting_world_value: int = ctx.slot_data["starting_world"]
