@@ -49,29 +49,113 @@ class SpyroWorld(World):
     item_name_groups = grouped_items
     location_name_groups = grouped_locations
 
+    _goal: str
+    _portal_shuffle: int
+    _death_link: int
+    _starting_world: int
+    _spyro_color: int
+
     def __init__(self, multiworld: "MultiWorld", player: int):
         super().__init__(multiworld, player)
-        self.goal: int | None = 0
+        self._goal = "gnasty"
+        self._portal_shuffle = 0
+        self._death_link = 0
+        self._starting_world = 0
+        self._spyro_color = -1
         self.itempool: list[SpyroItem] = []
         self.shuffled_entrance_pairings: list[tuple[str, str]] = []
 
-    @override
-    def generate_early(self) -> None:
-        self.goal = self.options.goal.value
-        self.itempool = []
+    @property
+    def goal(self) -> str:
+        """Goal for this world
 
+        Returns:
+            The goal name
+        """
+        return self._goal
+
+    @goal.setter
+    def goal(self, value: str) -> None:
+        if value in ("gnasty", "loot"):
+            self._goal = value
+        else:
+            raise OptionError(f"Invalid value {value} for goal for player {self.player_name}")
+
+    @property
+    def portal_shuffle(self) -> bool:
+        """Whether portals are shuffled
+
+        Returns:
+            bool
+        """
+        return self._portal_shuffle == 1
+
+    @portal_shuffle.setter
+    def portal_shuffle(self, value: bool) -> None:
+        if value:
+            self._portal_shuffle = 1
+        else:
+            self._portal_shuffle = 0
+
+    @property
+    def death_link(self) -> bool:
+        """Whether death link is on
+
+        Returns:
+            bool
+        """
+        return self._death_link == 1
+
+    @death_link.setter
+    def death_link(self, value: bool) -> None:
+        if value:
+            warning(f"Deathlink for {self.game} doesn't work yet. Option will be ignored.")
+            self._death_link = 1
+        else:
+            self._death_link = 0
+
+    @property
+    def starting_world(self) -> int:
+        """Which world the player starts in
+
+        Returns:
+            The index of the homeworld
+        """
+        return self._starting_world
+
+    @starting_world.setter
+    def starting_world(self, value: int) -> None:
+        if value in range(5):
+            self._starting_world = value
+        else:
+            raise OptionError(
+                "This shouldn't happen! Let the dev of the apworld for " +
+                f"{self.game} know that starting_homeworld broke!"
+            )
+
+    @property
+    def spyro_color(self) -> int:
+        """Spyro's RGBA color"""
+        return self._spyro_color
+
+    @spyro_color.setter
+    def spyro_color(self, value: str) -> None:
         try:
-            _: int = int(self.options.spyro_color.value, 16)
+            color: int = int(value, 16)
         except ValueError as exc:
             raise OptionError(
-                f"{self.player_name}'s spyro_color value of " +
-                f'"{self.options.spyro_color.value}" is not a valid RGBA color.'
+                f"{self.player_name}'s spyro_color value of " + f'"{value}" is not a valid RGBA color.'
             ) from exc
+        self._spyro_color = color
 
-        if self.options.death_link.value == 1:
-            warning(
-                f"Deathlink for {self.game} doesn't work yet. Option will be ignored"
-            )
+    @override
+    def generate_early(self) -> None:
+        self.goal = self.options.goal.get_option_name(self.options.goal.value).lower()
+        self.itempool = []
+        self.starting_world = self.options.starting_world.value
+        self.spyro_color = self.options.spyro_color.value
+        self.death_link = self.options.death_link.value == 1
+        self.portal_shuffle = self.options.portal_shuffle.value == 1
 
     @override
     def create_regions(self) -> None:
@@ -91,7 +175,7 @@ class SpyroWorld(World):
     @override
     def create_items(self) -> None:
         for name in homeworld_access:
-            if name == self.options.starting_world.get_option_name(self.options.starting_world.value):
+            if name == RAM.hub_environments[self.starting_world].name:
                 self.push_precollected(self.create_item(name))
             else:
                 self.itempool += [self.create_item(name)]
@@ -120,9 +204,9 @@ class SpyroWorld(World):
             random_filler = self.multiworld.random.choice(filler_items)
             self.itempool += [self.create_item(random_filler)]
 
-        if self.options.goal == "gnasty":
+        if self.goal == "gnasty":
             self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
-        elif self.options.goal == "loot":
+        elif self.goal == "loot":
             self.get_location("Gnasty's Loot Vortex").place_locked_item(victory)
 
         self.multiworld.itempool += self.itempool
@@ -130,7 +214,40 @@ class SpyroWorld(World):
     @override
     def connect_entrances(self) -> None:
         if not hasattr(self.multiworld, "generation_is_fake"):  # If not in UT gen, do the rest
-            if self.options.portal_shuffle:
+            if self.portal_shuffle:
+                # Ensure vanilla connection on goal level
+                goal_level: str = ""
+                if self.goal == "gnasty":
+                    goal_level = "Gnasty Gnorc"
+                elif self.goal == "loot":
+                    goal_level = "Gnasty's Loot"
+
+                gnasty_hub = self.get_region("Gnasty's World")
+                goal_level_region = self.get_region(goal_level)
+
+                # Iterate through hub and level's exits to grab pair of dangling exits
+                for named_exit in gnasty_hub.exits:
+                    if goal_level in named_exit.name:
+                        dangling_exit_hub = named_exit
+                for named_exit in goal_level_region.exits:
+                    if goal_level in named_exit.name:
+                        dangling_exit_level = named_exit
+
+                # Iterate through hub and level's entrances to grab pair of dangling entrances
+                for entrance in gnasty_hub.entrances:
+                    if goal_level in entrance.name:
+                        dangling_entrance_hub = entrance
+                for entrance in goal_level_region.entrances:
+                    if goal_level in entrance.name:
+                        dangling_entrance_level = entrance
+
+                # Actually connect the two pairs. Generic ER is confusing
+                dangling_entrance_hub.parent_region = dangling_exit_level.parent_region
+                dangling_entrance_level.parent_region = dangling_exit_hub.parent_region
+                dangling_exit_hub.connected_region = dangling_entrance_level.connected_region
+                dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
+
+                # Create shuffled connections with GER call
                 shuffled_entrances = randomize_entrances(
                     self,
                     True,
@@ -140,12 +257,14 @@ class SpyroWorld(World):
                     },
                     False
                 )
+
+                # Save results for filling slot data later
                 self.shuffled_entrance_pairings = shuffled_entrances.pairings
+
             else:
-                all_entrances = self.get_entrances()
                 all_ents_list: list[Entrance] = []
 
-                for entrance in all_entrances:
+                for entrance in self.get_entrances():
                     all_ents_list.append(entrance)
 
                 levels_start: int = 0
@@ -179,11 +298,11 @@ class SpyroWorld(World):
     @override
     def fill_slot_data(self) -> dict[str, int | list[tuple[str, str]] | str]:
         return {
-            "goal": self.options.goal.value,
-            "starting_world": self.options.starting_world.value,
-            "portal_shuffle": self.options.portal_shuffle.value,
+            "goal": self.goal,
+            "starting_world": self.starting_world,
+            "portal_shuffle": 1 if self.portal_shuffle else 0,
             "entrances": self.shuffled_entrance_pairings,
-            "spyro_color": self.options.spyro_color.value
+            "spyro_color": self.spyro_color,
         }
 
     def interpret_slot_data(self, slot_data: dict[str, any]) -> None:
@@ -205,6 +324,40 @@ class SpyroWorld(World):
 
         # Connect entrances
         if slot_data["portal_shuffle"] == 1:
+
+            # Ensure vanilla connection on goal level
+            goal_level: str = ""
+            if slot_data["goal"] == "gnasty":
+                goal_level = "Gnasty Gnorc"
+            elif slot_data["goal"] == "loot":
+                goal_level = "Gnasty's Loot"
+
+            gnasty_hub = regions["Gnasty's World"]
+            goal_level_region = regions[goal_level]
+
+            # Iterate through hub and level's exits to grab pair of dangling exits
+            for named_exit in gnasty_hub.exits:
+                if goal_level in named_exit.name:
+                    dangling_exit_hub = named_exit
+            for named_exit in goal_level_region.exits:
+                if goal_level in named_exit.name:
+                    dangling_exit_level = named_exit
+
+            # Iterate through hub and level's entrances to grab pair of dangling entrances
+            for entrance in gnasty_hub.entrances:
+                if goal_level in entrance.name:
+                    dangling_entrance_hub = entrance
+            for entrance in goal_level_region.entrances:
+                if goal_level in entrance.name:
+                    dangling_entrance_level = entrance
+
+            # Generic ER is so confusing
+            dangling_entrance_hub.parent_region = dangling_exit_level.parent_region
+            dangling_entrance_level.parent_region = dangling_exit_hub.parent_region
+            dangling_exit_hub.connected_region = dangling_entrance_level.connected_region
+            dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
+
+            # Connect remaining ER entrances
             pairings: list[tuple[str, str]] = slot_data["entrances"]
             for pairing in pairings:
                 entrances[pairing[0]].connect(entrances[pairing[1]].parent_region)

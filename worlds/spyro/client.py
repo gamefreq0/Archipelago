@@ -129,10 +129,9 @@ class SpyroClient(BizHawkClient):
                     pass
 
         if self.slot_data_spyro_color == b'':
-            color_string = ctx.slot_data["spyro_color"]
-            if color_string is not None:
-                color_value: int = int(color_string, 16)
-                self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
+            color_value: int
+            color_value = ctx.slot_data["spyro_color"]
+            self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
 
         if (len(self.slot_data_mapped_entrances) == 0) and (len(ctx.slot_data["entrances"]) > 0):
             temp_list: list[tuple[str, str]] = []
@@ -307,11 +306,10 @@ class SpyroClient(BizHawkClient):
                         )
 
             if cur_game_state == RAM.GameStates.TITLE_SCREEN:
-                starting_world_value = ctx.slot_data["starting_world"]
-                if starting_world_value is not None:
-                    starting_world_value += 1
-                    starting_world_value *= 10
-                    to_write_menu.append((RAM.starting_level_id, starting_world_value.to_bytes(1, "little")))
+                starting_world_value: int = ctx.slot_data["starting_world"]
+                starting_world_value += 1
+                starting_world_value *= 10
+                to_write_menu.append((RAM.starting_level_id, starting_world_value.to_bytes(1, "little")))
 
             if cur_game_state == RAM.GameStates.BALLOONIST:
                 env = self.env_by_id[cur_level_id]

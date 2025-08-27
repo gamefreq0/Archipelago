@@ -171,8 +171,7 @@ misc_locations.append("Defeated Gnasty Gnorc")
 location_list: list[str] = []
 
 for d in [
-    # TODO: reimplement total gem thresholds, dragon locations, egg locations
-    # total gems needs logic, the rest need client-side stuff
+    # TODO: implement dragon locations, egg locations
     level_gem_threshold_locations,
     total_gem_threshold_locations,
     # dragon_locations
