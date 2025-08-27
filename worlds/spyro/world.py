@@ -125,7 +125,7 @@ class SpyroWorld(World):
 
     @starting_world.setter
     def starting_world(self, value: int) -> None:
-        if value in range(4):
+        if value in range(5):
             self._starting_world = value
         else:
             raise OptionError(
