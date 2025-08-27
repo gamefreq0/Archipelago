@@ -307,11 +307,10 @@ class SpyroClient(BizHawkClient):
                         )
 
             if cur_game_state == RAM.GameStates.TITLE_SCREEN:
-                starting_world_value = ctx.slot_data["starting_world"]
-                if starting_world_value is not None:
-                    starting_world_value += 1
-                    starting_world_value *= 10
-                    to_write_menu.append((RAM.starting_level_id, starting_world_value.to_bytes(1, "little")))
+                starting_world_value: int = ctx.slot_data["starting_world"]
+                starting_world_value += 1
+                starting_world_value *= 10
+                to_write_menu.append((RAM.starting_level_id, starting_world_value.to_bytes(1, "little")))
 
             if cur_game_state == RAM.GameStates.BALLOONIST:
                 env = self.env_by_id[cur_level_id]
