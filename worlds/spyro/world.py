@@ -67,10 +67,10 @@ class SpyroWorld(World):
 
     @property
     def goal(self) -> str:
-        """Goal for this world, as a number
+        """Goal for this world
 
         Returns:
-            The goal value
+            The goal name
         """
         return self._goal
 
