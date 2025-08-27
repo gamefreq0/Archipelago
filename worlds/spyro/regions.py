@@ -1,3 +1,5 @@
+"""Holds create_regions override for AP to call during gen
+"""
 try:
     from typing import TYPE_CHECKING
 except ImportError:
@@ -17,6 +19,11 @@ ENTRANCE_OUT: int = 0x1
 
 
 def create_regions(world: "SpyroWorld"):
+    """Create regions, connect static regions, create dangling entrances for generic ER
+
+    Args:
+        world: The SpyroWorld to create the logical regions for
+    """
     options = world.options
     player = world.player
     multiworld = world.multiworld
@@ -75,21 +82,33 @@ def create_regions(world: "SpyroWorld"):
         _ = menu.connect(starting_world, "Starting Homeworld")
 
     _ = menu.connect(main_world, "Global Stats")
+
     for hub in RAM.hub_environments:
         hub_region = hub_regions[hub.name]
-        level: Environment
+
         for level in hub.child_environments:
             level_region = level_regions[level.name]
+
+            # Create dangling exit in hub for each portal, set access rule to item for portal, used for portal to
+            # fly-in connection in connect_entrances
             portal_to_flyin = hub_region.create_exit(f"{level.name} Portal")
             portal_to_flyin.randomization_type = EntranceType.TWO_WAY
             portal_to_flyin.randomization_group = ENTRANCE_IN
             portal_to_flyin.access_rule = (lambda state, level_name=level.name: state.has(level_name, player))
+
+            # Create dangling entrance in hub for each portal, as a place to logically arrive from exiting a level
             portal_from_vortex = hub_region.create_er_target(f"{level.name} Portal")
             portal_from_vortex.randomization_type = EntranceType.TWO_WAY
             portal_from_vortex.randomization_group = ENTRANCE_IN
+
+            # Create dangling entrance at the level fly-in, logical destination from a portal in a hub after
+            # doing connect_entrances
             level_flyin_from_portal = level_region.create_er_target(f"{level.name} Fly-in")
             level_flyin_from_portal.randomization_type = EntranceType.TWO_WAY
             level_flyin_from_portal.randomization_group = ENTRANCE_OUT
+
+            # Create dangling exit from level, in vanilla logically connects to the portal for the level
+            # In our case, it represents both the vortex and exit from menu transitions
             level_vortex_to_portal = level_region.create_exit(f"{level.name} Fly-in")
             level_vortex_to_portal.randomization_type = EntranceType.TWO_WAY
             level_vortex_to_portal.randomization_group = ENTRANCE_OUT
