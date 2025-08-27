@@ -24,7 +24,6 @@ def create_regions(world: "SpyroWorld"):
     Args:
         world: The SpyroWorld to create the logical regions for
     """
-    options = world.options
     player = world.player
     multiworld = world.multiworld
 
@@ -75,7 +74,7 @@ def create_regions(world: "SpyroWorld"):
     multiworld.regions.extend(regions)
 
     if not hasattr(world.multiworld, "generation_is_fake"):  # If not UT gen, connect as normal
-        starting_world_name = options.starting_world.current_key
+        starting_world_name = RAM.hub_environments[world.starting_world].name
         starting_world_name = starting_world_name.replace("_", " ")
         starting_world: Region = hub_regions[starting_world_name.title()]
 

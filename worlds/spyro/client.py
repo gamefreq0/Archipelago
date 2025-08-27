@@ -129,10 +129,9 @@ class SpyroClient(BizHawkClient):
                     pass
 
         if self.slot_data_spyro_color == b'':
-            color_string = ctx.slot_data["spyro_color"]
-            if color_string is not None:
-                color_value: int = int(color_string, 16)
-                self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
+            color_value: int
+            color_value = ctx.slot_data["spyro_color"]
+            self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
 
         if (len(self.slot_data_mapped_entrances) == 0) and (len(ctx.slot_data["entrances"]) > 0):
             temp_list: list[tuple[str, str]] = []
