@@ -360,8 +360,11 @@ class SpyroWorld(World):
             # Connect remaining ER entrances
             pairings: list[tuple[str, str]] = slot_data["entrances"]
             for pairing in pairings:
-                entrances[pairing[0]].connect(entrances[pairing[1]].parent_region)
-                entrances[pairing[1]].connect(entrances[pairing[0]].parent_region)
+                first_entrance: Entrance = entrances[pairing[0]]
+                second_entrance: Entrance = entrances[pairing[1]]
+                if (first_entrance.parent_region is not None) and (second_entrance.parent_region is not None):
+                    first_entrance.connect(second_entrance.parent_region)
+                    second_entrance.connect(first_entrance.parent_region)
         else:
             all_entrances = entrances
             all_ents_list: list[Entrance] = []
