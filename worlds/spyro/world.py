@@ -2,12 +2,12 @@ from logging import warning
 
 from typing import TYPE_CHECKING
 try:
-    from typing import final, override, ClassVar
+    from typing import override, ClassVar, Any
 except ImportError:
     if TYPE_CHECKING:
-        from typing import final, override, ClassVar
+        from typing import override, ClassVar, Any
     else:
-        from typing_extensions import final, override, ClassVar
+        from typing_extensions import override, ClassVar, Any
 
 from BaseClasses import Entrance, MultiWorld, Region
 from BaseClasses import ItemClassification
@@ -26,7 +26,6 @@ from .rules import set_rules
 from .addresses import RAM
 
 
-@final
 class SpyroWorld(World):
     """
     Spyro the Dragon, originally released on the PS1 in 1998, is a 3D collectathon platform starring the titular
@@ -34,20 +33,20 @@ class SpyroWorld(World):
     homeworlds, as you collect gems, recover stolen dragon eggs, free crystallized dragons, and make your way
     to Gnorc Gnexus to torch Gnasty and save the world of dragons.
     """
-    game = "Spyro the Dragon"
+    game: ClassVar[str] = "Spyro the Dragon"
     web: ClassVar[WebWorld] = SpyroWeb()
-    options_dataclass = SpyroOptions
+    options_dataclass: ClassVar[type[SpyroOptions]] = SpyroOptions  # pyright: ignore[reportIncompatibleVariableOverride]
     # Following ignore is for https://github.com/python/typing/discussions/1486 reasons
     # Hopefully, eventually this becomes unnecessary
     options: SpyroOptions  # pyright: ignore[reportIncompatibleVariableOverride]
-    topology_present = True
+    topology_present: bool = True
 
-    item_name_to_id = item_name_to_id
+    item_name_to_id: ClassVar[dict[str, int]] = item_name_to_id
 
-    location_name_to_id = location_name_to_id
+    location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
 
-    item_name_groups = grouped_items
-    location_name_groups = grouped_locations
+    item_name_groups: ClassVar[dict[str, set[str]]] = grouped_items
+    location_name_groups: ClassVar[dict[str, set[str]]] = grouped_locations
 
     _goal: str
     _portal_shuffle: int
@@ -225,6 +224,11 @@ class SpyroWorld(World):
                 gnasty_hub = self.get_region("Gnasty's World")
                 goal_level_region = self.get_region(goal_level)
 
+                dangling_entrance_hub: Entrance = Entrance(self.player, "")
+                dangling_entrance_level: Entrance = Entrance(self.player, "")
+                dangling_exit_hub: Entrance = Entrance(self.player, "")
+                dangling_exit_level: Entrance = Entrance(self.player, "")
+
                 # Iterate through hub and level's exits to grab pair of dangling exits
                 for named_exit in gnasty_hub.exits:
                     if goal_level in named_exit.name:
@@ -305,7 +309,7 @@ class SpyroWorld(World):
             "spyro_color": self.spyro_color,
         }
 
-    def interpret_slot_data(self, slot_data: dict[str, any]) -> None:
+    def interpret_slot_data(self, slot_data: dict[str, Any]) -> None:
         """Method called by UT, where we can handle deferred logic stuff
 
         Args:
@@ -334,6 +338,11 @@ class SpyroWorld(World):
 
             gnasty_hub = regions["Gnasty's World"]
             goal_level_region = regions[goal_level]
+
+            dangling_entrance_hub: Entrance = Entrance(self.player, "")
+            dangling_entrance_level: Entrance = Entrance(self.player, "")
+            dangling_exit_hub: Entrance = Entrance(self.player, "")
+            dangling_exit_level: Entrance = Entrance(self.player, "")
 
             # Iterate through hub and level's exits to grab pair of dangling exits
             for named_exit in gnasty_hub.exits:
