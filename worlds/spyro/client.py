@@ -4,12 +4,12 @@ import struct
 from typing import TYPE_CHECKING
 
 try:
-    from typing import final, override
+    from typing import override, ClassVar
 except ImportError:
     if TYPE_CHECKING:
-        from typing import final, override
+        from typing import override, ClassVar
     else:
-        from typing_extensions import final, override
+        from typing_extensions import override, ClassVar
 
 from NetUtils import ClientStatus
 import worlds._bizhawk as bizhawk
@@ -25,10 +25,9 @@ if TYPE_CHECKING:
 logger = logging.getLogger("Client")
 
 
-@final
 class SpyroClient(BizHawkClient):
-    game = "Spyro the Dragon"
-    system = "PSX"
+    game: ClassVar[str] = "Spyro the Dragon"
+    system: ClassVar[str | tuple[str]] = "PSX"
 
     local_checked_locations: set[int] = set()
     slot_data_spyro_color: bytes = b''
@@ -37,6 +36,8 @@ class SpyroClient(BizHawkClient):
     env_by_id: dict[int, Environment] = {}
     env_by_name: dict[str, Environment] = {}
 
+    hub: Environment
+    level: Environment
     for hub in RAM.hub_environments:
         env_by_id[hub.internal_id] = hub
         env_by_name[hub.name] = hub
@@ -57,6 +58,7 @@ class SpyroClient(BizHawkClient):
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
+    env: Environment
     for env in env_by_id.values():
         gem_counts[env.internal_id] = 0
         if not env.is_hub():
