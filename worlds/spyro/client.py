@@ -29,7 +29,6 @@ logger = logging.getLogger("Client")
 class SpyroClient(BizHawkClient):
     game = "Spyro the Dragon"
     system = "PSX"
-    patch_suffix = ""
 
     local_checked_locations: set[int] = set()
     slot_data_spyro_color: bytes = b''
