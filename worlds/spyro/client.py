@@ -237,7 +237,7 @@ class SpyroClient(BizHawkClient):
                     to_write_exiting.append((RAM.switched_portal_dest, b'\x01'))
                     hub_entrance_portal_name: str = ""
                     cur_level_env: Environment = self.env_by_id[cur_level_id]
-                    hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name)
+                    hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
                     id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
                     to_write_exiting.append(
                         (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
@@ -270,7 +270,7 @@ class SpyroClient(BizHawkClient):
                         to_write_ingame.append((RAM.switched_portal_dest, b'\x01'))
                         hub_entrance_portal_name: str = ""
                         cur_level_env: Environment = self.env_by_id[cur_level_id]
-                        hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name)
+                        hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
                         id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
                         to_write_ingame.append((RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little")))
 
@@ -302,7 +302,7 @@ class SpyroClient(BizHawkClient):
                         # If portal shuffle is on
                         if len(self.slot_data_mapped_entrances) > 0:
                             # Modify portal destinations
-                            portal_dest_id: int = self.env_by_name[self.lookup_portal_leads_to(level.name)].internal_id
+                            portal_dest_id: int = self.env_by_name[self.lookup_portal_leads_to(level.name, ctx)].internal_id
                             to_write_ingame.append(
                                 (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
                             )
@@ -461,7 +461,7 @@ class SpyroClient(BizHawkClient):
         """
         return int.from_bytes(bytes_in, byteorder="little")
 
-    def lookup_portal_leads_to(self, portal_entering: str) -> str:
+    def lookup_portal_leads_to(self, portal_entering: str, ctx: "BizHawkClientContext") -> str:
         """Given the name of a portal a player is entering, return the level the portal should lead to
 
         Args:
@@ -482,9 +482,18 @@ class SpyroClient(BizHawkClient):
             if env_name in flyin_level_name:
                 stripped_flyin_name = env_name
 
+        # At this point, if stripped flyin name is empty, it's the goal level. Set accordingly
+        # TODO: remove this once it's in slot data
+        if stripped_flyin_name == "":
+            goal_option: str = ctx.slot_data["goal"]
+            if goal_option == "gnasty":
+                stripped_flyin_name = "Gnasty Gnorc"
+            elif goal_option == "loot":
+                stripped_flyin_name = "Gnasty's Loot"
+
         return stripped_flyin_name
 
-    def lookup_portal_exit(self, level_exiting_from: str) -> str:
+    def lookup_portal_exit(self, level_exiting_from: str, ctx: "BizHawkClientContext") -> str:
         """Given the name of a level exiting from, return the corresponding name of the entrance portal
 
         Args:
@@ -506,6 +515,16 @@ class SpyroClient(BizHawkClient):
         for env_name in self.env_by_name:
             if env_name in hub_entrance_portal_name:
                 stripped_portal_name = env_name
+
+        # At this point, if it's the goal level being looked up, stripped portal name will be empty (until properly
+        # adding it to slot data, will do later)
+        # TODO: remove once in slot data
+        if stripped_portal_name == "":
+            goal_option: str = ctx.slot_data["goal"]
+            if goal_option == "gnasty":
+                stripped_portal_name = "Gnasty Gnorc"
+            elif goal_option == "loot":
+                stripped_portal_name = "Gnasty's Loot"
 
         return stripped_portal_name
 
