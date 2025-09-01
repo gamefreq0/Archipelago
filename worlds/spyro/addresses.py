@@ -169,6 +169,41 @@ class RAM:
     hub_environments[5].portal_dest_level_ids.append(0xa69c0)  # Gnasty Gnorc
     hub_environments[5].portal_dest_level_ids.append(0xa69cc)  # Gnasty's Loot
 
+    hub_environments[0].child_environments[0].text_offset = 0x101fc  # stone hill
+    hub_environments[0].child_environments[1].text_offset = 0x101f0  # dark hollow
+    hub_environments[0].child_environments[2].text_offset = 0x101e4  # town square
+    hub_environments[0].child_environments[3].text_offset = 0x75570  # toasty
+    hub_environments[0].child_environments[4].text_offset = 0x101d4  # sunny flight
+
+    hub_environments[1].child_environments[0].text_offset = 0x101c8  # dry canyon
+    hub_environments[1].child_environments[1].text_offset = 0x101bc  # cliff town
+    hub_environments[1].child_environments[2].text_offset = 0x101b0  # ice cavern
+    hub_environments[1].child_environments[3].text_offset = 0x101a0  # doctor shemp
+    hub_environments[1].child_environments[4].text_offset = 0x10190  # night flight
+
+    hub_environments[2].child_environments[0].text_offset = 0x10180  # alpine ridge
+    hub_environments[2].child_environments[1].text_offset = 0x10174  # high caves
+    hub_environments[2].child_environments[2].text_offset = 0x10168  # wizard peak
+    hub_environments[2].child_environments[3].text_offset = 0x1015c  # blowhard
+    hub_environments[2].child_environments[4].text_offset = 0x1014c  # crystal flight
+
+    hub_environments[3].child_environments[0].text_offset = 0x1013c  # terrace village
+    hub_environments[3].child_environments[1].text_offset = 0x10130  # misty bog
+    hub_environments[3].child_environments[2].text_offset = 0x10124  # tree tops
+    hub_environments[3].child_environments[3].text_offset = 0x10118  # metalhead
+    hub_environments[3].child_environments[4].text_offset = 0x1010c  # wild flight
+
+    hub_environments[4].child_environments[0].text_offset = 0x100fc  # dark passage
+    hub_environments[4].child_environments[1].text_offset = 0x100ec  # lofty castle
+    hub_environments[4].child_environments[2].text_offset = 0x100dc  # haunted towers
+    hub_environments[4].child_environments[3].text_offset = 0x75568  # jacques
+    hub_environments[4].child_environments[4].text_offset = 0x100d0  # icy flight
+
+    hub_environments[5].child_environments[0].text_offset = 0x100b4  # gnorc cove
+    hub_environments[5].child_environments[1].text_offset = 0x100a4  # twilight harbor
+    hub_environments[5].child_environments[2].text_offset = 0x10094  # gnasty gnorc
+    hub_environments[5].child_environments[3].text_offset = 0x10084  # gnasty's loot
+
     hub: Environment = hub_environments[0]
     for hub in hub_environments:
         dest_offset: int = 0
@@ -296,6 +331,7 @@ class RAM:
     total_gem_count: int = 0x75860
     balloonist_menu_choice: int = 0x777f0
     unlocked_worlds: int = 0x758d0
+    show_on_inventory_array: int = 0x78e78
 
     last_touched_whirlwind: int = 0x78c7c
     """Holds a pointer to the moby object for the last touched whirlwind."""

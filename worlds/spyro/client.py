@@ -4,12 +4,12 @@ import struct
 from typing import TYPE_CHECKING
 
 try:
-    from typing import final, override
+    from typing import override, ClassVar
 except ImportError:
     if TYPE_CHECKING:
-        from typing import final, override
+        from typing import override, ClassVar
     else:
-        from typing_extensions import final, override
+        from typing_extensions import override, ClassVar
 
 from NetUtils import ClientStatus
 import worlds._bizhawk as bizhawk
@@ -25,11 +25,9 @@ if TYPE_CHECKING:
 logger = logging.getLogger("Client")
 
 
-@final
 class SpyroClient(BizHawkClient):
-    game = "Spyro the Dragon"
-    system = "PSX"
-    patch_suffix = ""
+    game: ClassVar[str] = "Spyro the Dragon"
+    system: ClassVar[str | tuple[str]] = "PSX"
 
     local_checked_locations: set[int] = set()
     slot_data_spyro_color: bytes = b''
@@ -38,6 +36,8 @@ class SpyroClient(BizHawkClient):
     env_by_id: dict[int, Environment] = {}
     env_by_name: dict[str, Environment] = {}
 
+    hub: Environment
+    level: Environment
     for hub in RAM.hub_environments:
         env_by_id[hub.internal_id] = hub
         env_by_name[hub.name] = hub
@@ -58,6 +58,7 @@ class SpyroClient(BizHawkClient):
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
+    env: Environment
     for env in env_by_id.values():
         gem_counts[env.internal_id] = 0
         if not env.is_hub():
@@ -214,6 +215,7 @@ class SpyroClient(BizHawkClient):
             to_write_menu: list[tuple[int, bytes]] = []
             to_write_balloonist: list[tuple[int, bytes]] = []
             to_write_exiting: list[tuple[int, bytes]] = []
+            to_write_inventory: list[tuple[int, bytes]] = []
 
             if (
                 (cur_game_state == RAM.GameStates.GAMEPLAY)
@@ -228,6 +230,20 @@ class SpyroClient(BizHawkClient):
                 and (unlocked_worlds.count(bytes([0])) > 1)
             ):
                 to_write_ingame.append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
+
+            if cur_game_state in (RAM.GameStates.GAMEPLAY, RAM.GameStates.INVENTORY):
+                # Force all levels and hubs to be visible on the inventory screen
+                for index in range(len(self.env_by_id)):
+                    to_write_inventory.append((RAM.show_on_inventory_array + index, b'\x01'))
+
+                # Modify level/hub names to indicate accessibility and completion status
+                write_list: list[tuple[int, bytes]] = self.show_access(ctx)
+                for item in write_list:
+                    if cur_game_state == RAM.GameStates.GAMEPLAY:
+                        to_write_ingame.append(item)
+
+                    else:
+                        to_write_inventory.append(item)
 
             # If exiting level from menu, and portal shuffle on,
             # change cur_level_id to portal's vanilla level's internal ID
@@ -302,7 +318,8 @@ class SpyroClient(BizHawkClient):
                         # If portal shuffle is on
                         if len(self.slot_data_mapped_entrances) > 0:
                             # Modify portal destinations
-                            portal_dest_id: int = self.env_by_name[self.lookup_portal_leads_to(level.name, ctx)].internal_id
+                            dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
+                            portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
                             to_write_ingame.append(
                                 (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
                             )
@@ -377,6 +394,12 @@ class SpyroClient(BizHawkClient):
             await self.write_on_state(
                 to_write_balloonist,
                 RAM.GameStates.BALLOONIST.to_bytes(1, byteorder="little"),
+                ctx
+            )
+
+            await self.write_on_state(
+                to_write_inventory,
+                RAM.GameStates.INVENTORY.to_bytes(1, byteorder="little"),
                 ctx
             )
 
@@ -527,6 +550,66 @@ class SpyroClient(BizHawkClient):
                 stripped_portal_name = "Gnasty's Loot"
 
         return stripped_portal_name
+
+    def show_access(self, ctx: "BizHawkClientContext") -> list[tuple[int, bytes]]:
+        """Returns a list of writes to be performed to edit level/hub names to show on portals or in the inventory
+        screen that they are accessible and whether they have unchecked locations within
+
+        Returns:
+            List of writes to perform
+        """
+        write_list: list[tuple[int, bytes]] = []
+        first_char: bytes
+        # '.' is locked, '!' is unlocked and has unchecked locations, vanilla first character otherwise
+
+        for env in self.env_by_id.values():
+            first_char = b'.'  # Default this to locked, override further in as needed
+            env_locations: list[str] = []
+
+            if env.is_hub():
+                # Compile a list of unchecked locations for the current hub
+                env_locations = []
+                for name, loc_id in location_name_to_id.items():
+                    if (env.name in name) and (loc_id not in ctx.checked_locations):
+                        env_locations.append(name)
+
+                if env.name == "Gnasty's World":
+                    if len(self.boss_items) == 5:
+                        if len(env_locations) > 0:
+                            first_char = b'!'
+                        else:
+                            first_char = env.name[:1].encode("ASCII")
+                else:
+                    if env.name in self.ap_unlocked_worlds:
+                        if len(env_locations) > 0:
+                            first_char = b'!'
+                        else:
+                            first_char = env.name[:1].encode("ASCII")
+
+                write_list.append((env.text_offset, first_char))
+
+            else:  # This is a level
+                level_name: str = env.name
+
+                # If portal shuffle is on, replace level name with the level the portal leads to
+                if len(self.slot_data_mapped_entrances) > 0:
+                    level_name = self.lookup_portal_leads_to(level_name, ctx)
+
+                # Compile a list of unchecked locations behind the given portal
+                env_locations = []
+                for name, loc_id in location_name_to_id.items():
+                    if (level_name in name) and (loc_id not in ctx.checked_locations):
+                        env_locations.append(name)
+
+                if self.portal_accesses[env.name]:
+                    if len(env_locations) > 0:
+                        first_char = b'!'
+                    else:
+                        first_char = env.name[:1].encode("ASCII")
+
+                write_list.append((env.text_offset, first_char))
+
+        return write_list
 
     def __init__(self) -> None:
         pass
