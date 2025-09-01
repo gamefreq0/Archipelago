@@ -215,6 +215,7 @@ class SpyroClient(BizHawkClient):
             to_write_menu: list[tuple[int, bytes]] = []
             to_write_balloonist: list[tuple[int, bytes]] = []
             to_write_exiting: list[tuple[int, bytes]] = []
+            to_write_inventory: list[tuple[int, bytes]] = []
 
             if (
                 (cur_game_state == RAM.GameStates.GAMEPLAY)
@@ -229,6 +230,16 @@ class SpyroClient(BizHawkClient):
                 and (unlocked_worlds.count(bytes([0])) > 1)
             ):
                 to_write_ingame.append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
+
+            # If in gameplay or inventory, modify level/hub names to indicate accessibility and completion status
+            if cur_game_state in (RAM.GameStates.GAMEPLAY, RAM.GameStates.INVENTORY):
+                write_list: list[tuple[int, bytes]] = self.show_access(ctx)
+                for item in write_list:
+                    if cur_game_state == RAM.GameStates.GAMEPLAY:
+                        to_write_ingame.append(item)
+
+                    else:
+                        to_write_inventory.append(item)
 
             # If exiting level from menu, and portal shuffle on,
             # change cur_level_id to portal's vanilla level's internal ID
@@ -379,6 +390,12 @@ class SpyroClient(BizHawkClient):
             await self.write_on_state(
                 to_write_balloonist,
                 RAM.GameStates.BALLOONIST.to_bytes(1, byteorder="little"),
+                ctx
+            )
+
+            await self.write_on_state(
+                to_write_inventory,
+                RAM.GameStates.INVENTORY.to_bytes(1, byteorder="little"),
                 ctx
             )
 
