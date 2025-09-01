@@ -555,10 +555,11 @@ class SpyroClient(BizHawkClient):
             List of writes to perform
         """
         write_list: list[tuple[int, bytes]] = []
-        first_char: bytes = b'.'  # Default this to locked, override further in if needed
+        first_char: bytes
         # '.' is locked, '!' is unlocked and has unchecked locations, vanilla first character otherwise
 
         for env in self.env_by_id.values():
+            first_char = b'.'  # Default this to locked, override further in as needed
             env_locations: list[str] = []
 
             if env.is_hub():
