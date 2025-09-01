@@ -530,5 +530,64 @@ class SpyroClient(BizHawkClient):
 
         return stripped_portal_name
 
+    def show_access(self, ctx: "BizHawkClientContext") -> list[tuple[int, bytes]]:
+        """Returns a list of writes to be performed to edit level/hub names to show on portals or in the inventory
+        screen that they are accessible and whether they have unchecked locations within
+
+        Returns:
+            List of writes to perform
+        """
+        write_list: list[tuple[int, bytes]] = []
+        first_char: bytes = b'.'  # Default this to locked, override further in if needed
+        # '.' is locked, '!' is unlocked and has unchecked locations, vanilla first character otherwise
+
+        for env in self.env_by_id.values():
+            env_locations: list[str] = []
+
+            if env.is_hub():
+                # Compile a list of locations for the current hub
+                env_locations = []
+                for location_name in location_name_to_id:
+                    if env.name in location_name:
+                        env_locations.append(location_name)
+
+                if env.name == "Gnasty's World":
+                    if len(self.boss_items) == 5:
+                        if len(env_locations) > 0:
+                            first_char = b'!'
+                        else:
+                            first_char = env.name[:1].encode("ASCII")
+                else:
+                    if env.name in self.ap_unlocked_worlds:
+                        if len(env_locations) > 0:
+                            first_char = b'!'
+                        else:
+                            first_char = env.name[:1].encode("ASCII")
+
+                write_list.append((env.text_offset, first_char))
+
+            else:  # This is a level
+                level_name: str = env.name
+
+                # If portal shuffle is on, replace level name with the level the portal leads to
+                if len(self.slot_data_mapped_entrances) > 0:
+                    level_name = self.lookup_portal_leads_to(level_name, ctx)
+
+                # Compile a list of locations behind the given portal
+                env_locations = []
+                for location_name in location_name_to_id:
+                    if level_name in location_name:
+                        env_locations.append(location_name)
+
+                if self.portal_accesses[env.name]:
+                    if len(env_locations) > 0:
+                        first_char = b'!'
+                    else:
+                        first_char = env.name[:1].encode("ASCII")
+
+                write_list.append((env.text_offset, first_char))
+
+        return write_list
+
     def __init__(self) -> None:
         pass
