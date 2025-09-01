@@ -303,7 +303,8 @@ class SpyroClient(BizHawkClient):
                         # If portal shuffle is on
                         if len(self.slot_data_mapped_entrances) > 0:
                             # Modify portal destinations
-                            portal_dest_id: int = self.env_by_name[self.lookup_portal_leads_to(level.name, ctx)].internal_id
+                            dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
+                            portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
                             to_write_ingame.append(
                                 (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
                             )
