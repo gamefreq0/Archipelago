@@ -331,6 +331,7 @@ class RAM:
     total_gem_count: int = 0x75860
     balloonist_menu_choice: int = 0x777f0
     unlocked_worlds: int = 0x758d0
+    show_on_inventory_array: int = 0x78e78
 
     last_touched_whirlwind: int = 0x78c7c
     """Holds a pointer to the moby object for the last touched whirlwind."""
