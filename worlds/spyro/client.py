@@ -563,11 +563,11 @@ class SpyroClient(BizHawkClient):
             env_locations: list[str] = []
 
             if env.is_hub():
-                # Compile a list of locations for the current hub
+                # Compile a list of unchecked locations for the current hub
                 env_locations = []
-                for location_name in location_name_to_id:
-                    if env.name in location_name:
-                        env_locations.append(location_name)
+                for name, loc_id in location_name_to_id.items():
+                    if (env.name in name) and (loc_id not in ctx.checked_locations):
+                        env_locations.append(name)
 
                 if env.name == "Gnasty's World":
                     if len(self.boss_items) == 5:
@@ -591,11 +591,11 @@ class SpyroClient(BizHawkClient):
                 if len(self.slot_data_mapped_entrances) > 0:
                     level_name = self.lookup_portal_leads_to(level_name, ctx)
 
-                # Compile a list of locations behind the given portal
+                # Compile a list of unchecked locations behind the given portal
                 env_locations = []
-                for location_name in location_name_to_id:
-                    if level_name in location_name:
-                        env_locations.append(location_name)
+                for name, loc_id in location_name_to_id.items():
+                    if (level_name in name) and (loc_id not in ctx.checked_locations):
+                        env_locations.append(name)
 
                 if self.portal_accesses[env.name]:
                     if len(env_locations) > 0:
