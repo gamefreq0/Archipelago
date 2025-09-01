@@ -231,8 +231,12 @@ class SpyroClient(BizHawkClient):
             ):
                 to_write_ingame.append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
 
-            # If in gameplay or inventory, modify level/hub names to indicate accessibility and completion status
             if cur_game_state in (RAM.GameStates.GAMEPLAY, RAM.GameStates.INVENTORY):
+                # Force all levels and hubs to be visible on the inventory screen
+                for index in range(len(self.env_by_id)):
+                    to_write_inventory.append((RAM.show_on_inventory_array + index, b'\x01'))
+
+                # Modify level/hub names to indicate accessibility and completion status
                 write_list: list[tuple[int, bytes]] = self.show_access(ctx)
                 for item in write_list:
                     if cur_game_state == RAM.GameStates.GAMEPLAY:
