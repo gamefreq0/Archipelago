@@ -392,9 +392,9 @@ class SpyroClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             pass
 
-    def balloonist_helper(self, allow: bytes, choice: bytes) -> list[tuple[int, bytes]]:
+    def balloonist_helper(self, fake_timer: bytes, choice: bytes) -> list[tuple[int, bytes]]:
         result: list[tuple[int, bytes]] = []
-        result.append((RAM.fake_timer, allow))
+        result.append((RAM.fake_timer, fake_timer))
         result.append((RAM.last_selected_valid_choice, choice))
         return result
 
