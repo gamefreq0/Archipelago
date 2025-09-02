@@ -157,26 +157,26 @@ class SpyroClient(BizHawkClient):
 
             ram_data = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
 
-            recv_index = self.little_bytes(ram_data[0])
-            cur_game_state = self.little_bytes(ram_data[1])
-            cur_level_id = self.little_bytes(ram_data[2])
-            spyro_color = self.little_bytes(ram_data[3])
-            gnasty_anim_flag = self.little_bytes(ram_data[4])
+            recv_index = self.from_little_bytes(ram_data[0])
+            cur_game_state = self.from_little_bytes(ram_data[1])
+            cur_level_id = self.from_little_bytes(ram_data[2])
+            spyro_color = self.from_little_bytes(ram_data[3])
+            gnasty_anim_flag = self.from_little_bytes(ram_data[4])
             unlocked_worlds = ram_data[5]
-            balloonist_choice = self.little_bytes(ram_data[6])
-            total_gems_collected = self.little_bytes(ram_data[7])
-            did_portal_switch = self.little_bytes(ram_data[8])
-            spyro_anim = self.little_bytes(ram_data[9])
-            last_whirlwind_pointer = self.little_bytes(ram_data[10])
+            balloonist_choice = self.from_little_bytes(ram_data[6])
+            total_gems_collected = self.from_little_bytes(ram_data[7])
+            did_portal_switch = self.from_little_bytes(ram_data[8])
+            spyro_anim = self.from_little_bytes(ram_data[9])
+            last_whirlwind_pointer = self.from_little_bytes(ram_data[10])
 
             for env_id in self.env_by_id:
                 ram_data_offset = gem_counter_offset + internal_id_to_offset(env_id)
-                self.gem_counts[env_id] = self.little_bytes(ram_data[ram_data_offset])
+                self.gem_counts[env_id] = self.from_little_bytes(ram_data[ram_data_offset])
 
             for env_id, env in self.env_by_id.items():
                 if not env.is_hub():
                     ram_data_offset = vortex_offset + internal_id_to_offset(env_id)
-                    self.vortexes_reached[env_id] = self.little_bytes(ram_data[ram_data_offset])
+                    self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset])
 
             if cur_game_state == RAM.GameStates.GAMEPLAY:
                 if self.env_by_id[cur_level_id].name == "Gnasty Gnorc":
@@ -208,7 +208,7 @@ class SpyroClient(BizHawkClient):
                 and (self.slot_data_spyro_color != b'')
                 and (spyro_color.to_bytes(4, "little") != self.slot_data_spyro_color)
             ):
-                spyro_color = self.little_bytes(self.slot_data_spyro_color)
+                spyro_color = self.from_little_bytes(self.slot_data_spyro_color)
                 to_write_ingame.append((RAM.spyro_color_filter, spyro_color.to_bytes(4, "little")))
 
             if (
@@ -474,7 +474,7 @@ class SpyroClient(BizHawkClient):
         if location_id not in ctx.checked_locations:
             await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [location_id]}])
 
-    def little_bytes(self, bytes_in: bytes) -> int:
+    def from_little_bytes(self, bytes_in: bytes) -> int:
         """Returns an int from the given little-endian bytes
 
         Args:
