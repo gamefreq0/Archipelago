@@ -197,13 +197,9 @@ class SpyroClient(BizHawkClient):
                     self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset])
 
             await self.process_locations(cur_game_state, cur_level_id, ctx)
-
             self.update_spyro_color(self.spyro_color, cur_game_state)
-
             self.set_internal_worlds_unlocked(unlocked_worlds)
-
             self.adjust_level_names(cur_game_state, ctx)
-
             self.reset_portal_switch(did_portal_switch, cur_level_id, ctx)
 
             if cur_level_id == 0:  # We're on the title screen or in early load
@@ -220,12 +216,7 @@ class SpyroClient(BizHawkClient):
 
                 env = self.env_by_id[cur_level_id]
 
-                # Overwrite head checking code
-                if len(env.statue_head_checks) > 0:
-                    for address in env.statue_head_checks:
-                        # NOP out the conditional branches
-                        # This forces the statue heads to always open
-                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append((address, bytes(4)))
+                self.override_head_checks(env)
 
                 # Make Nestor skippable
                 if env.name == "Artisans":
@@ -756,3 +747,15 @@ class SpyroClient(BizHawkClient):
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
                 )
+
+    def override_head_checks(self, env: Environment):
+        """Override the code that checks if a dragon head statue should open
+
+        Args:
+            env: The current game environment
+        """
+        if len(env.statue_head_checks) > 0:
+            for address in env.statue_head_checks:
+                # NOP out the conditional branches
+                # This forces the statue heads to always open
+                self.to_write_lists[RAM.GameStates.GAMEPLAY].append((address, bytes(4)))
