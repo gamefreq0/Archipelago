@@ -227,27 +227,8 @@ class SpyroClient(BizHawkClient):
                     self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.tuco_egg_minimum, b'\xff\xff'))
 
                 if env.is_hub():
-                    for index, level in enumerate(env.child_environments):
-                        # Lock inaccessible portals
-                        if self.portal_accesses[level.name]:
-                            self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
-                                (env.portal_surface_types[index], b'\x06')
-                            )
-                        else:
-                            self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
-                                (env.portal_surface_types[index], b'\x00')
-                            )
 
-                        # If portal shuffle is on
-                        if len(self.slot_data_mapped_entrances) > 0:
-                            # Modify portal destinations
-                            dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
-                            portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
-                            self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
-                                (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
-                            )
-
-                if env.is_hub():
+                    self.do_hub_portal_mods(env, ctx)
 
                     # Hide world names if inaccessible
                     for looped_env in self.env_by_id.values():
@@ -763,3 +744,24 @@ class SpyroClient(BizHawkClient):
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append((address, bytes(4)))
 
         return
+
+    def do_hub_portal_mods(self, env: Environment, ctx: "BizHawkClientContext"):
+        for index, level in enumerate(env.child_environments):
+            # Lock inaccessible portals
+            if self.portal_accesses[level.name]:
+                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                    (env.portal_surface_types[index], b'\x06')
+                )
+            else:
+                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                    (env.portal_surface_types[index], b'\x00')
+                )
+
+            # If portal shuffle is on
+            if len(self.slot_data_mapped_entrances) > 0:
+                # Modify portal destinations
+                dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
+                portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
+                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                    (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
+                )
