@@ -67,6 +67,9 @@ class SpyroClient(BizHawkClient):
     to_write_lists: dict[int, list[tuple[int, bytes]]] = {}
     """A dict of lists of (address, bytes) to write, indexed by the gamestate to guard the writes against"""
 
+    spyro_color: int
+    """Spyro's RGBA tint as an int"""
+
     # Set up stuff for tracking later
     env: Environment
     for env in env_by_id.values():
@@ -175,7 +178,7 @@ class SpyroClient(BizHawkClient):
             recv_index = self.from_little_bytes(ram_data[0])
             cur_game_state = self.from_little_bytes(ram_data[1])
             cur_level_id = self.from_little_bytes(ram_data[2])
-            spyro_color = self.from_little_bytes(ram_data[3])
+            self.spyro_color = self.from_little_bytes(ram_data[3])
             self.gnasty_anim_flag = self.from_little_bytes(ram_data[4])
             unlocked_worlds = ram_data[5]
             balloonist_choice = self.from_little_bytes(ram_data[6])
@@ -195,14 +198,7 @@ class SpyroClient(BizHawkClient):
 
             await self.process_locations(cur_game_state, cur_level_id, ctx)
 
-            if (
-                (self.slot_data_spyro_color != b'')
-                and (spyro_color.to_bytes(4, "little") != self.slot_data_spyro_color)
-            ):
-                spyro_color = self.from_little_bytes(self.slot_data_spyro_color)
-                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
-                    (RAM.spyro_color_filter, spyro_color.to_bytes(4, "little"))
-                )
+            await self.update_spyro_color(self.spyro_color, cur_game_state)
 
             if unlocked_worlds.count(bytes([0])) > 1:
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
@@ -654,3 +650,32 @@ class SpyroClient(BizHawkClient):
                 for gem_threshold in range(500, total_treasure + 1, 500):
                     if self.total_gems_collected >= gem_threshold:
                         await self.send_location_once(f"{gem_threshold} Gems", ctx)
+
+        return
+
+    async def update_spyro_color(self, color: int, game_state: int) -> None:
+        """Given an RGBA color as an int, update Spyro's color
+
+        Args:
+            color: RGBA value as int
+            game_state: current game state
+        """
+        if self.slot_data_spyro_color != b'':
+            if color.to_bytes(4, "little") != self.slot_data_spyro_color:
+                color = self.from_little_bytes(self.slot_data_spyro_color)
+                if game_state in (
+                    RAM.GameStates.GAMEPLAY,
+                    RAM.GameStates.BALLOONIST,
+                    RAM.GameStates.DEATH,
+                    RAM.GameStates.DRAGON_CUTSCENE,
+                    RAM.GameStates.EXITING_LEVEL,
+                    RAM.GameStates.FAIRY_TEXTBOX,
+                    RAM.GameStates.FLY_IN,
+                    RAM.GameStates.GAMEPLAY,
+                    RAM.GameStates.TITLE_SCREEN
+                ):
+                    self.to_write_lists[game_state].append(
+                        (RAM.spyro_color_filter, color.to_bytes(4, "little"))
+                    )
+
+        return
