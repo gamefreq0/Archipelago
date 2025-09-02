@@ -771,3 +771,5 @@ class SpyroClient(BizHawkClient):
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
                 )
+
+        return
