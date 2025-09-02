@@ -439,7 +439,10 @@ class SpyroClient(BizHawkClient):
         return result
 
     async def write_on_state(
-        self, write_list: list[tuple[int, bytes]], state: bytes, ctx: "BizHawkClientContext"
+        self,
+        write_list: list[tuple[int, bytes]],
+        state: bytes,
+        ctx: "BizHawkClientContext"
     ) -> None:
         """Does a guarded write based on the current game state.
 
