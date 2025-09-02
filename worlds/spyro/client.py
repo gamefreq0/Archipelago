@@ -746,6 +746,12 @@ class SpyroClient(BizHawkClient):
         return
 
     def do_hub_portal_mods(self, env: Environment, ctx: "BizHawkClientContext"):
+        """Lock/unlock portals and set portal destinations in a given homeworld
+
+        Args:
+            env: The current homeworld environment
+            ctx: BizHawkClientContext
+        """
         for index, level in enumerate(env.child_environments):
             # Lock inaccessible portals
             if self.portal_accesses[level.name]:
