@@ -64,6 +64,9 @@ class SpyroClient(BizHawkClient):
     total_gems_collected: int = 0
     """Keeps track of the total treasure obtained by the player"""
 
+    to_write_lists: dict[int, list[tuple[int, bytes]]] = {}
+    """A dict of lists of (address, bytes) to write, indexed by the gamestate to guard the writes against"""
+
     # Set up stuff for tracking later
     env: Environment
     for env in env_by_id.values():
@@ -118,6 +121,10 @@ class SpyroClient(BizHawkClient):
             # Might break in the future, even if it does.
             # TODO: replace with own bool
             ctx.watcher_timeout = 0.125
+
+        # Reset and/or init write lists here
+        for game_state in RAM.GameStates:
+            self.to_write_lists[game_state] = []
 
         await self.process_received_items(ctx.items_received, ctx)
 
@@ -188,62 +195,56 @@ class SpyroClient(BizHawkClient):
 
             await self.process_locations(cur_game_state, cur_level_id, ctx)
 
-            to_write_ingame: list[tuple[int, bytes]] = []
-            to_write_menu: list[tuple[int, bytes]] = []
-            to_write_balloonist: list[tuple[int, bytes]] = []
-            to_write_exiting: list[tuple[int, bytes]] = []
-            to_write_inventory: list[tuple[int, bytes]] = []
-
             if (
-                (cur_game_state == RAM.GameStates.GAMEPLAY)
-                and (self.slot_data_spyro_color != b'')
+                (self.slot_data_spyro_color != b'')
                 and (spyro_color.to_bytes(4, "little") != self.slot_data_spyro_color)
             ):
                 spyro_color = self.from_little_bytes(self.slot_data_spyro_color)
-                to_write_ingame.append((RAM.spyro_color_filter, spyro_color.to_bytes(4, "little")))
+                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                    (RAM.spyro_color_filter, spyro_color.to_bytes(4, "little"))
+                )
 
-            if (
-                (cur_game_state == RAM.GameStates.GAMEPLAY)
-                and (unlocked_worlds.count(bytes([0])) > 1)
-            ):
-                to_write_ingame.append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
+            if unlocked_worlds.count(bytes([0])) > 1:
+                self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
 
             if cur_game_state in (RAM.GameStates.GAMEPLAY, RAM.GameStates.INVENTORY):
                 # Force all levels and hubs to be visible on the inventory screen
                 for index in range(len(self.env_by_id)):
-                    to_write_inventory.append((RAM.show_on_inventory_array + index, b'\x01'))
+                    self.to_write_lists[RAM.GameStates.INVENTORY].append((RAM.show_on_inventory_array + index, b'\x01'))
 
                 # Modify level/hub names to indicate accessibility and completion status
                 write_list: list[tuple[int, bytes]] = self.show_access(ctx)
                 for item in write_list:
-                    if cur_game_state == RAM.GameStates.GAMEPLAY:
-                        to_write_ingame.append(item)
-
-                    else:
-                        to_write_inventory.append(item)
+                    self.to_write_lists[cur_game_state].append(item)
 
             # If exiting level from menu, and portal shuffle on,
             # change cur_level_id to portal's vanilla level's internal ID
-            if cur_game_state == RAM.GameStates.EXITING_LEVEL:
-                if (did_portal_switch == 0) and (len(self.slot_data_mapped_entrances) > 0):
-                    # Turn flag on so we don't remap more than once
-                    to_write_exiting.append((RAM.switched_portal_dest, b'\x01'))
-                    hub_entrance_portal_name: str = ""
-                    cur_level_env: Environment = self.env_by_id[cur_level_id]
-                    hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
-                    id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
-                    to_write_exiting.append(
-                        (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
-                    )
+            if (did_portal_switch == 0) and (len(self.slot_data_mapped_entrances) > 0) and (cur_level_id != 0):
+                # Turn flag on so we don't remap more than once
+                self.to_write_lists[RAM.GameStates.EXITING_LEVEL].append((RAM.switched_portal_dest, b'\x01'))
+                hub_entrance_portal_name: str = ""
+                cur_level_env: Environment = self.env_by_id[cur_level_id]
+                hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
+                id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
+                self.to_write_lists[RAM.GameStates.EXITING_LEVEL].append(
+                    (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
+                )
 
-            if cur_game_state == RAM.GameStates.GAMEPLAY:
+            if cur_level_id == 0:  # We're on the title screen or in early load
+                starting_world_value: int = ctx.slot_data["starting_world"]
+                starting_world_value += 1
+                starting_world_value *= 10
+                self.to_write_lists[RAM.GameStates.TITLE_SCREEN].append(
+                    (RAM.starting_level_id, starting_world_value.to_bytes(1, "little"))
+                )
+            else:  # We're hopefully in a valid level here
                 # Reset this for tracking on next level exit. Can't switch in whirlwind, might be exiting via vortex
                 if (
                     (did_portal_switch == 1)
                     and (spyro_anim != RAM.SpyroStates.WHIRLWIND)
                     and not (self.env_by_id[cur_level_id].is_hub())
                 ):
-                    to_write_ingame.append((RAM.switched_portal_dest, b'\x00'))
+                    self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.switched_portal_dest, b'\x00'))
 
                 if (
                     (spyro_anim == RAM.SpyroStates.WHIRLWIND)
@@ -260,55 +261,53 @@ class SpyroClient(BizHawkClient):
                     if len(self.slot_data_mapped_entrances) > 0:
                         # Modify current level ID to point at portal's vanilla level, to make the game think we're
                         # leaving that other level, causing us to exit from that portal in that homeworld
-                        to_write_ingame.append((RAM.switched_portal_dest, b'\x01'))
+                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.switched_portal_dest, b'\x01'))
                         hub_entrance_portal_name: str = ""
                         cur_level_env: Environment = self.env_by_id[cur_level_id]
                         hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
                         id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
-                        to_write_ingame.append((RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little")))
+                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                            (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
+                        )
 
-                # TODO: ensure cur_level_id is valid, to avoid issues early in game load
-                env = self.env_by_id[cur_level_id]
+                    env = self.env_by_id[cur_level_id]
 
-                # Overwrite head checking code
-                if len(env.statue_head_checks) > 0:
-                    for address in env.statue_head_checks:
-                        # NOP out the conditional branches
-                        # This forces the statue heads to always open
-                        to_write_ingame.append((address, bytes(4)))
+                    # Overwrite head checking code
+                    if len(env.statue_head_checks) > 0:
+                        for address in env.statue_head_checks:
+                            # NOP out the conditional branches
+                            # This forces the statue heads to always open
+                            self.to_write_lists[RAM.GameStates.GAMEPLAY].append((address, bytes(4)))
 
-                # Make Nestor skippable
-                if env.name == "Artisans":
-                    to_write_ingame.append((RAM.nestor_unskippable, b'\x00'))
+                    # Make Nestor skippable
+                    if env.name == "Artisans":
+                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.nestor_unskippable, b'\x00'))
 
-                # Prevent Tuco's warp-to-level shenanigans by setting egg minimum to -1
-                if env.name == "Magic Crafters":
-                    to_write_ingame.append((RAM.tuco_egg_minimum, b'\xff\xff'))
+                    # Prevent Tuco's warp-to-level shenanigans by setting egg minimum to -1
+                    if env.name == "Magic Crafters":
+                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.tuco_egg_minimum, b'\xff\xff'))
 
-                if env.is_hub():
-                    for index, level in enumerate(env.child_environments):
-                        # Lock inaccessible portals
-                        if self.portal_accesses[level.name]:
-                            to_write_ingame.append((env.portal_surface_types[index], b'\x06'))
-                        else:
-                            to_write_ingame.append((env.portal_surface_types[index], b'\x00'))
+                    if env.is_hub():
+                        for index, level in enumerate(env.child_environments):
+                            # Lock inaccessible portals
+                            if self.portal_accesses[level.name]:
+                                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                                    (env.portal_surface_types[index], b'\x06')
+                                )
+                            else:
+                                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                                    (env.portal_surface_types[index], b'\x00')
+                                )
 
-                        # If portal shuffle is on
-                        if len(self.slot_data_mapped_entrances) > 0:
-                            # Modify portal destinations
-                            dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
-                            portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
-                            to_write_ingame.append(
-                                (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
-                            )
+                            # If portal shuffle is on
+                            if len(self.slot_data_mapped_entrances) > 0:
+                                # Modify portal destinations
+                                dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
+                                portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
+                                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                                    (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
+                                )
 
-            if cur_game_state == RAM.GameStates.TITLE_SCREEN:
-                starting_world_value: int = ctx.slot_data["starting_world"]
-                starting_world_value += 1
-                starting_world_value *= 10
-                to_write_menu.append((RAM.starting_level_id, starting_world_value.to_bytes(1, "little")))
-
-            if cur_game_state == RAM.GameStates.BALLOONIST:
                 env = self.env_by_id[cur_level_id]
 
                 if env.is_hub():
@@ -324,18 +323,18 @@ class SpyroClient(BizHawkClient):
                             if looped_env.name not in self.ap_unlocked_worlds:
                                 byte_val = b'\x00'
 
-                            to_write_balloonist.append((looped_env.text_offset, byte_val))
+                            self.to_write_lists[RAM.GameStates.BALLOONIST].append((looped_env.text_offset, byte_val))
                         else:
                             if len(self.boss_items) != 5:
                                 byte_val = b'\x00'
 
-                            to_write_balloonist.append((looped_env.text_offset, byte_val))
+                            self.to_write_lists[RAM.GameStates.BALLOONIST].append((looped_env.text_offset, byte_val))
 
                     # Prevent access to inaccessible worlds
 
                     # Rewrite level data pointers to point at mod's area of memory
-                    to_write_balloonist.append((env.balloon_pointers[0], b'\x01'))
-                    to_write_balloonist.append((env.balloon_pointers[1], b'\x0c\xf0'))
+                    self.to_write_lists[RAM.GameStates.BALLOONIST].append((env.balloon_pointers[0], b'\x01'))
+                    self.to_write_lists[RAM.GameStates.BALLOONIST].append((env.balloon_pointers[1], b'\x0c\xf0'))
 
                     # Turn menu selection number into world index number
                     mapped_choice = menu_lookup((int(env.internal_id / 10) - 1), balloonist_choice)
@@ -349,37 +348,10 @@ class SpyroClient(BizHawkClient):
                     # frames of the menu opening. We abuse it for
                     # setting conditional access instead
                     for item in self.set_balloonist_unlocks(mapped_choice, balloonist_choice):
-                        to_write_balloonist.append(item)
+                        self.to_write_lists[RAM.GameStates.BALLOONIST].append(item)
 
-            await self.write_on_state(
-                to_write_ingame,
-                RAM.GameStates.GAMEPLAY.to_bytes(1, byteorder="little"),
-                ctx
-            )
-
-            await self.write_on_state(
-                to_write_exiting,
-                RAM.GameStates.EXITING_LEVEL.to_bytes(1, byteorder="little"),
-                ctx
-            )
-
-            await self.write_on_state(
-                to_write_menu,
-                RAM.GameStates.TITLE_SCREEN.to_bytes(1, byteorder="little"),
-                ctx
-            )
-
-            await self.write_on_state(
-                to_write_balloonist,
-                RAM.GameStates.BALLOONIST.to_bytes(1, byteorder="little"),
-                ctx
-            )
-
-            await self.write_on_state(
-                to_write_inventory,
-                RAM.GameStates.INVENTORY.to_bytes(1, byteorder="little"),
-                ctx
-            )
+            for game_state, write_list in self.to_write_lists.items():
+                await self.write_on_state(write_list, game_state.to_bytes(1, byteorder="little"), ctx)
 
         except bizhawk.RequestFailedError:
             pass
