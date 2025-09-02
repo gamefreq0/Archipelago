@@ -653,7 +653,7 @@ class SpyroClient(BizHawkClient):
                 except KeyError:
                     # Wasn't a level access item, do stuff here
                     pass
-        
+
         return
 
     async def process_locations(self, game_state: int, cur_level_id: int, ctx: "BizHawkClientContext") -> None:
@@ -664,7 +664,7 @@ class SpyroClient(BizHawkClient):
             cur_level_id: The internal ID of the current level
             ctx: BizHawkClientContext
         """
-        if (cur_level_id != 0):  # Hopefully prevents weirdness early in game load
+        if cur_level_id != 0:  # Hopefully prevents weirdness early in game load
             if game_state == RAM.GameStates.GAMEPLAY:
                 # Send location on defeating Gnasty
                 if self.env_by_id[cur_level_id].name == "Gnasty Gnorc":
