@@ -115,11 +115,13 @@ class SpyroClient(BizHawkClient):
 
         await self.process_received_items(ctx.items_received, ctx)
 
+        # Read Spyro color in from slot data and store locally
         if self.slot_data_spyro_color == b'':
             color_value: int
             color_value = ctx.slot_data["spyro_color"]
             self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
 
+        # If portal shuffle is on, read in entrance mappings from slot data and store locally
         if (len(self.slot_data_mapped_entrances) == 0) and (len(ctx.slot_data["entrances"]) > 0):
             temp_list: list[tuple[str, str]] = []
             temp_list = ctx.slot_data["entrances"]
