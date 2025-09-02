@@ -204,18 +204,7 @@ class SpyroClient(BizHawkClient):
 
             self.adjust_level_names(cur_game_state, ctx)
 
-            # If exiting level from menu, and portal shuffle on,
-            # change cur_level_id to portal's vanilla level's internal ID
-            if (did_portal_switch == 0) and (len(self.slot_data_mapped_entrances) > 0) and (cur_level_id != 0):
-                # Turn flag on so we don't remap more than once
-                self.to_write_lists[RAM.GameStates.EXITING_LEVEL].append((RAM.switched_portal_dest, b'\x01'))
-                hub_entrance_portal_name: str = ""
-                cur_level_env: Environment = self.env_by_id[cur_level_id]
-                hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
-                id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
-                self.to_write_lists[RAM.GameStates.EXITING_LEVEL].append(
-                    (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
-                )
+            self.reset_portal_switch(did_portal_switch, cur_level_id, ctx)
 
             if cur_level_id == 0:  # We're on the title screen or in early load
                 starting_world_value: int = ctx.slot_data["starting_world"]
@@ -710,3 +699,27 @@ class SpyroClient(BizHawkClient):
                 self.to_write_lists[game_state].append(item)
 
         return
+
+    def reset_portal_switch(self, did_switch: int, cur_level_id: int, ctx: "BizHawkClientContext"):
+        """Reset info for tracking whether portal swtich has been handled yet
+
+        Args:
+            did_switch: Internal tracking in RAM on whether we cleaned up after the switch
+            cur_level_id: The internal ID of the current level
+            ctx: BizHawkClientContext
+        """
+        # If exiting level from menu, and portal shuffle on,
+        # change cur_level_id to portal's vanilla level's internal ID
+        if (did_switch == 0) and (len(self.slot_data_mapped_entrances) > 0) and (cur_level_id != 0):
+            # Turn flag on so we don't remap more than once
+            self.to_write_lists[RAM.GameStates.EXITING_LEVEL].append((RAM.switched_portal_dest, b'\x01'))
+            hub_entrance_portal_name: str = ""
+            cur_level_env: Environment = self.env_by_id[cur_level_id]
+            hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
+            id_of_entrance: int = self.env_by_name[hub_entrance_portal_name].internal_id
+            self.to_write_lists[RAM.GameStates.EXITING_LEVEL].append(
+                (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
+            )
+
+        return
+
