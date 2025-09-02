@@ -610,6 +610,3 @@ class SpyroClient(BizHawkClient):
                 write_list.append((env.text_offset, first_char))
 
         return write_list
-
-    def __init__(self) -> None:
-        pass
