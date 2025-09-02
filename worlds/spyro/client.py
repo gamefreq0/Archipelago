@@ -207,12 +207,7 @@ class SpyroClient(BizHawkClient):
             self.reset_portal_switch(did_portal_switch, cur_level_id, ctx)
 
             if cur_level_id == 0:  # We're on the title screen or in early load
-                starting_world_value: int = ctx.slot_data["starting_world"]
-                starting_world_value += 1
-                starting_world_value *= 10
-                self.to_write_lists[RAM.GameStates.TITLE_SCREEN].append(
-                    (RAM.starting_level_id, starting_world_value.to_bytes(1, "little"))
-                )
+                self.set_starting_world(ctx)
             else:  # We're hopefully in a valid level here
                 # Reset this for tracking on next level exit. Can't switch in whirlwind, might be exiting via vortex
                 if (
@@ -722,4 +717,17 @@ class SpyroClient(BizHawkClient):
             )
 
         return
+
+    def set_starting_world(self, ctx: "BizHawkClientContext") -> None:
+        """While on the title screen, update the starting level ID to enter on completion of the intro cutscene
+
+        Args:
+            ctx: BizHawkClientContext
+        """
+        starting_world_value: int = cast(int, ctx.slot_data["starting_world"])
+        starting_world_value += 1
+        starting_world_value *= 10
+        self.to_write_lists[RAM.GameStates.TITLE_SCREEN].append(
+            (RAM.starting_level_id, starting_world_value.to_bytes(1, "little"))
+        )
 
