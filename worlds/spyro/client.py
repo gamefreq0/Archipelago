@@ -135,7 +135,7 @@ class SpyroClient(BizHawkClient):
         # TODO: Add in datastorage bit here so the color can be modified during gameplay
         if self.slot_data_spyro_color == b'':
             color_value: int
-            color_value = ctx.slot_data["spyro_color"]
+            color_value = cast(int, ctx.slot_data["spyro_color"])
             self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
 
         # If portal shuffle is on, read in entrance mappings from slot data and store locally
