@@ -216,8 +216,6 @@ class SpyroClient(BizHawkClient):
 
                 env = self.env_by_id[cur_level_id]
 
-                self.override_head_checks(env)
-
                 # Make Nestor skippable
                 if env.name == "Artisans":
                     self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.nestor_unskippable, b'\x00'))
@@ -227,7 +225,7 @@ class SpyroClient(BizHawkClient):
                     self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.tuco_egg_minimum, b'\xff\xff'))
 
                 if env.is_hub():
-
+                    self.override_head_checks(env)
                     self.do_hub_portal_mods(env, ctx)
                     self.do_balloonist_mods(env, balloonist_choice)
 
