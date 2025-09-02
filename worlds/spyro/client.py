@@ -200,8 +200,7 @@ class SpyroClient(BizHawkClient):
 
             self.update_spyro_color(self.spyro_color, cur_game_state)
 
-            if unlocked_worlds.count(bytes([0])) > 1:
-                self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
+            self.set_internal_worlds_unlocked(unlocked_worlds)
 
             if cur_game_state in (RAM.GameStates.GAMEPLAY, RAM.GameStates.INVENTORY):
                 # Force all levels and hubs to be visible on the inventory screen
@@ -677,5 +676,16 @@ class SpyroClient(BizHawkClient):
                     self.to_write_lists[game_state].append(
                         (RAM.spyro_color_filter, color.to_bytes(4, "little"))
                     )
+
+        return
+
+    def set_internal_worlds_unlocked(self, unlocked_worlds: bytes) -> None:
+        """Check the game's internal value for unlocked worlds for the balloonist and set all to unlocked
+
+        Args:
+            unlocked_worlds: Sequence of bytes holding the game's internal worlds unlocked data
+        """
+        if unlocked_worlds.count(bytes([0])) > 1:
+            self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
 
         return
