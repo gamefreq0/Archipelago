@@ -657,7 +657,7 @@ class SpyroClient(BizHawkClient):
         return
 
     async def process_locations(self, game_state: int, cur_level_id: int, ctx: "BizHawkClientContext") -> None:
-        """Check the memory of the game and send completed locations as needed
+        """Check the memory of the game and send completed locations based on inventory as needed
 
         Args:
             game_state: The current state of the game
