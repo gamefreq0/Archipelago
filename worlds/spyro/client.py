@@ -141,7 +141,7 @@ class SpyroClient(BizHawkClient):
         # If portal shuffle is on, read in entrance mappings from slot data and store locally
         if (len(self.slot_data_mapped_entrances) == 0) and (len(ctx.slot_data["entrances"]) > 0):
             temp_list: list[tuple[str, str]] = []
-            temp_list = ctx.slot_data["entrances"]
+            temp_list = cast(list[tuple[str, str]], ctx.slot_data["entrances"])
             for item in temp_list:
                 if "Fly-in" in item[0]:
                     self.slot_data_mapped_entrances.append(item)
