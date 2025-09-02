@@ -202,15 +202,7 @@ class SpyroClient(BizHawkClient):
 
             self.set_internal_worlds_unlocked(unlocked_worlds)
 
-            if cur_game_state in (RAM.GameStates.GAMEPLAY, RAM.GameStates.INVENTORY):
-                # Force all levels and hubs to be visible on the inventory screen
-                for index in range(len(self.env_by_id)):
-                    self.to_write_lists[RAM.GameStates.INVENTORY].append((RAM.show_on_inventory_array + index, b'\x01'))
-
-                # Modify level/hub names to indicate accessibility and completion status
-                write_list: list[tuple[int, bytes]] = self.show_access(ctx)
-                for item in write_list:
-                    self.to_write_lists[cur_game_state].append(item)
+            self.adjust_level_names(cur_game_state, ctx)
 
             # If exiting level from menu, and portal shuffle on,
             # change cur_level_id to portal's vanilla level's internal ID
@@ -533,11 +525,12 @@ class SpyroClient(BizHawkClient):
 
         return stripped_portal_name
 
-    def show_access(self, ctx: "BizHawkClientContext") -> list[tuple[int, bytes]]:
+    def show_access(self, game_state: int, ctx: "BizHawkClientContext") -> list[tuple[int, bytes]]:
         """Returns a list of writes to be performed to edit level/hub names to show on portals or in the inventory
         screen that they are accessible and whether they have unchecked locations within
 
         Args:
+            game_state: The current game state
             ctx: BizhawkClientContext
 
         Returns:
@@ -591,6 +584,10 @@ class SpyroClient(BizHawkClient):
                         first_char = b'!'
                     else:
                         first_char = env.name[:1].encode("ASCII")
+
+                # Ensure vanilla name in loading screens
+                if game_state == RAM.GameStates.LOADING:
+                    first_char = env.name[:1].encode("ASCII")
 
                 write_list.append((env.text_offset, first_char))
 
@@ -687,5 +684,29 @@ class SpyroClient(BizHawkClient):
         """
         if unlocked_worlds.count(bytes([0])) > 1:
             self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
+
+        return
+
+    def adjust_level_names(self, game_state: int, ctx: "BizHawkClientContext") -> None:
+        """Ensure all levels/hub are visible on the inventory screen and have names adjusted to indicate accessibility
+        and whether there are checks left in the level/hub
+
+        Args:
+            game_state: The current game state
+            ctx: BizHawkClientContext
+        """
+        # Force all levels and hubs to be visible on the inventory screen
+        for index in range(len(self.env_by_id)):
+            self.to_write_lists[RAM.GameStates.INVENTORY].append((RAM.show_on_inventory_array + index, b'\x01'))
+
+        if game_state in (
+            RAM.GameStates.GAMEPLAY,
+            RAM.GameStates.INVENTORY,
+            RAM.GameStates.LOADING,
+        ):
+            # Modify level/hub names to indicate accessibility and completion status
+            write_list: list[tuple[int, bytes]] = self.show_access(game_state, ctx)
+            for item in write_list:
+                self.to_write_lists[game_state].append(item)
 
         return
