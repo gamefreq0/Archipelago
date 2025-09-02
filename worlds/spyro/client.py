@@ -209,37 +209,14 @@ class SpyroClient(BizHawkClient):
             if cur_level_id == 0:  # We're on the title screen or in early load
                 self.set_starting_world(ctx)
             else:  # We're hopefully in a valid level here
-                # Reset this for tracking on next level exit. Can't switch in whirlwind, might be exiting via vortex
-                if (
-                    (did_portal_switch == 1)
-                    and (spyro_anim != RAM.SpyroStates.WHIRLWIND)
-                    and not (self.env_by_id[cur_level_id].is_hub())
-                ):
-                    self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.switched_portal_dest, b'\x00'))
 
-                if (
-                    (spyro_anim == RAM.SpyroStates.WHIRLWIND)
-                    and (did_portal_switch == 0)
-                    and (not self.env_by_id[cur_level_id].is_hub())
-                    and (last_whirlwind_pointer == self.env_by_id[cur_level_id].vortex_moby_pointer)
-                ):
-                    # We're in a whirlwind, haven't modified the current level ID, we're in a level,
-                    # and we're touching the vortex
-                    # Send vortex location
-                    await self.send_location_once(f"{self.env_by_id[cur_level_id].name} Vortex", ctx)
-
-                    # If portal shuffle on, begin doing checks for setting vortex exit portal
-                    if len(self.slot_data_mapped_entrances) > 0:
-                        # Modify current level ID to point at portal's vanilla level, to make the game think we're
-                        # leaving that other level, causing us to exit from that portal in that homeworld
-                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.switched_portal_dest, b'\x01'))
-                        hub_entrance_portal_name: str = ""
-                        cur_level_env: Environment = self.env_by_id[cur_level_id]
-                        hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
-                        id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
-                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
-                            (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
-                        )
+                await self.do_portal_shuffle_changes(
+                    did_portal_switch,
+                    spyro_anim,
+                    cur_level_id,
+                    last_whirlwind_pointer,
+                    ctx
+                )
 
                 env = self.env_by_id[cur_level_id]
 
@@ -731,3 +708,51 @@ class SpyroClient(BizHawkClient):
             (RAM.starting_level_id, starting_world_value.to_bytes(1, "little"))
         )
 
+    async def do_portal_shuffle_changes(
+        self,
+        did_switch: int,
+        spyro_anim: int,
+        cur_level_id: int,
+        last_whirlwind_pointer: int,
+        ctx: "BizHawkClientContext"
+    ) -> None:
+        """Handles setting up quit from menu and exit vortexes for portal shuffle, and also sends vortex locations
+
+        Args:
+            did_switch: Whether we have handled switching the current level ID, as stored in game RAM
+            spyro_anim: Spyro's current animation
+            cur_level_id: The current reported internal level ID
+            last_whirlwind_pointer: The pointer to the last touched whirlwind
+            ctx: BizHawkClientContext
+        """
+        # Reset this for tracking on next level exit. Can't switch in whirlwind, might be exiting via vortex
+        if (
+            (did_switch == 1)
+            and (spyro_anim != RAM.SpyroStates.WHIRLWIND)
+            and not (self.env_by_id[cur_level_id].is_hub())
+        ):
+            self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.switched_portal_dest, b'\x00'))
+
+        if (
+            (spyro_anim == RAM.SpyroStates.WHIRLWIND)
+            and (did_switch == 0)
+            and (not self.env_by_id[cur_level_id].is_hub())
+            and (last_whirlwind_pointer == self.env_by_id[cur_level_id].vortex_moby_pointer)
+        ):
+            # We're in a whirlwind, haven't modified the current level ID, we're in a level,
+            # and we're touching the vortex
+            # Send vortex location
+            await self.send_location_once(f"{self.env_by_id[cur_level_id].name} Vortex", ctx)
+
+            # If portal shuffle on, begin doing checks for setting vortex exit portal
+            if len(self.slot_data_mapped_entrances) > 0:
+                # Modify current level ID to point at portal's vanilla level, to make the game think we're
+                # leaving that other level, causing us to exit from that portal in that homeworld
+                self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.switched_portal_dest, b'\x01'))
+                hub_entrance_portal_name: str = ""
+                cur_level_env: Environment = self.env_by_id[cur_level_id]
+                hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
+                id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
+                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                    (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
+                )
