@@ -748,6 +748,8 @@ class SpyroClient(BizHawkClient):
                     (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
                 )
 
+        return
+
     def override_head_checks(self, env: Environment):
         """Override the code that checks if a dragon head statue should open
 
