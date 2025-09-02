@@ -267,6 +267,7 @@ class SpyroClient(BizHawkClient):
                         id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
                         to_write_ingame.append((RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little")))
 
+                # TODO: ensure cur_level_id is valid, to avoid issues early in game load
                 env = self.env_by_id[cur_level_id]
 
                 # Overwrite head checking code
