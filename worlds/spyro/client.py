@@ -198,7 +198,7 @@ class SpyroClient(BizHawkClient):
 
             await self.process_locations(cur_game_state, cur_level_id, ctx)
 
-            await self.update_spyro_color(self.spyro_color, cur_game_state)
+            self.update_spyro_color(self.spyro_color, cur_game_state)
 
             if unlocked_worlds.count(bytes([0])) > 1:
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.unlocked_worlds, bytes([2, 2, 2, 2, 2, 2])))
@@ -653,7 +653,7 @@ class SpyroClient(BizHawkClient):
 
         return
 
-    async def update_spyro_color(self, color: int, game_state: int) -> None:
+    def update_spyro_color(self, color: int, game_state: int) -> None:
         """Given an RGBA color as an int, update Spyro's color
 
         Args:
