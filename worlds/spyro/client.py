@@ -58,6 +58,12 @@ class SpyroClient(BizHawkClient):
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
+    gnasty_anim_flag: int = 0
+    """Keeps track of Gnasty Gnorc's current animation"""
+
+    total_gems_collected: int = 0
+    """Keeps track of the total treasure obtained by the player"""
+
     # Set up stuff for tracking later
     env: Environment
     for env in env_by_id.values():
@@ -163,10 +169,10 @@ class SpyroClient(BizHawkClient):
             cur_game_state = self.from_little_bytes(ram_data[1])
             cur_level_id = self.from_little_bytes(ram_data[2])
             spyro_color = self.from_little_bytes(ram_data[3])
-            gnasty_anim_flag = self.from_little_bytes(ram_data[4])
+            self.gnasty_anim_flag = self.from_little_bytes(ram_data[4])
             unlocked_worlds = ram_data[5]
             balloonist_choice = self.from_little_bytes(ram_data[6])
-            total_gems_collected = self.from_little_bytes(ram_data[7])
+            self.total_gems_collected = self.from_little_bytes(ram_data[7])
             did_portal_switch = self.from_little_bytes(ram_data[8])
             spyro_anim = self.from_little_bytes(ram_data[9])
             last_whirlwind_pointer = self.from_little_bytes(ram_data[10])
@@ -180,24 +186,7 @@ class SpyroClient(BizHawkClient):
                     ram_data_offset = vortex_offset + internal_id_to_offset(env_id)
                     self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset])
 
-            if cur_game_state == RAM.GameStates.GAMEPLAY:
-                if self.env_by_id[cur_level_id].name == "Gnasty Gnorc":
-                    if gnasty_anim_flag == RAM.GNASTY_DEFEATED:
-                        await self.send_location_once("Defeated Gnasty Gnorc", ctx)
-
-            if cur_game_state == RAM.GameStates.GAMEPLAY:
-                # Send 1/4 gem threshold checks
-                for env in self.env_by_id.values():
-                    quarter_count: int = int(env.total_gems / 4)
-
-                    for index in range(1, 5):
-                        if self.gem_counts[env.internal_id] >= (quarter_count * index):
-                            await self.send_location_once(f"{env.name} {25 * index}% Gems", ctx)
-
-                # Send 500 increment total gem threhshold checks
-                for gem_threshold in range(500, total_treasure + 1, 500):
-                    if total_gems_collected >= gem_threshold:
-                        await self.send_location_once(f"{gem_threshold} Gems", ctx)
+            await self.process_locations(cur_game_state, cur_level_id, ctx)
 
             to_write_ingame: list[tuple[int, bytes]] = []
             to_write_menu: list[tuple[int, bytes]] = []
@@ -664,3 +653,33 @@ class SpyroClient(BizHawkClient):
                 except KeyError:
                     # Wasn't a level access item, do stuff here
                     pass
+        
+        return
+
+    async def process_locations(self, game_state: int, cur_level_id: int, ctx: "BizHawkClientContext") -> None:
+        """Check the memory of the game and send completed locations as needed
+
+        Args:
+            game_state: The current state of the game
+            cur_level_id: The internal ID of the current level
+            ctx: BizHawkClientContext
+        """
+        if (cur_level_id != 0):  # Hopefully prevents weirdness early in game load
+            if game_state == RAM.GameStates.GAMEPLAY:
+                # Send location on defeating Gnasty
+                if self.env_by_id[cur_level_id].name == "Gnasty Gnorc":
+                    if self.gnasty_anim_flag == RAM.GNASTY_DEFEATED:
+                        await self.send_location_once("Defeated Gnasty Gnorc", ctx)
+
+                # Send 1/4 gem threshold checks
+                for env in self.env_by_id.values():
+                    quarter_count: int = int(env.total_gems / 4)
+
+                    for index in range(1, 5):
+                        if self.gem_counts[env.internal_id] >= (quarter_count * index):
+                            await self.send_location_once(f"{env.name} {25 * index}% Gems", ctx)
+
+                # Send 500 increment total gem threhshold checks
+                for gem_threshold in range(500, total_treasure + 1, 500):
+                    if self.total_gems_collected >= gem_threshold:
+                        await self.send_location_once(f"{gem_threshold} Gems", ctx)
