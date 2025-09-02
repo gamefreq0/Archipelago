@@ -392,10 +392,24 @@ class SpyroClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             pass
 
-    def balloonist_helper(self, fake_timer: bytes, choice: bytes) -> list[tuple[int, bytes]]:
+    def balloonist_helper(self, should_allow: bool, choice: int) -> list[tuple[int, bytes]]:
+        """Build up a list of bytes to write in order to allow/deny the ability to choose the selected choice in the
+        balloonist menu
+
+        Args:
+            should_allow: Whether the selected option should be allowed to be chosen
+            choice: The numeric index of the selected choice in the menu
+
+        Returns:
+            The list of bytes to be written in the format (address, bytes)
+        """
+        # The game checks to see if the timer is above a certain value before allowing a selection. We can abuse this
+        # in order to allow/deny choosing an option based on access requirements instead
+        fake_timer: bytes = b'\x1f' if should_allow else b'\x00'
+        choice_byte = choice.to_bytes(1, byteorder="little")
         result: list[tuple[int, bytes]] = []
         result.append((RAM.fake_timer, fake_timer))
-        result.append((RAM.last_selected_valid_choice, choice))
+        result.append((RAM.last_selected_valid_choice, choice_byte))
         return result
 
     def set_balloonist_unlocks(self, mapped_choice: int, raw_choice: int) -> list[tuple[int, bytes]]:
@@ -414,27 +428,35 @@ class SpyroClient(BizHawkClient):
 
         hub_name: str = "Stay Here"  # default in case it's -1, which is Stay Here anyway.
         hub_id: int = 0
+        stay_here: int = 0
         if mapped_choice != -1:
             hub_id = (mapped_choice + 1) * 10
             hub_name = self.env_by_id[hub_id].name
 
-        if (hub_name != "Stay Here") and (hub_name != "Gnasty's World"):
-            if hub_name in self.ap_unlocked_worlds:
-                for item in self.balloonist_helper(b'\x1f', raw_choice.to_bytes(1, byteorder="little")):
-                    result.append(item)
-            else:
-                for item in self.balloonist_helper(b'\x00', b'\x00'):
-                    result.append(item)
-        elif hub_name == "Gnasty's World":
-            if len(self.boss_items) == 5:
-                for item in self.balloonist_helper(b'\x1f', raw_choice.to_bytes(1, byteorder="little")):
-                    result.append(item)
-            else:
-                for item in self.balloonist_helper(b'\x00', b'\x00'):
-                    result.append(item)
+        should_allow_choice: bool
+        last_selected_valid_choice: int
+
+        if hub_name == "Stay Here":
+            should_allow_choice = True
+            last_selected_valid_choice = stay_here
         else:
-            for item in self.balloonist_helper(b'\x1f', b'\x00'):
-                result.append(item)
+            if hub_name == "Gnasty's World":
+                if len(self.boss_items) == 5:
+                    should_allow_choice = True
+                    last_selected_valid_choice = raw_choice
+                else:
+                    should_allow_choice = False
+                    last_selected_valid_choice = stay_here
+            else:
+                if hub_name in self.ap_unlocked_worlds:
+                    should_allow_choice = True
+                    last_selected_valid_choice = raw_choice
+                else:
+                    should_allow_choice = False
+                    last_selected_valid_choice = stay_here
+
+        for item in self.balloonist_helper(should_allow_choice, last_selected_valid_choice):
+            result.append(item)
 
         return result
 
