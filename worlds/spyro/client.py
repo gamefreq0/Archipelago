@@ -270,45 +270,43 @@ class SpyroClient(BizHawkClient):
                             (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
                         )
 
-                    env = self.env_by_id[cur_level_id]
-
-                    # Overwrite head checking code
-                    if len(env.statue_head_checks) > 0:
-                        for address in env.statue_head_checks:
-                            # NOP out the conditional branches
-                            # This forces the statue heads to always open
-                            self.to_write_lists[RAM.GameStates.GAMEPLAY].append((address, bytes(4)))
-
-                    # Make Nestor skippable
-                    if env.name == "Artisans":
-                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.nestor_unskippable, b'\x00'))
-
-                    # Prevent Tuco's warp-to-level shenanigans by setting egg minimum to -1
-                    if env.name == "Magic Crafters":
-                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.tuco_egg_minimum, b'\xff\xff'))
-
-                    if env.is_hub():
-                        for index, level in enumerate(env.child_environments):
-                            # Lock inaccessible portals
-                            if self.portal_accesses[level.name]:
-                                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
-                                    (env.portal_surface_types[index], b'\x06')
-                                )
-                            else:
-                                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
-                                    (env.portal_surface_types[index], b'\x00')
-                                )
-
-                            # If portal shuffle is on
-                            if len(self.slot_data_mapped_entrances) > 0:
-                                # Modify portal destinations
-                                dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
-                                portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
-                                self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
-                                    (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
-                                )
-
                 env = self.env_by_id[cur_level_id]
+
+                # Overwrite head checking code
+                if len(env.statue_head_checks) > 0:
+                    for address in env.statue_head_checks:
+                        # NOP out the conditional branches
+                        # This forces the statue heads to always open
+                        self.to_write_lists[RAM.GameStates.GAMEPLAY].append((address, bytes(4)))
+
+                # Make Nestor skippable
+                if env.name == "Artisans":
+                    self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.nestor_unskippable, b'\x00'))
+
+                # Prevent Tuco's warp-to-level shenanigans by setting egg minimum to -1
+                if env.name == "Magic Crafters":
+                    self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.tuco_egg_minimum, b'\xff\xff'))
+
+                if env.is_hub():
+                    for index, level in enumerate(env.child_environments):
+                        # Lock inaccessible portals
+                        if self.portal_accesses[level.name]:
+                            self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                                (env.portal_surface_types[index], b'\x06')
+                            )
+                        else:
+                            self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                                (env.portal_surface_types[index], b'\x00')
+                            )
+
+                        # If portal shuffle is on
+                        if len(self.slot_data_mapped_entrances) > 0:
+                            # Modify portal destinations
+                            dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
+                            portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
+                            self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
+                                (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
+                            )
 
                 if env.is_hub():
 
