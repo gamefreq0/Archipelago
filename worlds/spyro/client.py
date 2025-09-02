@@ -229,44 +229,7 @@ class SpyroClient(BizHawkClient):
                 if env.is_hub():
 
                     self.do_hub_portal_mods(env, ctx)
-
-                    # Hide world names if inaccessible
-                    for looped_env in self.env_by_id.values():
-                        if not looped_env.is_hub():
-                            continue
-
-                        byte_val = looped_env.name[:1].encode("ASCII")
-
-                        if looped_env.name != "Gnasty's World":
-                            if looped_env.name not in self.ap_unlocked_worlds:
-                                byte_val = b'\x00'
-
-                            self.to_write_lists[RAM.GameStates.BALLOONIST].append((looped_env.text_offset, byte_val))
-                        else:
-                            if len(self.boss_items) != 5:
-                                byte_val = b'\x00'
-
-                            self.to_write_lists[RAM.GameStates.BALLOONIST].append((looped_env.text_offset, byte_val))
-
-                    # Prevent access to inaccessible worlds
-
-                    # Rewrite level data pointers to point at mod's area of memory
-                    self.to_write_lists[RAM.GameStates.BALLOONIST].append((env.balloon_pointers[0], b'\x01'))
-                    self.to_write_lists[RAM.GameStates.BALLOONIST].append((env.balloon_pointers[1], b'\x0c\xf0'))
-
-                    # Turn menu selection number into world index number
-                    mapped_choice = menu_lookup((int(env.internal_id / 10) - 1), balloonist_choice)
-
-                    # Poke last valid selected choice number to RAM
-                    # as well as poking a value to what the game
-                    # thinks is a timer, which allows selecting a
-                    # choice when it is >= 0x1f
-                    # The code is normally meant to prevent a player
-                    # from choosing an option in the menu within a few
-                    # frames of the menu opening. We abuse it for
-                    # setting conditional access instead
-                    for item in self.set_balloonist_unlocks(mapped_choice, balloonist_choice):
-                        self.to_write_lists[RAM.GameStates.BALLOONIST].append(item)
+                    self.do_balloonist_mods(env, balloonist_choice)
 
             for game_state, write_list in self.to_write_lists.items():
                 await self.write_on_state(write_list, game_state.to_bytes(1, byteorder="little"), ctx)
@@ -771,5 +734,52 @@ class SpyroClient(BizHawkClient):
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
                 )
+
+        return
+
+    def do_balloonist_mods(self, env: Environment, balloonist_choice: int) -> None:
+        """Show/hide world names in baloonist menu based on accessibility, and allow/deny choosing selected option
+
+        Args:
+            env: The current hub's environment
+            balloonist_choice: The index of the currently selected option in the balloonist menu
+        """
+        # Hide world names if inaccessible
+        for looped_env in self.env_by_id.values():
+            if not looped_env.is_hub():
+                continue
+
+            byte_val = looped_env.name[:1].encode("ASCII")
+
+            if looped_env.name != "Gnasty's World":
+                if looped_env.name not in self.ap_unlocked_worlds:
+                    byte_val = b'\x00'
+
+                self.to_write_lists[RAM.GameStates.BALLOONIST].append((looped_env.text_offset, byte_val))
+            else:
+                if len(self.boss_items) != 5:
+                    byte_val = b'\x00'
+
+                self.to_write_lists[RAM.GameStates.BALLOONIST].append((looped_env.text_offset, byte_val))
+
+        # Prevent access to inaccessible worlds
+
+        # Rewrite level data pointers to point at mod's area of memory
+        self.to_write_lists[RAM.GameStates.BALLOONIST].append((env.balloon_pointers[0], b'\x01'))
+        self.to_write_lists[RAM.GameStates.BALLOONIST].append((env.balloon_pointers[1], b'\x0c\xf0'))
+
+        # Turn menu selection number into world index number
+        mapped_choice = menu_lookup((int(env.internal_id / 10) - 1), balloonist_choice)
+
+        # Poke last valid selected choice number to RAM
+        # as well as poking a value to what the game
+        # thinks is a timer, which allows selecting a
+        # choice when it is >= 0x1f
+        # The code is normally meant to prevent a player
+        # from choosing an option in the menu within a few
+        # frames of the menu opening. We abuse it for
+        # setting conditional access instead
+        for item in self.set_balloonist_unlocks(mapped_choice, balloonist_choice):
+            self.to_write_lists[RAM.GameStates.BALLOONIST].append(item)
 
         return
