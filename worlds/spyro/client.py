@@ -761,3 +761,5 @@ class SpyroClient(BizHawkClient):
                 # NOP out the conditional branches
                 # This forces the statue heads to always open
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append((address, bytes(4)))
+
+        return
