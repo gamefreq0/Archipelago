@@ -399,6 +399,17 @@ class SpyroClient(BizHawkClient):
         return result
 
     def set_balloonist_unlocks(self, mapped_choice: int, raw_choice: int) -> list[tuple[int, bytes]]:
+        """Given the index of the selected option in terms of homeworld indices, and the position of the selection in
+        the balloonists' menu, builds a list of writes to perform in order to allow or deny access to choose the
+        selected option
+
+        Args:
+            mapped_choice: The numeric index of the homeworld selected, or -1 for "Stay Here"
+            raw_choice: The current index of the choice in the balloonist menu
+
+        Returns:
+            A list of writes in the format (adress, bytes)
+        """
         result: list[tuple[int, bytes]] = []
 
         hub_name: str = "Stay Here"  # default in case it's -1, which is Stay Here anyway.
