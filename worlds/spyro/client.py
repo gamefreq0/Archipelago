@@ -4,12 +4,12 @@ import struct
 from typing import TYPE_CHECKING
 
 try:
-    from typing import override, ClassVar
+    from typing import override, ClassVar, cast
 except ImportError:
     if TYPE_CHECKING:
-        from typing import override, ClassVar
+        from typing import override, ClassVar, cast
     else:
-        from typing_extensions import override, ClassVar
+        from typing_extensions import override, ClassVar, cast
 
 from NetUtils import ClientStatus, NetworkItem
 import worlds._bizhawk as bizhawk
