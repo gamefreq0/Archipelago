@@ -11,7 +11,7 @@ except ImportError:
     else:
         from typing_extensions import override, ClassVar
 
-from NetUtils import ClientStatus
+from NetUtils import ClientStatus, NetworkItem
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
@@ -58,6 +58,7 @@ class SpyroClient(BizHawkClient):
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
+    # Set up stuff for tracking later
     env: Environment
     for env in env_by_id.values():
         gem_counts[env.internal_id] = 0
@@ -112,22 +113,7 @@ class SpyroClient(BizHawkClient):
             # TODO: replace with own bool
             ctx.watcher_timeout = 0.125
 
-        for item in ctx.items_received:
-            item_name = item_id_to_name[item.item]
-
-            if item_name in goal_item:
-                await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
-            elif item_name in homeworld_access:
-                self.ap_unlocked_worlds.add(item_name)
-            elif item_name in boss_items:
-                self.boss_items.add(item_id_to_name[item.item])
-            else:
-                try:
-                    env: Environment = self.env_by_name[item_name]
-                    self.portal_accesses[env.name] = True
-                except KeyError:
-                    # Wasn't a level access item, do stuff here
-                    pass
+        await self.process_received_items(ctx.items_received, ctx)
 
         if self.slot_data_spyro_color == b'':
             color_value: int
@@ -467,6 +453,7 @@ class SpyroClient(BizHawkClient):
 
         Args:
             location_name: The name of the location to send
+            ctx: BizhawkClientContext
         """
         location_id = location_name_to_id[location_name]
 
@@ -489,6 +476,7 @@ class SpyroClient(BizHawkClient):
 
         Args:
             portal_entering: The portal being walked into
+            ctx: BizhawkClientContext
 
         Returns:
             The name of the level the portal should lead to
@@ -521,6 +509,7 @@ class SpyroClient(BizHawkClient):
 
         Args:
             level_exiting_from: The name of the level being exited from
+            ctx: BizhawkClientContext
 
         Returns:
             The name of the portal that led to this level, which is the name of the vanilla level it leads to
@@ -555,8 +544,11 @@ class SpyroClient(BizHawkClient):
         """Returns a list of writes to be performed to edit level/hub names to show on portals or in the inventory
         screen that they are accessible and whether they have unchecked locations within
 
+        Args:
+            ctx: BizhawkClientContext
+
         Returns:
-            List of writes to perform
+            List of writes to perform in the format (address, bytes to write)
         """
         write_list: list[tuple[int, bytes]] = []
         first_char: bytes
@@ -610,3 +602,27 @@ class SpyroClient(BizHawkClient):
                 write_list.append((env.text_offset, first_char))
 
         return write_list
+
+    async def process_received_items(self, received_list: list[NetworkItem], ctx: "BizHawkClientContext") -> None:
+        """Processes items received from the Archipelago server.
+
+        Args:
+            received_list: Usually just ctx.items_received
+            ctx: BizhawkClientContext
+        """
+        for item in received_list:
+            item_name = item_id_to_name[item.item]
+
+            if item_name in goal_item:
+                await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+            elif item_name in homeworld_access:
+                self.ap_unlocked_worlds.add(item_name)
+            elif item_name in boss_items:
+                self.boss_items.add(item_id_to_name[item.item])
+            else:
+                try:
+                    env: Environment = self.env_by_name[item_name]
+                    self.portal_accesses[env.name] = True
+                except KeyError:
+                    # Wasn't a level access item, do stuff here
+                    pass
