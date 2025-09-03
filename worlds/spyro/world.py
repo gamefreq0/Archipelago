@@ -2,12 +2,12 @@ from logging import warning
 
 from typing import TYPE_CHECKING
 try:
-    from typing import override, ClassVar, Any
+    from typing import override, ClassVar, Any, cast
 except ImportError:
     if TYPE_CHECKING:
-        from typing import override, ClassVar, Any
+        from typing import override, ClassVar, Any, cast
     else:
-        from typing_extensions import override, ClassVar, Any
+        from typing_extensions import override, ClassVar, Any, cast
 
 from BaseClasses import Entrance, MultiWorld, Region
 from BaseClasses import ItemClassification
@@ -319,7 +319,7 @@ class SpyroWorld(World):
         regions: dict[str, Region] = self.multiworld.regions.region_cache[self.player]
         entrances: dict[str, Entrance] = self.multiworld.regions.entrance_cache[self.player]
 
-        starting_homeworld_index: int = slot_data["starting_world"]
+        starting_homeworld_index: int = cast(int, slot_data["starting_world"])
         starting_homeworld = RAM.hub_environments[starting_homeworld_index].name
         starting_region: Region = regions[starting_homeworld]
         menu: Region = regions["Menu"]
@@ -367,7 +367,7 @@ class SpyroWorld(World):
             dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
 
             # Connect remaining ER entrances
-            pairings: list[tuple[str, str]] = slot_data["entrances"]
+            pairings: list[tuple[str, str]] = cast(list[tuple[str, str]], slot_data["entrances"])
             for pairing in pairings:
                 first_entrance: Entrance = entrances[pairing[0]]
                 second_entrance: Entrance = entrances[pairing[1]]
