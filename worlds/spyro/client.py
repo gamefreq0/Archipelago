@@ -73,7 +73,7 @@ class SpyroClient(BizHawkClient):
     portal_shuffle: bool = False
     """Whether portal shuffle is on"""
 
-    goal: str
+    goal: str = ""
     """The name of the current goal"""
 
     starting_world: int
