@@ -70,6 +70,9 @@ class SpyroClient(BizHawkClient):
     spyro_color: int
     """Spyro's RGBA tint as an int"""
 
+    goal: str
+    """The name of the current goal"""
+
     # Set up stuff for tracking later
     env: Environment
     for env in env_by_id.values():
