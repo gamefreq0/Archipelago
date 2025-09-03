@@ -198,7 +198,7 @@ class SpyroClient(BizHawkClient):
             self.update_spyro_color(self.spyro_color, cur_game_state)
             self.set_internal_worlds_unlocked(unlocked_worlds)
             self.adjust_level_names(cur_game_state, ctx)
-            self.reset_portal_switch(did_portal_switch, cur_level_id, ctx)
+            self.reset_portal_switch(did_portal_switch, cur_level_id)
 
             if cur_level_id == 0:  # We're on the title screen or in early load
                 self.set_starting_world(ctx)
@@ -629,7 +629,7 @@ class SpyroClient(BizHawkClient):
 
         return
 
-    def reset_portal_switch(self, did_switch: int, cur_level_id: int, ctx: "BizHawkClientContext"):
+    def reset_portal_switch(self, did_switch: int, cur_level_id: int):
         """Reset info for tracking whether portal swtich has been handled yet
 
         Args:
