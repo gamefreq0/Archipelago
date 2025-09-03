@@ -230,8 +230,8 @@ class SpyroClient(BizHawkClient):
             for game_state, write_list in self.to_write_lists.items():
                 await self.write_on_state(write_list, game_state.to_bytes(1, byteorder="little"), ctx)
 
-        except bizhawk.RequestFailedError:
-            pass
+        except bizhawk.RequestFailedError as exc:
+            raise exc  # Was passing here before, revert if this causes issues
 
         return
 
