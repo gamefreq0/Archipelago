@@ -253,6 +253,8 @@ class SpyroClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             pass
 
+        return
+
     def balloonist_helper(self, should_allow: bool, choice: int) -> list[tuple[int, bytes]]:
         """Build up a list of bytes to write in order to allow/deny the ability to choose the selected choice in the
         balloonist menu
