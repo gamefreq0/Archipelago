@@ -660,7 +660,7 @@ class SpyroClient(BizHawkClient):
         Args:
             ctx: BizHawkClientContext
         """
-        starting_world_value: int = cast(int, ctx.slot_data["starting_world"])
+        starting_world_value: int = self.starting_world
         starting_world_value += 1
         starting_world_value *= 10
         self.to_write_lists[RAM.GameStates.TITLE_SCREEN].append(
