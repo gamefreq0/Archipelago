@@ -76,6 +76,9 @@ class SpyroClient(BizHawkClient):
     goal: str
     """The name of the current goal"""
 
+    starting_world: int
+    """The index of the starting homeworld"""
+
     # Set up stuff for tracking later
     env: Environment
     for env in env_by_id.values():
