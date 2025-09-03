@@ -264,6 +264,9 @@ class SpyroClient(BizHawkClient):
             else:
                 self.portal_shuffle = False
 
+            # Read in starting homeworld from slot data
+            self.starting_world = cast(int, ctx.slot_data["starting_world"])
+
         self.did_setup = True
         return
 
