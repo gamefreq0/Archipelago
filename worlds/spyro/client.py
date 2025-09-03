@@ -224,7 +224,7 @@ class SpyroClient(BizHawkClient):
 
                 if env.is_hub():
                     self.override_head_checks(env)
-                    self.do_hub_portal_mods(env, ctx)
+                    self.do_hub_portal_mods(env)
                     self.do_balloonist_mods(env, balloonist_choice)
 
             for game_state, write_list in self.to_write_lists.items():
@@ -730,7 +730,7 @@ class SpyroClient(BizHawkClient):
 
         return
 
-    def do_hub_portal_mods(self, env: Environment, ctx: "BizHawkClientContext"):
+    def do_hub_portal_mods(self, env: Environment):
         """Lock/unlock portals and set portal destinations in a given homeworld
 
         Args:
