@@ -393,10 +393,9 @@ class SpyroClient(BizHawkClient):
         # At this point, if stripped flyin name is empty, it's the goal level. Set accordingly
         # TODO: remove this once it's in slot data
         if stripped_flyin_name == "":
-            goal_option: str = ctx.slot_data["goal"]
-            if goal_option == "gnasty":
+            if self.goal == "gnasty":
                 stripped_flyin_name = "Gnasty Gnorc"
-            elif goal_option == "loot":
+            elif self.goal == "loot":
                 stripped_flyin_name = "Gnasty's Loot"
 
         return stripped_flyin_name
@@ -429,10 +428,9 @@ class SpyroClient(BizHawkClient):
         # adding it to slot data, will do later)
         # TODO: remove once in slot data
         if stripped_portal_name == "":
-            goal_option: str = ctx.slot_data["goal"]
-            if goal_option == "gnasty":
+            if self.goal == "gnasty":
                 stripped_portal_name = "Gnasty Gnorc"
-            elif goal_option == "loot":
+            elif self.goal == "loot":
                 stripped_portal_name = "Gnasty's Loot"
 
         return stripped_portal_name
