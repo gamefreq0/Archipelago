@@ -70,6 +70,9 @@ class SpyroClient(BizHawkClient):
     spyro_color: int
     """Spyro's RGBA tint as an int"""
 
+    portal_shuffle: bool = False
+    """Whether portal shuffle is on"""
+
     goal: str
     """The name of the current goal"""
 
