@@ -143,18 +143,6 @@ class SpyroClient(BizHawkClient):
 
         await self.process_received_items(ctx.items_received, ctx)
 
-        # If portal shuffle is on, read in entrance mappings from slot data and store locally
-        if len(self.slot_data_mapped_entrances) == 0:
-            entrance_data: list[tuple[str, str]] = cast(list[tuple[str, str]], ctx.slot_data["entrances"])
-            if len(entrance_data) > 0:
-                self.portal_shuffle = True
-                for item in entrance_data:
-                    if "Fly-in" in item[0]:
-                        self.slot_data_mapped_entrances.append(item)
-        else:
-            self.slot_data_mapped_entrances.append(("", ""))  # So we don't re-run the check above
-            self.portal_shuffle = False
-
         try:
             to_read_list: list[tuple[int, int]] = [
                 (RAM.last_received_archipelago_id, 4),
@@ -257,6 +245,20 @@ class SpyroClient(BizHawkClient):
 
             # Read in goal from slot data
             self.goal = cast(str, ctx.slot_data["goal"])
+
+            # If portal shuffle is on, read in entrance mappings from slot data and store locally
+            if len(self.slot_data_mapped_entrances) == 0:
+                entrance_data: list[tuple[str, str]] = cast(list[tuple[str, str]], ctx.slot_data["entrances"])
+
+                if len(entrance_data) > 0:
+                    self.portal_shuffle = True
+
+                    for item in entrance_data:
+                        if "Fly-in" in item[0]:  # Skip every other, since the two-way mapping makes half of it redundant
+                            self.slot_data_mapped_entrances.append(item)
+            else:
+                self.slot_data_mapped_entrances.append(("", ""))  # So we don't re-run the check above
+                self.portal_shuffle = False
 
         self.did_setup = True
         return
