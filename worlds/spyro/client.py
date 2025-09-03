@@ -201,7 +201,7 @@ class SpyroClient(BizHawkClient):
             self.reset_portal_switch(did_portal_switch, cur_level_id)
 
             if cur_level_id == 0:  # We're on the title screen or in early load
-                self.set_starting_world(ctx)
+                self.set_starting_world()
             else:  # We're hopefully in a valid level here
 
                 await self.do_portal_shuffle_changes(
@@ -652,7 +652,7 @@ class SpyroClient(BizHawkClient):
 
         return
 
-    def set_starting_world(self, ctx: "BizHawkClientContext") -> None:
+    def set_starting_world(self) -> None:
         """While on the title screen, update the starting level ID to enter on completion of the intro cutscene
 
         Args:
