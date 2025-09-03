@@ -409,12 +409,11 @@ class SpyroClient(BizHawkClient):
 
         return stripped_flyin_name
 
-    def lookup_portal_exit(self, level_exiting_from: str, ctx: "BizHawkClientContext") -> str:
+    def lookup_portal_exit(self, level_exiting_from: str) -> str:
         """Given the name of a level exiting from, return the corresponding name of the entrance portal
 
         Args:
             level_exiting_from: The name of the level being exited from
-            ctx: BizhawkClientContext
 
         Returns:
             The name of the portal that led to this level, which is the name of the vanilla level it leads to
@@ -645,7 +644,7 @@ class SpyroClient(BizHawkClient):
             self.to_write_lists[RAM.GameStates.EXITING_LEVEL].append((RAM.switched_portal_dest, b'\x01'))
             hub_entrance_portal_name: str = ""
             cur_level_env: Environment = self.env_by_id[cur_level_id]
-            hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
+            hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name)
             id_of_entrance: int = self.env_by_name[hub_entrance_portal_name].internal_id
             self.to_write_lists[RAM.GameStates.EXITING_LEVEL].append(
                 (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
@@ -709,7 +708,7 @@ class SpyroClient(BizHawkClient):
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append((RAM.switched_portal_dest, b'\x01'))
                 hub_entrance_portal_name: str = ""
                 cur_level_env: Environment = self.env_by_id[cur_level_id]
-                hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name, ctx)
+                hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name)
                 id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
