@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 
 logger = logging.getLogger("Client")
+CLIENT_VERSION: str = "v0.3.3"  # TODO: Remove before PR to main
 
 
 class SpyroClient(BizHawkClient):
@@ -241,6 +242,7 @@ class SpyroClient(BizHawkClient):
         Args:
             ctx: BizHawkClientContext
         """
+        logger.info("Spyro Client version %s loaded", CLIENT_VERSION)  # TODO: Remove this before PR to main
         if ctx.slot_data is not None:
             # Read in Spyro color from slot data
             # TODO: Add in datastorage bit here so the color can be modified during gameplay
