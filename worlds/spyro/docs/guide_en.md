@@ -31,7 +31,7 @@ locate `EmuHawk.exe` in your BizHawk install.
 ## Connecting to a Server
 
 1. If EmuHawk didn't launch automatically, open it manually.
-2. Open your Spyro the Dragon (USA) ISO or CUE file in EmuHawk.
+2. Open your Spyro the Dragon (USA) ISO or CUE file in EmuHawk. Don't start a new game from the menu until the client is connected to both BizHawk and the server.
 3. In EmuHawk, go to `Tools > Lua Console`. This window must stay open while playing. Be careful to avoid clicking "TAStudio" below it in the menu, as this is known to delete your savefile.
 4. In the Lua Console window, go to `Script > Open Script…`.
 5. Navigate to your Archipelago install folder and open `data/lua/connector_bizhawk_generic.lua`.
