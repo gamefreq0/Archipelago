@@ -143,13 +143,6 @@ class SpyroClient(BizHawkClient):
 
         await self.process_received_items(ctx.items_received, ctx)
 
-        # # Read Spyro color in from slot data and store locally
-        # # TODO: Add in datastorage bit here so the color can be modified during gameplay
-        # if self.slot_data_spyro_color == b'':
-        #     color_value: int
-        #     color_value = cast(int, ctx.slot_data["spyro_color"])
-        #     self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
-
         # Read in goal from slot data
         if not self.goal:
             self.goal = cast(str, ctx.slot_data["goal"])
