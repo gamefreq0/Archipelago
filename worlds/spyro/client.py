@@ -254,7 +254,7 @@ class SpyroClient(BizHawkClient):
                     self.portal_shuffle = True
 
                     for item in entrance_data:
-                        if "Fly-in" in item[0]:  # Skip every other, since the two-way mapping makes half of it redundant
+                        if "Fly-in" in item[0]:  # Skip every other, two-way mapping makes half of it redundant
                             self.slot_data_mapped_entrances.append(item)
             else:
                 self.slot_data_mapped_entrances.append(("", ""))  # So we don't re-run the check above
