@@ -79,6 +79,9 @@ class SpyroClient(BizHawkClient):
     starting_world: int
     """The index of the starting homeworld"""
 
+    did_setup: bool = False
+    """Whether we've processed slot data"""
+
     # Set up stuff for tracking later
     env: Environment
     for env in env_by_id.values():
@@ -129,9 +132,6 @@ class SpyroClient(BizHawkClient):
             return
 
         if ctx.watcher_timeout != 0.125:
-            # Hopefully this runs the first time. Good place for init stuff, if so
-            # Might break in the future, even if it does.
-            # TODO: replace with own bool
             ctx.watcher_timeout = 0.125
 
         # Reset and/or init write lists here
