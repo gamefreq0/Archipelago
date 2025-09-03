@@ -378,12 +378,11 @@ class SpyroClient(BizHawkClient):
         """
         return int.from_bytes(bytes_in, byteorder="little")
 
-    def lookup_portal_leads_to(self, portal_entering: str, ctx: "BizHawkClientContext") -> str:
+    def lookup_portal_leads_to(self, portal_entering: str) -> str:
         """Given the name of a portal a player is entering, return the level the portal should lead to
 
         Args:
             portal_entering: The portal being walked into
-            ctx: BizhawkClientContext
 
         Returns:
             The name of the level the portal should lead to
@@ -491,7 +490,7 @@ class SpyroClient(BizHawkClient):
 
                 # If portal shuffle is on, replace level name with the level the portal leads to
                 if len(self.slot_data_mapped_entrances) > 0:
-                    level_name = self.lookup_portal_leads_to(level_name, ctx)
+                    level_name = self.lookup_portal_leads_to(level_name)
 
                 # Compile a list of unchecked locations behind the given portal
                 env_locations = []
@@ -753,7 +752,7 @@ class SpyroClient(BizHawkClient):
             # If portal shuffle is on
             if len(self.slot_data_mapped_entrances) > 0:
                 # Modify portal destinations
-                dest_level_name = self.lookup_portal_leads_to(level.name, ctx)
+                dest_level_name = self.lookup_portal_leads_to(level.name)
                 portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
