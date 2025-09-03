@@ -236,6 +236,11 @@ class SpyroClient(BizHawkClient):
         return
 
     def do_init(self, ctx: "BizHawkClientContext") -> None:
+        """Do first time setup stuff, like read in slot data into class vars
+
+        Args:
+            ctx: BizHawkClientContext
+        """
         if ctx.slot_data is not None:
             # Read in Spyro color from slot data
             # TODO: Add in datastorage bit here so the color can be modified during gameplay
