@@ -134,18 +134,21 @@ class SpyroClient(BizHawkClient):
         if ctx.watcher_timeout != 0.125:
             ctx.watcher_timeout = 0.125
 
+        if not self.did_setup:
+            self.do_init(ctx)
+
         # Reset and/or init write lists here
         for game_state in RAM.GameStates:
             self.to_write_lists[game_state] = []
 
         await self.process_received_items(ctx.items_received, ctx)
 
-        # Read Spyro color in from slot data and store locally
-        # TODO: Add in datastorage bit here so the color can be modified during gameplay
-        if self.slot_data_spyro_color == b'':
-            color_value: int
-            color_value = cast(int, ctx.slot_data["spyro_color"])
-            self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
+        # # Read Spyro color in from slot data and store locally
+        # # TODO: Add in datastorage bit here so the color can be modified during gameplay
+        # if self.slot_data_spyro_color == b'':
+        #     color_value: int
+        #     color_value = cast(int, ctx.slot_data["spyro_color"])
+        #     self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
 
         # Read in goal from slot data
         if not self.goal:
@@ -253,6 +256,17 @@ class SpyroClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             pass
 
+        return
+
+    def do_init(self, ctx: "BizHawkClientContext") -> None:
+        if ctx.slot_data is not None:
+            # Read in Spyro color from slot data
+            # TODO: Add in datastorage bit here so the color can be modified during gameplay
+            color_value: int
+            color_value = cast(int, ctx.slot_data["spyro_color"])
+            self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
+
+        self.did_setup = True
         return
 
     def balloonist_helper(self, should_allow: bool, choice: int) -> list[tuple[int, bytes]]:
