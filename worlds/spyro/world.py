@@ -218,7 +218,7 @@ class SpyroWorld(World):
             random_trap: str = self.multiworld.random.choice(trap_items)
             self.itempool += [self.create_item(random_trap)]
 
-        junk_count = total_unfilled_locations - total_filled_local_locations
+        junk_count: int = total_unfilled_locations - total_filled_local_locations
 
         for _ in range(junk_count):
             random_filler = self.multiworld.random.choice(filler_items)
