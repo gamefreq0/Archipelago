@@ -2,12 +2,12 @@ from logging import warning
 
 from typing import TYPE_CHECKING
 try:
-    from typing import override, ClassVar, Any, cast
+    from typing import override, ClassVar, TypedDict
 except ImportError:
     if TYPE_CHECKING:
-        from typing import override, ClassVar, Any, cast
+        from typing import override, ClassVar, TypedDict
     else:
-        from typing_extensions import override, ClassVar, Any, cast
+        from typing_extensions import override, ClassVar, TypedDict
 
 from BaseClasses import Entrance, MultiWorld, Region
 from BaseClasses import ItemClassification
@@ -25,6 +25,14 @@ from .options import SpyroOptions
 from .regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 from .rules import set_rules
 from .addresses import RAM, Environment
+
+
+class _SlotDataTypes(TypedDict):
+    goal: str
+    starting_world: int
+    portal_shuffle: int
+    entrances: list[tuple[str, str]]
+    spyro_color: int
 
 
 class SpyroWorld(World):
@@ -389,7 +397,7 @@ class SpyroWorld(World):
 
         return entrance_portal_name
 
-    def interpret_slot_data(self, slot_data: dict[str, Any]) -> None:
+    def interpret_slot_data(self, slot_data: _SlotDataTypes) -> None:
         """Method called by UT, where we can handle deferred logic stuff
 
         Args:
@@ -399,7 +407,7 @@ class SpyroWorld(World):
         regions: dict[str, Region] = self.multiworld.regions.region_cache[self.player]
         entrances: dict[str, Entrance] = self.multiworld.regions.entrance_cache[self.player]
 
-        starting_homeworld_index: int = cast(int, slot_data["starting_world"])
+        starting_homeworld_index: int = slot_data["starting_world"]
         starting_homeworld: str = RAM.hub_environments[starting_homeworld_index].name
         starting_region: Region = regions[starting_homeworld]
         menu: Region = regions["Menu"]
@@ -447,7 +455,8 @@ class SpyroWorld(World):
             dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
 
             # Connect remaining ER entrances
-            pairings: list[tuple[str, str]] = cast(list[tuple[str, str]], slot_data["entrances"])
+            pairings: list[tuple[str, str]] = slot_data["entrances"]
+
             for pairing in pairings:
                 first_entrance: Entrance = entrances[pairing[0]]
                 second_entrance: Entrance = entrances[pairing[1]]
