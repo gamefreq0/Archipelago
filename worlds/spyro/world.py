@@ -338,6 +338,30 @@ class SpyroWorld(World):
             "spyro_color": self.spyro_color,
         }
 
+    @override
+    def extend_hint_information(self, hint_data: dict[int, dict[int, str]]) -> None:
+        """Given hint_data from the multiworld, mutate it to modify the entrance data, which is used in the hints tab.
+
+        Args:
+            hint_data: Archipelago's hint_data, indexed by player and location ID
+        """
+        hint_data.update({self.player: {}})  # Taken from Tunic. Not sure why this is needed.
+        new_hint_data: dict[int, dict[int, str]] = hint_data
+        if self.portal_shuffle:
+            # Iterate locations for mapping their entrances as needed
+            for name, loc_id in location_name_to_id.items():
+                location = self.multiworld.get_location(name, self.player)
+                region_name: str = "No level should match this substring"
+
+                if location.parent_region is not None:
+                    region_name = location.parent_region.name
+
+                if (region_name in self.env_by_name) and (not self.env_by_name[region_name].is_hub()):
+                    new_hint_data[self.player][loc_id] = self.lookup_shuffled_entrance(region_name)
+
+        hint_data = new_hint_data
+        return
+
     def lookup_shuffled_entrance(self, level_name: str) -> str:
         """Given the name of a level, find the name of the portal that leads to it
 
