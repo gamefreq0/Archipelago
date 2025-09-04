@@ -236,13 +236,21 @@ class SpyroWorld(World):
                 dangling_exit_hub: Entrance = Entrance(self.player, "")
                 dangling_exit_level: Entrance = Entrance(self.player, "")
 
-                # Iterate through hub and level's exits to grab pair of dangling exits
+                first_unshuffled_pairing: list[str] = ["", ""]
+                second_unshuffled_pairing: list[str] = ["", ""]
+
+                # Iterate through hub and level's exits to grab pair of dangling exits, and save names to add to
+                # slot data for later, so the client can lookup the vanilla connection without special casing
                 for named_exit in gnasty_hub.exits:
                     if goal_level in named_exit.name:
                         dangling_exit_hub = named_exit
+                        first_unshuffled_pairing[0] = named_exit.name
+                        second_unshuffled_pairing[1] = named_exit.name
                 for named_exit in goal_level_region.exits:
                     if goal_level in named_exit.name:
                         dangling_exit_level = named_exit
+                        first_unshuffled_pairing[1] = named_exit.name
+                        second_unshuffled_pairing[0] = named_exit.name
 
                 # Iterate through hub and level's entrances to grab pair of dangling entrances
                 for entrance in gnasty_hub.entrances:
@@ -271,6 +279,10 @@ class SpyroWorld(World):
 
                 # Save results for filling slot data later
                 self.shuffled_entrance_pairings = shuffled_entrances.pairings
+
+                # Tack on vanilla goal level pairings to slot data
+                self.shuffled_entrance_pairings.append((first_unshuffled_pairing[0], first_unshuffled_pairing[1]))
+                self.shuffled_entrance_pairings.append((second_unshuffled_pairing[0], second_unshuffled_pairing[1]))
 
             else:
                 all_ents_list: list[Entrance] = []
