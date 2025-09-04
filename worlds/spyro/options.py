@@ -45,6 +45,7 @@ class PortalShuffleOption(Toggle):
 
 class SpyroColorOption(FreeText):
     """Choose a color to tint Spyro, in RGBA format.
+    Also accepts "random" as an option, which will roll a random RGB value with full alpha
 
     Note that a value of FFFFFF00 will result in the vanilla colors.
     """

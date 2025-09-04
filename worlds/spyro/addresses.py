@@ -1,19 +1,10 @@
 from enum import IntEnum
 
-from typing import TYPE_CHECKING
-try:
-    from typing import final
-except ImportError:
-    if TYPE_CHECKING:
-        from typing import final
-    else:
-        from typing_extensions import final
-
 
 def internal_id_to_offset(internal_id: int) -> int:
     """Translates internal ID to zero-indexed offset in the overall environment"""
-    homeworld_index = int(internal_id / 10) - 1
-    homeworld_offset = internal_id % 10
+    homeworld_index: int = int(internal_id / 10) - 1
+    homeworld_offset: int = internal_id % 10
     return (homeworld_index * 6) + homeworld_offset
 
 
@@ -55,13 +46,12 @@ class Environment():
 
     def is_hub(self) -> bool:
         """Whether the current environment is a homeworld"""
-        is_hub = False
+        is_hub: bool = False
         if self.internal_id % 10 == 0:
             is_hub = True
         return is_hub
 
 
-@final
 class RAM:
     """A handy collection of memory values and addresses for Spyro"""
 

@@ -22,7 +22,7 @@ from .items import item_id_to_name, boss_items, homeworld_access, goal_item
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 
-logger = logging.getLogger("Client")
+logger: logging.Logger = logging.getLogger("Client")
 CLIENT_VERSION: str = "v0.3.3"  # TODO: Remove before PR to main
 
 
@@ -159,12 +159,12 @@ class SpyroClient(BizHawkClient):
                 (RAM.last_touched_whirlwind, 3),
             ]
 
-            gem_counter_offset = len(to_read_list)
+            gem_counter_offset: int = len(to_read_list)
 
             for env in self.env_by_id.values():
                 to_read_list.append((env.gem_counter, 2))
 
-            vortex_offset = len(to_read_list)
+            vortex_offset: int = len(to_read_list)
 
             for env in self.env_by_id.values():
                 to_read_list.append((env.vortex_pointer, 1))
@@ -172,28 +172,28 @@ class SpyroClient(BizHawkClient):
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
 
-            ram_data = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
+            ram_data: list[bytes] = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
 
-            recv_index = self.from_little_bytes(ram_data[0])
-            cur_game_state = self.from_little_bytes(ram_data[1])
-            cur_level_id = self.from_little_bytes(ram_data[2])
+            recv_index: int = self.from_little_bytes(ram_data[0])
+            cur_game_state: int = self.from_little_bytes(ram_data[1])
+            cur_level_id: int = self.from_little_bytes(ram_data[2])
             self.spyro_color = self.from_little_bytes(ram_data[3])
             self.gnasty_anim_flag = self.from_little_bytes(ram_data[4])
-            unlocked_worlds = ram_data[5]
-            balloonist_choice = self.from_little_bytes(ram_data[6])
+            unlocked_worlds: bytes = ram_data[5]
+            balloonist_choice: int = self.from_little_bytes(ram_data[6])
             self.total_gems_collected = self.from_little_bytes(ram_data[7])
-            did_portal_switch = self.from_little_bytes(ram_data[8])
-            spyro_anim = self.from_little_bytes(ram_data[9])
-            last_whirlwind_pointer = self.from_little_bytes(ram_data[10])
+            did_portal_switch: int = self.from_little_bytes(ram_data[8])
+            spyro_anim: int = self.from_little_bytes(ram_data[9])
+            last_whirlwind_pointer: int = self.from_little_bytes(ram_data[10])
 
             for env_id in self.env_by_id:
-                ram_data_offset = gem_counter_offset + internal_id_to_offset(env_id)
-                self.gem_counts[env_id] = self.from_little_bytes(ram_data[ram_data_offset])
+                ram_data_offset_gems: int = gem_counter_offset + internal_id_to_offset(env_id)
+                self.gem_counts[env_id] = self.from_little_bytes(ram_data[ram_data_offset_gems])
 
             for env_id, env in self.env_by_id.items():
                 if not env.is_hub():
-                    ram_data_offset = vortex_offset + internal_id_to_offset(env_id)
-                    self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset])
+                    ram_data_offset_vortexes: int = vortex_offset + internal_id_to_offset(env_id)
+                    self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset_vortexes])
 
             await self.process_locations(cur_game_state, cur_level_id, ctx)
             self.update_spyro_color(self.spyro_color, cur_game_state)
@@ -213,7 +213,7 @@ class SpyroClient(BizHawkClient):
                     ctx
                 )
 
-                env = self.env_by_id[cur_level_id]
+                env: Environment = self.env_by_id[cur_level_id]
 
                 # Make Nestor skippable
                 if env.name == "Artisans":
@@ -284,7 +284,7 @@ class SpyroClient(BizHawkClient):
         # The game checks to see if the timer is above a certain value before allowing a selection. We can abuse this
         # in order to allow/deny choosing an option based on access requirements instead
         fake_timer: bytes = b'\x1f' if should_allow else b'\x00'
-        choice_byte = choice.to_bytes(1, byteorder="little")
+        choice_byte: bytes = choice.to_bytes(1, byteorder="little")
         result: list[tuple[int, bytes]] = []
         result.append((RAM.fake_timer, fake_timer))
         result.append((RAM.last_selected_valid_choice, choice_byte))
@@ -369,7 +369,7 @@ class SpyroClient(BizHawkClient):
             location_name: The name of the location to send
             ctx: BizhawkClientContext
         """
-        location_id = location_name_to_id[location_name]
+        location_id: int = location_name_to_id[location_name]
 
         if location_id not in ctx.checked_locations:
             await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [location_id]}])
@@ -526,7 +526,7 @@ class SpyroClient(BizHawkClient):
             ctx: BizhawkClientContext
         """
         for item in received_list:
-            item_name = item_id_to_name[item.item]
+            item_name: str = item_id_to_name[item.item]
 
             if item_name in goal_item:
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
@@ -583,7 +583,7 @@ class SpyroClient(BizHawkClient):
         """
         if self.slot_data_spyro_color != b'':
             if color.to_bytes(4, "little") != self.slot_data_spyro_color:
-                color = self.from_little_bytes(self.slot_data_spyro_color)
+                new_color: int = self.from_little_bytes(self.slot_data_spyro_color)
                 if game_state in (
                     RAM.GameStates.GAMEPLAY,
                     RAM.GameStates.BALLOONIST,
@@ -596,7 +596,7 @@ class SpyroClient(BizHawkClient):
                     RAM.GameStates.TITLE_SCREEN
                 ):
                     self.to_write_lists[game_state].append(
-                        (RAM.spyro_color_filter, color.to_bytes(4, "little"))
+                        (RAM.spyro_color_filter, new_color.to_bytes(4, "little"))
                     )
 
         return
@@ -716,7 +716,7 @@ class SpyroClient(BizHawkClient):
                 hub_entrance_portal_name: str = ""
                 cur_level_env: Environment = self.env_by_id[cur_level_id]
                 hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name)
-                id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
+                id_of_entrance: int = self.env_by_name[hub_entrance_portal_name].internal_id
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
                 )
@@ -758,7 +758,7 @@ class SpyroClient(BizHawkClient):
             # If portal shuffle is on
             if len(self.slot_data_mapped_entrances) > 0:
                 # Modify portal destinations
-                dest_level_name = self.lookup_portal_leads_to(level.name)
+                dest_level_name: str = self.lookup_portal_leads_to(level.name)
                 portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
@@ -778,7 +778,7 @@ class SpyroClient(BizHawkClient):
             if not looped_env.is_hub():
                 continue
 
-            byte_val = looped_env.name[:1].encode("ASCII")
+            byte_val: bytes = looped_env.name[:1].encode("ASCII")
 
             if looped_env.name != "Gnasty's World":
                 if looped_env.name not in self.ap_unlocked_worlds:
@@ -798,7 +798,7 @@ class SpyroClient(BizHawkClient):
         self.to_write_lists[RAM.GameStates.BALLOONIST].append((env.balloon_pointers[1], b'\x0c\xf0'))
 
         # Turn menu selection number into world index number
-        mapped_choice = menu_lookup((int(env.internal_id / 10) - 1), balloonist_choice)
+        mapped_choice: int = menu_lookup((int(env.internal_id / 10) - 1), balloonist_choice)
 
         # Poke last valid selected choice number to RAM
         # as well as poking a value to what the game

@@ -2,17 +2,18 @@ from logging import warning
 
 from typing import TYPE_CHECKING
 try:
-    from typing import override, ClassVar, Any, cast
+    from typing import override, ClassVar, TypedDict
 except ImportError:
     if TYPE_CHECKING:
-        from typing import override, ClassVar, Any, cast
+        from typing import override, ClassVar, TypedDict
     else:
-        from typing_extensions import override, ClassVar, Any, cast
+        from typing_extensions import override, ClassVar, TypedDict
 
 from BaseClasses import Entrance, MultiWorld, Region
 from BaseClasses import ItemClassification
+from BaseClasses import Location
 from Options import OptionError
-from entrance_rando import randomize_entrances
+from entrance_rando import ERPlacementState, randomize_entrances
 from ..AutoWorld import WebWorld, World
 from .web import SpyroWeb
 from .items import SpyroItem, filler_items, goal_item
@@ -23,7 +24,15 @@ from .locations import grouped_locations
 from .options import SpyroOptions
 from .regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 from .rules import set_rules
-from .addresses import RAM
+from .addresses import RAM, Environment
+
+
+class _SlotDataTypes(TypedDict):
+    goal: str
+    starting_world: int
+    portal_shuffle: int
+    entrances: list[tuple[str, str]]
+    spyro_color: int
 
 
 class SpyroWorld(World):
@@ -61,8 +70,17 @@ class SpyroWorld(World):
         self._death_link = 0
         self._starting_world = 0
         self._spyro_color = -1
-        self.itempool: list[SpyroItem] = []
         self.shuffled_entrance_pairings: list[tuple[str, str]] = []
+        self.env_by_id: dict[int, Environment] = {}
+        self.env_by_name: dict[str, Environment] = {}
+
+        for hub in RAM.hub_environments:
+            self.env_by_id[hub.internal_id] = hub
+            self.env_by_name[hub.name] = hub
+
+            for level in hub.child_environments:
+                self.env_by_id[level.internal_id] = level
+                self.env_by_name[level.name] = level
 
     @property
     def goal(self) -> str:
@@ -150,18 +168,25 @@ class SpyroWorld(World):
     @override
     def generate_early(self) -> None:
         self.goal = self.options.goal.get_option_name(self.options.goal.value).lower()
-        self.itempool = []
         self.starting_world = self.options.starting_world.value
-        self.spyro_color = self.options.spyro_color.value
+        if self.options.spyro_color.value == "random":
+            random_rgb: bytes = self.random.randbytes(3)
+            temp_color: str = random_rgb.hex() + "ff"  # Ensure full alpha
+            self.spyro_color = temp_color
+            print(temp_color)
+            print(self.spyro_color)
+        else:
+            self.spyro_color = self.options.spyro_color.value
         self.death_link = self.options.death_link.value == 1
         self.portal_shuffle = self.options.portal_shuffle.value == 1
 
     @override
     def create_regions(self) -> None:
-        return create_regions(self)
+        return create_regions(self, self.starting_world)
 
     @override
     def create_item(self, name: str) -> SpyroItem:
+        classification: ItemClassification
         if name in filler_items:
             classification = ItemClassification.filler
         elif name in trap_items:
@@ -173,42 +198,45 @@ class SpyroWorld(World):
 
     @override
     def create_items(self) -> None:
+        """Mutate the multiworld itempool to include items for Spyro.
+        """
+        itempool: list[SpyroItem] = []
         for name in homeworld_access:
             if name == RAM.hub_environments[self.starting_world].name:
                 self.push_precollected(self.create_item(name))
             else:
-                self.itempool += [self.create_item(name)]
+                itempool += [self.create_item(name)]
 
         for name in level_access:
-            self.itempool += [self.create_item(name)]
+            itempool += [self.create_item(name)]
 
         for name in boss_items:
-            self.itempool += [self.create_item(name)]
+            itempool += [self.create_item(name)]
 
-        victory = self.create_item(goal_item[0])
+        victory: SpyroItem = self.create_item(goal_item[0])
 
-        trap_percentage = 0.05
-        total_unfilled_locations = len(self.multiworld.get_unfilled_locations(self.player))
-        total_filled_local_locations = len(self.itempool) + 1  # Victory item
-        trap_count = round((total_unfilled_locations - total_filled_local_locations) * trap_percentage)
+        trap_percentage: float = 0.05
+        total_unfilled_locations: int = len(self.multiworld.get_unfilled_locations(self.player))
+        total_filled_local_locations: int = len(itempool) + 1  # Victory item
+        trap_count: int = round((total_unfilled_locations - total_filled_local_locations) * trap_percentage)
         total_filled_local_locations += trap_count
 
         for _ in range(trap_count):
-            random_trap = self.multiworld.random.choice(trap_items)
-            self.itempool += [self.create_item(random_trap)]
+            random_trap: str = self.multiworld.random.choice(trap_items)
+            itempool += [self.create_item(random_trap)]
 
-        junk_count = total_unfilled_locations - total_filled_local_locations
+        junk_count: int = total_unfilled_locations - total_filled_local_locations
 
         for _ in range(junk_count):
-            random_filler = self.multiworld.random.choice(filler_items)
-            self.itempool += [self.create_item(random_filler)]
+            random_filler: str = self.multiworld.random.choice(filler_items)
+            itempool += [self.create_item(random_filler)]
 
         if self.goal == "gnasty":
             self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
         elif self.goal == "loot":
             self.get_location("Gnasty's Loot Vortex").place_locked_item(victory)
 
-        self.multiworld.itempool += self.itempool
+        self.multiworld.itempool += itempool
 
     @override
     def connect_entrances(self) -> None:
@@ -221,21 +249,29 @@ class SpyroWorld(World):
                 elif self.goal == "loot":
                     goal_level = "Gnasty's Loot"
 
-                gnasty_hub = self.get_region("Gnasty's World")
-                goal_level_region = self.get_region(goal_level)
+                gnasty_hub: Region = self.get_region("Gnasty's World")
+                goal_level_region: Region = self.get_region(goal_level)
 
                 dangling_entrance_hub: Entrance = Entrance(self.player, "")
                 dangling_entrance_level: Entrance = Entrance(self.player, "")
                 dangling_exit_hub: Entrance = Entrance(self.player, "")
                 dangling_exit_level: Entrance = Entrance(self.player, "")
 
-                # Iterate through hub and level's exits to grab pair of dangling exits
+                first_unshuffled_pairing: list[str] = ["", ""]
+                second_unshuffled_pairing: list[str] = ["", ""]
+
+                # Iterate through hub and level's exits to grab pair of dangling exits, and save names to add to
+                # slot data for later, so the client can lookup the vanilla connection without special casing
                 for named_exit in gnasty_hub.exits:
                     if goal_level in named_exit.name:
                         dangling_exit_hub = named_exit
+                        first_unshuffled_pairing[0] = named_exit.name
+                        second_unshuffled_pairing[1] = named_exit.name
                 for named_exit in goal_level_region.exits:
                     if goal_level in named_exit.name:
                         dangling_exit_level = named_exit
+                        first_unshuffled_pairing[1] = named_exit.name
+                        second_unshuffled_pairing[0] = named_exit.name
 
                 # Iterate through hub and level's entrances to grab pair of dangling entrances
                 for entrance in gnasty_hub.entrances:
@@ -252,7 +288,7 @@ class SpyroWorld(World):
                 dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
 
                 # Create shuffled connections with GER call
-                shuffled_entrances = randomize_entrances(
+                shuffled_entrances: ERPlacementState = randomize_entrances(
                     self,
                     True,
                     {
@@ -264,6 +300,10 @@ class SpyroWorld(World):
 
                 # Save results for filling slot data later
                 self.shuffled_entrance_pairings = shuffled_entrances.pairings
+
+                # Tack on vanilla goal level pairings to slot data
+                self.shuffled_entrance_pairings.append((first_unshuffled_pairing[0], first_unshuffled_pairing[1]))
+                self.shuffled_entrance_pairings.append((second_unshuffled_pairing[0], second_unshuffled_pairing[1]))
 
             else:
                 all_ents_list: list[Entrance] = []
@@ -309,7 +349,55 @@ class SpyroWorld(World):
             "spyro_color": self.spyro_color,
         }
 
-    def interpret_slot_data(self, slot_data: dict[str, Any]) -> None:
+    @override
+    def extend_hint_information(self, hint_data: dict[int, dict[int, str]]) -> None:
+        """Given hint_data from the multiworld, mutate it to modify the entrance data, which is used in the hints tab.
+
+        Args:
+            hint_data: Archipelago's hint_data, indexed by player and location ID
+        """
+        hint_data.update({self.player: {}})  # Taken from Tunic. Not sure why this is needed. Doesn't work without.
+        new_hint_data: dict[int, dict[int, str]] = hint_data
+        if self.portal_shuffle:
+            # Iterate locations for mapping their entrances as needed
+            for name, loc_id in location_name_to_id.items():
+                location: Location = self.multiworld.get_location(name, self.player)
+                region_name: str = "No level should match this substring"
+
+                if location.parent_region is not None:
+                    region_name = location.parent_region.name
+
+                if (region_name in self.env_by_name) and (not self.env_by_name[region_name].is_hub()):
+                    new_hint_data[self.player][loc_id] = self.lookup_shuffled_entrance(region_name)
+
+        hint_data = new_hint_data
+        return
+
+    def lookup_shuffled_entrance(self, level_name: str) -> str:
+        """Given the name of a level, find the name of the portal that leads to it
+
+        Args:
+            level_name: The name of the level to find the entrance for
+
+        Returns:
+            The name of the portal that leads to the given level
+        """
+        entrance_portal_name: str = ""
+        unstripped_portal_name: str = ""
+
+        # Find the mapped fly-in to the given level, save the mapped portal for later
+        for pairing in self.shuffled_entrance_pairings:
+            if (level_name in pairing[0]) and ("Fly-in" in pairing[0]):
+                unstripped_portal_name = pairing[1]
+
+        # Find the level that matches the portal name from earlier, save for returning
+        for env_name in self.env_by_name:
+            if env_name in unstripped_portal_name:
+                entrance_portal_name = env_name
+
+        return entrance_portal_name
+
+    def interpret_slot_data(self, slot_data: _SlotDataTypes) -> None:
         """Method called by UT, where we can handle deferred logic stuff
 
         Args:
@@ -319,8 +407,8 @@ class SpyroWorld(World):
         regions: dict[str, Region] = self.multiworld.regions.region_cache[self.player]
         entrances: dict[str, Entrance] = self.multiworld.regions.entrance_cache[self.player]
 
-        starting_homeworld_index: int = cast(int, slot_data["starting_world"])
-        starting_homeworld = RAM.hub_environments[starting_homeworld_index].name
+        starting_homeworld_index: int = slot_data["starting_world"]
+        starting_homeworld: str = RAM.hub_environments[starting_homeworld_index].name
         starting_region: Region = regions[starting_homeworld]
         menu: Region = regions["Menu"]
 
@@ -367,7 +455,8 @@ class SpyroWorld(World):
             dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
 
             # Connect remaining ER entrances
-            pairings: list[tuple[str, str]] = cast(list[tuple[str, str]], slot_data["entrances"])
+            pairings: list[tuple[str, str]] = slot_data["entrances"]
+
             for pairing in pairings:
                 first_entrance: Entrance = entrances[pairing[0]]
                 second_entrance: Entrance = entrances[pairing[1]]
@@ -375,7 +464,7 @@ class SpyroWorld(World):
                     first_entrance.connect(second_entrance.parent_region)
                     second_entrance.connect(first_entrance.parent_region)
         else:
-            all_entrances = entrances
+            all_entrances: dict[str, Entrance] = entrances
             all_ents_list: list[Entrance] = []
 
             for entrance in all_entrances.values():
