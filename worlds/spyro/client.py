@@ -213,7 +213,7 @@ class SpyroClient(BizHawkClient):
                     ctx
                 )
 
-                env = self.env_by_id[cur_level_id]
+                env: Environment = self.env_by_id[cur_level_id]
 
                 # Make Nestor skippable
                 if env.name == "Artisans":
@@ -284,7 +284,7 @@ class SpyroClient(BizHawkClient):
         # The game checks to see if the timer is above a certain value before allowing a selection. We can abuse this
         # in order to allow/deny choosing an option based on access requirements instead
         fake_timer: bytes = b'\x1f' if should_allow else b'\x00'
-        choice_byte = choice.to_bytes(1, byteorder="little")
+        choice_byte: bytes = choice.to_bytes(1, byteorder="little")
         result: list[tuple[int, bytes]] = []
         result.append((RAM.fake_timer, fake_timer))
         result.append((RAM.last_selected_valid_choice, choice_byte))
@@ -369,7 +369,7 @@ class SpyroClient(BizHawkClient):
             location_name: The name of the location to send
             ctx: BizhawkClientContext
         """
-        location_id = location_name_to_id[location_name]
+        location_id: int = location_name_to_id[location_name]
 
         if location_id not in ctx.checked_locations:
             await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [location_id]}])
@@ -526,7 +526,7 @@ class SpyroClient(BizHawkClient):
             ctx: BizhawkClientContext
         """
         for item in received_list:
-            item_name = item_id_to_name[item.item]
+            item_name: str = item_id_to_name[item.item]
 
             if item_name in goal_item:
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
@@ -716,7 +716,7 @@ class SpyroClient(BizHawkClient):
                 hub_entrance_portal_name: str = ""
                 cur_level_env: Environment = self.env_by_id[cur_level_id]
                 hub_entrance_portal_name = self.lookup_portal_exit(cur_level_env.name)
-                id_of_entrance = self.env_by_name[hub_entrance_portal_name].internal_id
+                id_of_entrance: int = self.env_by_name[hub_entrance_portal_name].internal_id
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (RAM.cur_level_id, id_of_entrance.to_bytes(1, byteorder="little"))
                 )
@@ -758,7 +758,7 @@ class SpyroClient(BizHawkClient):
             # If portal shuffle is on
             if len(self.slot_data_mapped_entrances) > 0:
                 # Modify portal destinations
-                dest_level_name = self.lookup_portal_leads_to(level.name)
+                dest_level_name: str = self.lookup_portal_leads_to(level.name)
                 portal_dest_id: int = self.env_by_name[dest_level_name].internal_id
                 self.to_write_lists[RAM.GameStates.GAMEPLAY].append(
                     (env.portal_dest_level_ids[index], portal_dest_id.to_bytes(1, byteorder="little"))
@@ -778,7 +778,7 @@ class SpyroClient(BizHawkClient):
             if not looped_env.is_hub():
                 continue
 
-            byte_val = looped_env.name[:1].encode("ASCII")
+            byte_val: bytes = looped_env.name[:1].encode("ASCII")
 
             if looped_env.name != "Gnasty's World":
                 if looped_env.name not in self.ap_unlocked_worlds:
@@ -798,7 +798,7 @@ class SpyroClient(BizHawkClient):
         self.to_write_lists[RAM.GameStates.BALLOONIST].append((env.balloon_pointers[1], b'\x0c\xf0'))
 
         # Turn menu selection number into world index number
-        mapped_choice = menu_lookup((int(env.internal_id / 10) - 1), balloonist_choice)
+        mapped_choice: int = menu_lookup((int(env.internal_id / 10) - 1), balloonist_choice)
 
         # Poke last valid selected choice number to RAM
         # as well as poking a value to what the game
