@@ -208,7 +208,7 @@ class SpyroWorld(World):
 
         victory: SpyroItem = self.create_item(goal_item[0])
 
-        trap_percentage = 0.05
+        trap_percentage: float = 0.05
         total_unfilled_locations = len(self.multiworld.get_unfilled_locations(self.player))
         total_filled_local_locations = len(self.itempool) + 1  # Victory item
         trap_count = round((total_unfilled_locations - total_filled_local_locations) * trap_percentage)
