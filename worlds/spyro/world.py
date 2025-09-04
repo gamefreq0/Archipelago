@@ -180,6 +180,7 @@ class SpyroWorld(World):
 
     @override
     def create_item(self, name: str) -> SpyroItem:
+        classification: ItemClassification
         if name in filler_items:
             classification = ItemClassification.filler
         elif name in trap_items:
