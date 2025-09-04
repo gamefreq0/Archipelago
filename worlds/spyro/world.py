@@ -174,7 +174,7 @@ class SpyroWorld(World):
 
     @override
     def create_regions(self) -> None:
-        return create_regions(self)
+        return create_regions(self, self.starting_world)
 
     @override
     def create_item(self, name: str) -> SpyroItem:
