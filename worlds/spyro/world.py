@@ -23,7 +23,7 @@ from .locations import grouped_locations
 from .options import SpyroOptions
 from .regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 from .rules import set_rules
-from .addresses import RAM
+from .addresses import RAM, Environment
 
 
 class SpyroWorld(World):
