@@ -32,7 +32,11 @@ class LevelStats():
     reached_vortex: bool
 
     def __init__(
-        self, egg_count: int = 0, treasure_count: int = 0, dragon_count: int = 0, has_vortex: bool = True
+        self,
+        egg_count: int = 0,
+        treasure_count: int = 0,
+        dragon_count: int = 0,
+        has_vortex: bool = True
     ) -> None:
         self.egg_count = egg_count
         self.treasure_count = treasure_count
