@@ -1,5 +1,6 @@
 """Holds create_regions override for AP to call during gen
 """
+from BaseClasses import MultiWorld, Region, Entrance, EntranceType
 from ..AutoWorld import World
 from .items import boss_items
 
