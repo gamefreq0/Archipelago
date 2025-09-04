@@ -22,7 +22,7 @@ from .items import item_id_to_name, boss_items, homeworld_access, goal_item
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 
-logger = logging.getLogger("Client")
+logger: logging.Logger = logging.getLogger("Client")
 CLIENT_VERSION: str = "v0.3.3"  # TODO: Remove before PR to main
 
 
