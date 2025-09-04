@@ -11,6 +11,7 @@ except ImportError:
 
 from BaseClasses import Entrance, MultiWorld, Region
 from BaseClasses import ItemClassification
+from BaseClasses import Location
 from Options import OptionError
 from entrance_rando import randomize_entrances
 from ..AutoWorld import WebWorld, World
@@ -352,7 +353,7 @@ class SpyroWorld(World):
         if self.portal_shuffle:
             # Iterate locations for mapping their entrances as needed
             for name, loc_id in location_name_to_id.items():
-                location = self.multiworld.get_location(name, self.player)
+                location: Location = self.multiworld.get_location(name, self.player)
                 region_name: str = "No level should match this substring"
 
                 if location.parent_region is not None:
