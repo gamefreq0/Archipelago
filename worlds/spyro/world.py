@@ -63,6 +63,16 @@ class SpyroWorld(World):
         self._spyro_color = -1
         self.itempool: list[SpyroItem] = []
         self.shuffled_entrance_pairings: list[tuple[str, str]] = []
+        self.env_by_id: dict[int, Environment] = {}
+        self.env_by_name: dict[str, Environment] = {}
+
+        for hub in RAM.hub_environments:
+            self.env_by_id[hub.internal_id] = hub
+            self.env_by_name[hub.name] = hub
+
+            for level in hub.child_environments:
+                self.env_by_id[level.internal_id] = level
+                self.env_by_name[level.name] = level
 
     @property
     def goal(self) -> str:
