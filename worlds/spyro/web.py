@@ -13,9 +13,9 @@ from ..AutoWorld import WebWorld
 
 @final
 class SpyroWeb(WebWorld):
-    theme = "grass"
+    theme: str = "grass"
 
-    setup_en = Tutorial(
+    setup_en: Tutorial = Tutorial(
         "Spyro the Dragon Multiworld Setup Guide",
         "A guide to setting up Spyro the Dragon in Archipelago",
         "English",
@@ -24,4 +24,4 @@ class SpyroWeb(WebWorld):
         ["gamefreq0"]
     )
 
-    tutorials = [setup_en]
+    tutorials: list[Tutorial] = [setup_en]
