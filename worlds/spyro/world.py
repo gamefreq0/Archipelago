@@ -221,7 +221,7 @@ class SpyroWorld(World):
         junk_count: int = total_unfilled_locations - total_filled_local_locations
 
         for _ in range(junk_count):
-            random_filler = self.multiworld.random.choice(filler_items)
+            random_filler: str = self.multiworld.random.choice(filler_items)
             self.itempool += [self.create_item(random_filler)]
 
         if self.goal == "gnasty":
