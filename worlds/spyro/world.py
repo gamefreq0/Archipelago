@@ -456,7 +456,7 @@ class SpyroWorld(World):
                     first_entrance.connect(second_entrance.parent_region)
                     second_entrance.connect(first_entrance.parent_region)
         else:
-            all_entrances = entrances
+            all_entrances: dict[str, Entrance] = entrances
             all_ents_list: list[Entrance] = []
 
             for entrance in all_entrances.values():
