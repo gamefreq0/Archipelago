@@ -53,9 +53,6 @@ class SpyroClient(BizHawkClient):
     gem_counts: dict[int, int] = {}
     """Keeps track of gem counts, indexed by level ID"""
 
-    vortexes_reached: dict[int, int] = {}
-    """Keeps track of reached vortices, indexed by level ID"""
-
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
@@ -164,11 +161,6 @@ class SpyroClient(BizHawkClient):
             for env in self.env_by_id.values():
                 to_read_list.append((env.gem_counter, 2))
 
-            vortex_offset: int = len(to_read_list)
-
-            for env in self.env_by_id.values():
-                to_read_list.append((env.vortex_pointer, 1))
-
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
 
@@ -189,11 +181,6 @@ class SpyroClient(BizHawkClient):
             for env_id in self.env_by_id:
                 ram_data_offset_gems: int = gem_counter_offset + internal_id_to_offset(env_id)
                 self.gem_counts[env_id] = self.from_little_bytes(ram_data[ram_data_offset_gems])
-
-            for env_id, env in self.env_by_id.items():
-                if not env.is_hub():
-                    ram_data_offset_vortexes: int = vortex_offset + internal_id_to_offset(env_id)
-                    self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset_vortexes])
 
             await self.process_locations(cur_game_state, cur_level_id, ctx)
             self.update_spyro_color(self.spyro_color, cur_game_state)
