@@ -13,7 +13,7 @@ from BaseClasses import Entrance, MultiWorld, Region
 from BaseClasses import ItemClassification
 from BaseClasses import Location
 from Options import OptionError
-from entrance_rando import randomize_entrances
+from entrance_rando import ERPlacementState, randomize_entrances
 from ..AutoWorld import WebWorld, World
 from .web import SpyroWeb
 from .items import SpyroItem, filler_items, goal_item
@@ -280,7 +280,7 @@ class SpyroWorld(World):
                 dangling_exit_level.connected_region = dangling_entrance_hub.connected_region
 
                 # Create shuffled connections with GER call
-                shuffled_entrances = randomize_entrances(
+                shuffled_entrances: ERPlacementState = randomize_entrances(
                     self,
                     True,
                     {
