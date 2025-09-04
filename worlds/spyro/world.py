@@ -190,6 +190,8 @@ class SpyroWorld(World):
 
     @override
     def create_items(self) -> None:
+        """Mutate the multiworld itempool to include items for Spyro.
+        """
         for name in homeworld_access:
             if name == RAM.hub_environments[self.starting_world].name:
                 self.push_precollected(self.create_item(name))
