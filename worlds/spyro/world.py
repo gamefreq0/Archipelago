@@ -349,7 +349,7 @@ class SpyroWorld(World):
         Args:
             hint_data: Archipelago's hint_data, indexed by player and location ID
         """
-        hint_data.update({self.player: {}})  # Taken from Tunic. Not sure why this is needed.
+        hint_data.update({self.player: {}})  # Taken from Tunic. Not sure why this is needed. Doesn't work without.
         new_hint_data: dict[int, dict[int, str]] = hint_data
         if self.portal_shuffle:
             # Iterate locations for mapping their entrances as needed
