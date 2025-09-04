@@ -68,7 +68,7 @@ def create_regions(world: World, starting_homeworld: int) -> None:
     multiworld.regions.extend(regions)
 
     if not hasattr(world.multiworld, "generation_is_fake"):  # If not UT gen, connect as normal
-        starting_world_name: str = RAM.hub_environments[world.starting_world].name
+        starting_world_name: str = RAM.hub_environments[starting_homeworld].name
         starting_world_name = starting_world_name.replace("_", " ")
         starting_world: Region = hub_regions[starting_world_name.title()]
 
