@@ -1,12 +1,3 @@
-from typing import TYPE_CHECKING
-try:
-    from typing import final
-except ImportError:
-    if TYPE_CHECKING:
-        from typing import final
-    else:
-        from typing_extensions import final
-
 from BaseClasses import Location
 
 from .addresses import RAM
@@ -14,7 +5,6 @@ from .addresses import RAM
 BASE_SPYRO_LOCATION_ID = 1000
 
 
-@final
 class SpyroLocation(Location):
     game: str = "Spyro the Dragon"
 
