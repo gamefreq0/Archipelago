@@ -206,7 +206,7 @@ class SpyroWorld(World):
         for name in boss_items:
             self.itempool += [self.create_item(name)]
 
-        victory = self.create_item(goal_item[0])
+        victory: SpyroItem = self.create_item(goal_item[0])
 
         trap_percentage = 0.05
         total_unfilled_locations = len(self.multiworld.get_unfilled_locations(self.player))
