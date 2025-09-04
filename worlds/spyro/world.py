@@ -152,7 +152,14 @@ class SpyroWorld(World):
         self.goal = self.options.goal.get_option_name(self.options.goal.value).lower()
         self.itempool = []
         self.starting_world = self.options.starting_world.value
-        self.spyro_color = self.options.spyro_color.value
+        if self.options.spyro_color.value == "random":
+            random_rgb: bytes = self.random.randbytes(3)
+            temp_color: str = random_rgb.hex() + "FF"  # Ensure full alpha
+            self.spyro_color = temp_color
+            print(temp_color)
+            print(self.spyro_color)
+        else:
+            self.spyro_color = self.options.spyro_color.value
         self.death_link = self.options.death_link.value == 1
         self.portal_shuffle = self.options.portal_shuffle.value == 1
 
