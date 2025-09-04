@@ -2,7 +2,7 @@ from BaseClasses import Location
 
 from .addresses import RAM
 
-BASE_SPYRO_LOCATION_ID = 1000
+BASE_SPYRO_LOCATION_ID: int = 1000
 
 
 class SpyroLocation(Location):
@@ -126,13 +126,13 @@ for d in [
 level_gem_threshold_locations: list[str] = []
 
 for hub in RAM.hub_environments:
-    quarter_gems_hub = int(hub.total_gems / 4)
+    quarter_gems_hub: int = int(hub.total_gems / 4)
 
     for index in range(1, 5):
         level_gem_threshold_locations.append(f"{hub.name} {index * 25}% Gems")
 
     for level in hub.child_environments:
-        quarter_gems_level = int(level.total_gems / 4)
+        quarter_gems_level: int = int(level.total_gems / 4)
 
         for index in range(1, 5):
             level_gem_threshold_locations.append(f"{level.name} {index * 25}% Gems")
@@ -176,10 +176,10 @@ for d in [
     for item in d:
         location_list.append(item)
 
-location_id_to_name = dict(enumerate(location_list, start=BASE_SPYRO_LOCATION_ID))
-location_name_to_id = {v: k for k, v in location_id_to_name.items()}
+location_id_to_name: dict[int, str] = dict(enumerate(location_list, start=BASE_SPYRO_LOCATION_ID))
+location_name_to_id: dict[str, int] = {v: k for k, v in location_id_to_name.items()}
 
-flight_levels = {
+flight_levels: set[str] = {
     "Sunny Flight",
     "Night Flight",
     "Crystal Flight",
@@ -187,7 +187,7 @@ flight_levels = {
     "Icy Flight"
 }
 
-boss_levels = {
+boss_levels: set[str] = {
     "Toasty",
     "Doctor Shemp",
     "Blowhard",
@@ -196,7 +196,7 @@ boss_levels = {
     "Gnasty Gnorc"
 }
 
-meta_groups = {
+meta_groups: dict[str, set[str]] = {
     "Flight Levels": set(flight_levels),
     "Boss Levels": set(boss_levels)
 }
