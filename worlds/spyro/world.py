@@ -62,7 +62,6 @@ class SpyroWorld(World):
         self._death_link = 0
         self._starting_world = 0
         self._spyro_color = -1
-        self.itempool: list[SpyroItem] = []
         self.shuffled_entrance_pairings: list[tuple[str, str]] = []
         self.env_by_id: dict[int, Environment] = {}
         self.env_by_name: dict[str, Environment] = {}
@@ -161,7 +160,6 @@ class SpyroWorld(World):
     @override
     def generate_early(self) -> None:
         self.goal = self.options.goal.get_option_name(self.options.goal.value).lower()
-        self.itempool = []
         self.starting_world = self.options.starting_world.value
         if self.options.spyro_color.value == "random":
             random_rgb: bytes = self.random.randbytes(3)
@@ -194,17 +192,18 @@ class SpyroWorld(World):
     def create_items(self) -> None:
         """Mutate the multiworld itempool to include items for Spyro.
         """
+        itempool: list[SpyroItem] = []
         for name in homeworld_access:
             if name == RAM.hub_environments[self.starting_world].name:
                 self.push_precollected(self.create_item(name))
             else:
-                self.itempool += [self.create_item(name)]
+                itempool += [self.create_item(name)]
 
         for name in level_access:
-            self.itempool += [self.create_item(name)]
+            itempool += [self.create_item(name)]
 
         for name in boss_items:
-            self.itempool += [self.create_item(name)]
+            itempool += [self.create_item(name)]
 
         victory: SpyroItem = self.create_item(goal_item[0])
 
@@ -216,20 +215,20 @@ class SpyroWorld(World):
 
         for _ in range(trap_count):
             random_trap: str = self.multiworld.random.choice(trap_items)
-            self.itempool += [self.create_item(random_trap)]
+            itempool += [self.create_item(random_trap)]
 
         junk_count: int = total_unfilled_locations - total_filled_local_locations
 
         for _ in range(junk_count):
             random_filler: str = self.multiworld.random.choice(filler_items)
-            self.itempool += [self.create_item(random_filler)]
+            itempool += [self.create_item(random_filler)]
 
         if self.goal == "gnasty":
             self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
         elif self.goal == "loot":
             self.get_location("Gnasty's Loot Vortex").place_locked_item(victory)
 
-        self.multiworld.itempool += self.itempool
+        self.multiworld.itempool += itempool
 
     @override
     def connect_entrances(self) -> None:
