@@ -164,7 +164,7 @@ class SpyroClient(BizHawkClient):
             for env in self.env_by_id.values():
                 to_read_list.append((env.gem_counter, 2))
 
-            vortex_offset = len(to_read_list)
+            vortex_offset: int = len(to_read_list)
 
             for env in self.env_by_id.values():
                 to_read_list.append((env.vortex_pointer, 1))
@@ -172,19 +172,19 @@ class SpyroClient(BizHawkClient):
             for address, size in to_read_list:
                 batched_reads.append((address, size, "MainRAM"))
 
-            ram_data = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
+            ram_data: list[bytes] = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
 
-            recv_index = self.from_little_bytes(ram_data[0])
-            cur_game_state = self.from_little_bytes(ram_data[1])
-            cur_level_id = self.from_little_bytes(ram_data[2])
+            recv_index: int = self.from_little_bytes(ram_data[0])
+            cur_game_state: int = self.from_little_bytes(ram_data[1])
+            cur_level_id: int = self.from_little_bytes(ram_data[2])
             self.spyro_color = self.from_little_bytes(ram_data[3])
             self.gnasty_anim_flag = self.from_little_bytes(ram_data[4])
-            unlocked_worlds = ram_data[5]
-            balloonist_choice = self.from_little_bytes(ram_data[6])
+            unlocked_worlds: bytes = ram_data[5]
+            balloonist_choice: int = self.from_little_bytes(ram_data[6])
             self.total_gems_collected = self.from_little_bytes(ram_data[7])
-            did_portal_switch = self.from_little_bytes(ram_data[8])
-            spyro_anim = self.from_little_bytes(ram_data[9])
-            last_whirlwind_pointer = self.from_little_bytes(ram_data[10])
+            did_portal_switch: int = self.from_little_bytes(ram_data[8])
+            spyro_anim: int = self.from_little_bytes(ram_data[9])
+            last_whirlwind_pointer: int = self.from_little_bytes(ram_data[10])
 
             for env_id in self.env_by_id:
                 ram_data_offset = gem_counter_offset + internal_id_to_offset(env_id)
