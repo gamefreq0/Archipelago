@@ -159,7 +159,7 @@ class SpyroClient(BizHawkClient):
                 (RAM.last_touched_whirlwind, 3),
             ]
 
-            gem_counter_offset = len(to_read_list)
+            gem_counter_offset: int = len(to_read_list)
 
             for env in self.env_by_id.values():
                 to_read_list.append((env.gem_counter, 2))
