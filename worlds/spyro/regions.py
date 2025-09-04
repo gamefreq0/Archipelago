@@ -1,29 +1,22 @@
 """Holds create_regions override for AP to call during gen
 """
-try:
-    from typing import TYPE_CHECKING
-except ImportError:
-    from typing_extensions import TYPE_CHECKING
-
-from BaseClasses import Region, EntranceType, MultiWorld, Entrance
+from ..AutoWorld import World
 from .items import boss_items
 
 from .locations import SpyroLocation, location_name_to_id
 from .addresses import RAM, Environment
 
-if TYPE_CHECKING:
-    from .world import SpyroWorld
-
 ENTRANCE_IN: int = 0x0
 ENTRANCE_OUT: int = 0x1
 
 
-def create_regions(world: "SpyroWorld"):
+def create_regions(world: World, starting_homeworld: int) -> None:
     """Create regions, connect static regions, create dangling entrances for generic ER
     Mutates multiworld data to add regions
 
     Args:
         world: The SpyroWorld to create the logical regions for
+        starting_homeworld: The index of the hub to start in
     """
     player: int = world.player
     multiworld: MultiWorld = world.multiworld
