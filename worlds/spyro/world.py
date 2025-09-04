@@ -401,7 +401,7 @@ class SpyroWorld(World):
         entrances: dict[str, Entrance] = self.multiworld.regions.entrance_cache[self.player]
 
         starting_homeworld_index: int = cast(int, slot_data["starting_world"])
-        starting_homeworld = RAM.hub_environments[starting_homeworld_index].name
+        starting_homeworld: str = RAM.hub_environments[starting_homeworld_index].name
         starting_region: Region = regions[starting_homeworld]
         menu: Region = regions["Menu"]
 
