@@ -187,13 +187,13 @@ class SpyroClient(BizHawkClient):
             last_whirlwind_pointer: int = self.from_little_bytes(ram_data[10])
 
             for env_id in self.env_by_id:
-                ram_data_offset = gem_counter_offset + internal_id_to_offset(env_id)
-                self.gem_counts[env_id] = self.from_little_bytes(ram_data[ram_data_offset])
+                ram_data_offset_gems: int = gem_counter_offset + internal_id_to_offset(env_id)
+                self.gem_counts[env_id] = self.from_little_bytes(ram_data[ram_data_offset_gems])
 
             for env_id, env in self.env_by_id.items():
                 if not env.is_hub():
-                    ram_data_offset = vortex_offset + internal_id_to_offset(env_id)
-                    self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset])
+                    ram_data_offset_vortexes: int = vortex_offset + internal_id_to_offset(env_id)
+                    self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset_vortexes])
 
             await self.process_locations(cur_game_state, cur_level_id, ctx)
             self.update_spyro_color(self.spyro_color, cur_game_state)
