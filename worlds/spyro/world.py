@@ -154,7 +154,7 @@ class SpyroWorld(World):
         self.starting_world = self.options.starting_world.value
         if self.options.spyro_color.value == "random":
             random_rgb: bytes = self.random.randbytes(3)
-            temp_color: str = random_rgb.hex() + "FF"  # Ensure full alpha
+            temp_color: str = random_rgb.hex() + "ff"  # Ensure full alpha
             self.spyro_color = temp_color
             print(temp_color)
             print(self.spyro_color)
