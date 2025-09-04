@@ -338,6 +338,30 @@ class SpyroWorld(World):
             "spyro_color": self.spyro_color,
         }
 
+    def lookup_shuffled_entrance(self, level_name: str) -> str:
+        """Given the name of a level, find the name of the portal that leads to it
+
+        Args:
+            level_name: The name of the level to find the entrance for
+
+        Returns:
+            The name of the portal that leads to the given level
+        """
+        entrance_portal_name: str = ""
+        unstripped_portal_name: str = ""
+
+        # Find the mapped fly-in to the given level, save the mapped portal for later
+        for pairing in self.shuffled_entrance_pairings:
+            if (level_name in pairing[0]) and ("Fly-in" in pairing[0]):
+                unstripped_portal_name = pairing[1]
+
+        # Find the level that matches the portal name from earlier, save for returning
+        for env_name in self.env_by_name:
+            if env_name in unstripped_portal_name:
+                entrance_portal_name = env_name
+
+        return entrance_portal_name
+
     def interpret_slot_data(self, slot_data: dict[str, Any]) -> None:
         """Method called by UT, where we can handle deferred logic stuff
 
