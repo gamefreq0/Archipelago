@@ -20,6 +20,7 @@ ENTRANCE_OUT: int = 0x1
 
 def create_regions(world: "SpyroWorld"):
     """Create regions, connect static regions, create dangling entrances for generic ER
+    Mutates multiworld data to add regions
 
     Args:
         world: The SpyroWorld to create the logical regions for
