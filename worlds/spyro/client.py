@@ -583,7 +583,7 @@ class SpyroClient(BizHawkClient):
         """
         if self.slot_data_spyro_color != b'':
             if color.to_bytes(4, "little") != self.slot_data_spyro_color:
-                color = self.from_little_bytes(self.slot_data_spyro_color)
+                new_color: int = self.from_little_bytes(self.slot_data_spyro_color)
                 if game_state in (
                     RAM.GameStates.GAMEPLAY,
                     RAM.GameStates.BALLOONIST,
@@ -596,7 +596,7 @@ class SpyroClient(BizHawkClient):
                     RAM.GameStates.TITLE_SCREEN
                 ):
                     self.to_write_lists[game_state].append(
-                        (RAM.spyro_color_filter, color.to_bytes(4, "little"))
+                        (RAM.spyro_color_filter, new_color.to_bytes(4, "little"))
                     )
 
         return
