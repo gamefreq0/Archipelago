@@ -242,8 +242,8 @@ class SpyroWorld(World):
                 elif self.goal == "loot":
                     goal_level = "Gnasty's Loot"
 
-                gnasty_hub = self.get_region("Gnasty's World")
-                goal_level_region = self.get_region(goal_level)
+                gnasty_hub: Region = self.get_region("Gnasty's World")
+                goal_level_region: Region = self.get_region(goal_level)
 
                 dangling_entrance_hub: Entrance = Entrance(self.player, "")
                 dangling_entrance_level: Entrance = Entrance(self.player, "")
