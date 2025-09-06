@@ -205,6 +205,10 @@ class SpyroClient(BizHawkClient):
                 self.set_starting_world()
             else:  # We're hopefully in a valid level here
 
+                if self.cur_game_state.value() == RAM.GameStates.TITLE_SCREEN:
+                    # We're on the title screen after quitting to menu? Seems cur_level_id doesn't change when doing so
+                    self.set_starting_world()
+
                 await self.do_portal_shuffle_changes(
                     self.did_portal_switch.value(),
                     self.spyro_anim.value(),
