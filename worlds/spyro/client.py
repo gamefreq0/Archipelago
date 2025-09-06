@@ -238,8 +238,11 @@ class SpyroClient(BizHawkClient):
             for game_state, write_list in self.to_write_lists.items():
                 await self.write_on_state(write_list, game_state.to_bytes(1, byteorder="little"), ctx)
 
-        except bizhawk.RequestFailedError as exc:
-            raise exc  # Was passing here before, revert if this causes issues
+        except bizhawk.RequestFailedError:
+            # If we don't swallow this exception, we get an ugly exit when BizHawk disconnects from the client
+            # Mostly noticeable if we close BizHawk or the connector before the client. Yes, I'm not enthused about this
+            # No, I'm not dealing with bug reports from people if we do this the "proper way"
+            pass
 
         return
 
