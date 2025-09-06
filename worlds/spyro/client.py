@@ -26,6 +26,25 @@ logger: logging.Logger = logging.getLogger("Client")
 CLIENT_VERSION: str = "v0.3.3"  # TODO: Remove before PR to main
 
 
+class RamReads():
+    """Class for holding data related to reads from BizHawk memory
+    """
+
+    def __init__(self, address: int, byte_count: int) -> None:
+        self.address: int = address
+        self.byte_count: int = byte_count
+        self.raw_data: bytes = b''
+        return
+
+    def value(self) -> int:
+        """Return the value of the read data intrepreted as an int from a little-endian representation
+
+        Returns:
+            Little-endian int representation of the raw data
+        """
+        return int.from_bytes(self.raw_data, byteorder="little")
+
+
 class SpyroClient(BizHawkClient):
     game: ClassVar[str] = "Spyro the Dragon"
     system: ClassVar[str | tuple[str]] = "PSX"
