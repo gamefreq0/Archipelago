@@ -569,19 +569,20 @@ class SpyroClient(BizHawkClient):
             ctx: BizHawkClientContext
         """
         if cur_level_id != 0:  # Hopefully prevents weirdness early in game load
+            env: Environment = self.env_by_id[cur_level_id]
             if game_state in (RAM.GameStates.GAMEPLAY, RAM.GameStates.FLIGHT_MENU):
                 # Send location on defeating Gnasty
-                if self.env_by_id[cur_level_id].name == "Gnasty Gnorc":
+                if env.name == "Gnasty Gnorc":
                     if self.gnasty_anim_flag.value() == RAM.GNASTY_DEFEATED:
                         await self.send_location_once("Defeated Gnasty Gnorc", ctx)
 
                 # Send 1/4 gem threshold checks
-                for env_id, env in self.env_by_id.items():
-                    quarter_count: int = int(env.total_gems / 4)
+                for env_id, env_gems in self.env_by_id.items():
+                    quarter_count: int = int(env_gems.total_gems / 4)
 
                     for index in range(1, 5):
                         if self.gem_counts[internal_id_to_offset(env_id)].value() >= (quarter_count * index):
-                            await self.send_location_once(f"{env.name} {25 * index}% Gems", ctx)
+                            await self.send_location_once(f"{env_gems.name} {25 * index}% Gems", ctx)
 
                 # Send 500 increment total gem threhshold checks
                 for gem_threshold in range(500, total_treasure + 1, 500):
