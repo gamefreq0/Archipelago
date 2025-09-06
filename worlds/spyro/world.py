@@ -27,7 +27,7 @@ from .rules import set_rules
 from .addresses import RAM, Environment
 
 
-class _SlotDataTypes(TypedDict):
+class SlotDataTypes(TypedDict):
     goal: str
     starting_world: int
     portal_shuffle: int
@@ -397,7 +397,7 @@ class SpyroWorld(World):
 
         return entrance_portal_name
 
-    def interpret_slot_data(self, slot_data: _SlotDataTypes) -> None:
+    def interpret_slot_data(self, slot_data: SlotDataTypes) -> None:
         """Method called by UT, where we can handle deferred logic stuff
 
         Args:

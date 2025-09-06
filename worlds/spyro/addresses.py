@@ -23,8 +23,6 @@ class Environment():
     child_environments: list["Environment"]
     portal_surface_types: list[int]
     portal_dest_level_ids: list[int]
-    VORTEX_BASE_POINTER: int = 0x7a6a8
-    vortex_pointer: int
     vortex_moby_pointer: int
 
     def __init__(self, name: str, internal_id: int, has_vortex: bool = False) -> None:
@@ -41,7 +39,6 @@ class Environment():
         self.child_environments = []
         self.portal_surface_types = []
         self.portal_dest_level_ids = []
-        self.vortex_pointer = self.VORTEX_BASE_POINTER + internal_id_to_offset(self.internal_id)
         self.vortex_moby_pointer = 0
 
     def is_hub(self) -> bool:

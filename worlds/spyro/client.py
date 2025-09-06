@@ -4,12 +4,12 @@ import struct
 from typing import TYPE_CHECKING
 
 try:
-    from typing import override, ClassVar, cast
+    from typing import override, ClassVar
 except ImportError:
     if TYPE_CHECKING:
-        from typing import override, ClassVar, cast
+        from typing import override, ClassVar
     else:
-        from typing_extensions import override, ClassVar, cast
+        from typing_extensions import override, ClassVar
 
 from NetUtils import ClientStatus, NetworkItem
 import worlds._bizhawk as bizhawk
@@ -18,12 +18,32 @@ from worlds._bizhawk.client import BizHawkClient
 from .addresses import RAM, menu_lookup, Environment, internal_id_to_offset
 from .locations import location_name_to_id, total_treasure
 from .items import item_id_to_name, boss_items, homeworld_access, goal_item
+from .world import SlotDataTypes
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 
 logger: logging.Logger = logging.getLogger("Client")
-CLIENT_VERSION: str = "v0.3.3"  # TODO: Remove before PR to main
+CLIENT_VERSION: str = "v0.3.5"  # TODO: Remove before PR to main
+
+
+class RamReads():
+    """Class for holding data related to reads from BizHawk memory
+    """
+
+    def __init__(self, address: int, byte_count: int) -> None:
+        self.address: int = address
+        self.byte_count: int = byte_count
+        self.raw_data: bytes = b''
+        return
+
+    def value(self) -> int:
+        """Return the value of the read data intrepreted as an int from a little-endian representation
+
+        Returns:
+            Little-endian int representation of the raw data
+        """
+        return int.from_bytes(self.raw_data, byteorder="little")
 
 
 class SpyroClient(BizHawkClient):
@@ -50,26 +70,28 @@ class SpyroClient(BizHawkClient):
     ap_unlocked_worlds: set[str] = set()
     boss_items: set[str] = set()
 
-    gem_counts: dict[int, int] = {}
-    """Keeps track of gem counts, indexed by level ID"""
+    recv_index: RamReads = RamReads(RAM.last_received_archipelago_id, 4)
+    """Index of last processed AP item"""
 
-    vortexes_reached: dict[int, int] = {}
-    """Keeps track of reached vortices, indexed by level ID"""
+    cur_game_state: RamReads = RamReads(RAM.cur_game_state, 1)
+    cur_level_id: RamReads = RamReads(RAM.cur_level_id, 1)
+    spyro_color: RamReads = RamReads(RAM.spyro_color_filter, 4)
+    gnasty_anim_flag: RamReads = RamReads(RAM.gnasty_anim_flag, 1)
+    unlocked_worlds: RamReads = RamReads(RAM.unlocked_worlds, 6)
+    balloonist_menu_choice: RamReads = RamReads(RAM.balloonist_menu_choice, 1)
+    total_gems_collected: RamReads = RamReads(RAM.total_gem_count, 4)
+    did_portal_switch: RamReads = RamReads(RAM.switched_portal_dest, 1)
+    spyro_anim: RamReads = RamReads(RAM.spyro_cur_animation, 1)
+    last_whirlwind_pointer: RamReads = RamReads(RAM.last_touched_whirlwind, 3)
+
+    gem_counts: list[RamReads] = []
+    """Keeps track of gem counts"""
 
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
-    gnasty_anim_flag: int = 0
-    """Keeps track of Gnasty Gnorc's current animation"""
-
-    total_gems_collected: int = 0
-    """Keeps track of the total treasure obtained by the player"""
-
     to_write_lists: dict[int, list[tuple[int, bytes]]] = {}
     """A dict of lists of (address, bytes) to write, indexed by the gamestate to guard the writes against"""
-
-    spyro_color: int
-    """Spyro's RGBA tint as an int"""
 
     portal_shuffle: bool = False
     """Whether portal shuffle is on"""
@@ -83,12 +105,13 @@ class SpyroClient(BizHawkClient):
     did_setup: bool = False
     """Whether we've processed slot data"""
 
-    # Set up stuff for tracking later
-    env: Environment
-    for env in env_by_id.values():
-        gem_counts[env.internal_id] = 0
-        if not env.is_hub():
-            portal_accesses[env.name] = False
+    def __init__(self) -> None:
+        for env in self.env_by_id.values():
+            self.gem_counts.append(RamReads(env.gem_counter, 2))
+            if not env.is_hub():
+                self.portal_accesses[env.name] = False
+
+        return
 
     @override
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
@@ -145,75 +168,47 @@ class SpyroClient(BizHawkClient):
         await self.process_received_items(ctx.items_received, ctx)
 
         try:
-            to_read_list: list[tuple[int, int]] = [
-                (RAM.last_received_archipelago_id, 4),
-                (RAM.cur_game_state, 1),
-                (RAM.cur_level_id, 1),
-                (RAM.spyro_color_filter, 4),
-                (RAM.gnasty_anim_flag, 1),
-                (RAM.unlocked_worlds, 6),
-                (RAM.balloonist_menu_choice, 1),
-                (RAM.total_gem_count, 4),
-                (RAM.switched_portal_dest, 1),
-                (RAM.spyro_cur_animation, 1),
-                (RAM.last_touched_whirlwind, 3),
-            ]
+            to_read_list: list[RamReads] = []
+            to_read_list.append(self.recv_index)
+            to_read_list.append(self.cur_game_state)
+            to_read_list.append(self.cur_level_id)
+            to_read_list.append(self.spyro_color)
+            to_read_list.append(self.gnasty_anim_flag)
+            to_read_list.append(self.unlocked_worlds)
+            to_read_list.append(self.balloonist_menu_choice)
+            to_read_list.append(self.total_gems_collected)
+            to_read_list.append(self.did_portal_switch)
+            to_read_list.append(self.spyro_anim)
+            to_read_list.append(self.last_whirlwind_pointer)
+            to_read_list.extend(self.gem_counts)
 
-            gem_counter_offset: int = len(to_read_list)
-
-            for env in self.env_by_id.values():
-                to_read_list.append((env.gem_counter, 2))
-
-            vortex_offset: int = len(to_read_list)
-
-            for env in self.env_by_id.values():
-                to_read_list.append((env.vortex_pointer, 1))
-
-            for address, size in to_read_list:
-                batched_reads.append((address, size, "MainRAM"))
+            for ram_item in to_read_list:
+                batched_reads.append((ram_item.address, ram_item.byte_count, "MainRAM"))
 
             ram_data: list[bytes] = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
 
-            recv_index: int = self.from_little_bytes(ram_data[0])
-            cur_game_state: int = self.from_little_bytes(ram_data[1])
-            cur_level_id: int = self.from_little_bytes(ram_data[2])
-            self.spyro_color = self.from_little_bytes(ram_data[3])
-            self.gnasty_anim_flag = self.from_little_bytes(ram_data[4])
-            unlocked_worlds: bytes = ram_data[5]
-            balloonist_choice: int = self.from_little_bytes(ram_data[6])
-            self.total_gems_collected = self.from_little_bytes(ram_data[7])
-            did_portal_switch: int = self.from_little_bytes(ram_data[8])
-            spyro_anim: int = self.from_little_bytes(ram_data[9])
-            last_whirlwind_pointer: int = self.from_little_bytes(ram_data[10])
+            for ram_item in to_read_list:
+                ram_item.raw_data = ram_data.pop(0)
 
-            for env_id in self.env_by_id:
-                ram_data_offset_gems: int = gem_counter_offset + internal_id_to_offset(env_id)
-                self.gem_counts[env_id] = self.from_little_bytes(ram_data[ram_data_offset_gems])
+            await self.process_locations(self.cur_game_state.value(), self.cur_level_id.value(), ctx)
+            self.update_spyro_color(self.spyro_color.value(), self.cur_game_state.value())
+            self.set_internal_worlds_unlocked(self.unlocked_worlds.raw_data)
+            self.adjust_level_names(self.cur_game_state.value(), ctx)
+            self.reset_portal_switch(self.did_portal_switch.value(), self.cur_level_id.value())
 
-            for env_id, env in self.env_by_id.items():
-                if not env.is_hub():
-                    ram_data_offset_vortexes: int = vortex_offset + internal_id_to_offset(env_id)
-                    self.vortexes_reached[env_id] = self.from_little_bytes(ram_data[ram_data_offset_vortexes])
-
-            await self.process_locations(cur_game_state, cur_level_id, ctx)
-            self.update_spyro_color(self.spyro_color, cur_game_state)
-            self.set_internal_worlds_unlocked(unlocked_worlds)
-            self.adjust_level_names(cur_game_state, ctx)
-            self.reset_portal_switch(did_portal_switch, cur_level_id)
-
-            if cur_level_id == 0:  # We're on the title screen or in early load
+            if self.cur_level_id.value() == 0:  # We're on the title screen or in early load
                 self.set_starting_world()
             else:  # We're hopefully in a valid level here
 
                 await self.do_portal_shuffle_changes(
-                    did_portal_switch,
-                    spyro_anim,
-                    cur_level_id,
-                    last_whirlwind_pointer,
+                    self.did_portal_switch.value(),
+                    self.spyro_anim.value(),
+                    self.cur_level_id.value(),
+                    self.last_whirlwind_pointer.value(),
                     ctx
                 )
 
-                env: Environment = self.env_by_id[cur_level_id]
+                env: Environment = self.env_by_id[self.cur_level_id.value()]
 
                 # Make Nestor skippable
                 if env.name == "Artisans":
@@ -226,13 +221,16 @@ class SpyroClient(BizHawkClient):
                 if env.is_hub():
                     self.override_head_checks(env)
                     self.do_hub_portal_mods(env)
-                    self.do_balloonist_mods(env, balloonist_choice)
+                    self.do_balloonist_mods(env, self.balloonist_menu_choice.value())
 
             for game_state, write_list in self.to_write_lists.items():
                 await self.write_on_state(write_list, game_state.to_bytes(1, byteorder="little"), ctx)
 
-        except bizhawk.RequestFailedError as exc:
-            raise exc  # Was passing here before, revert if this causes issues
+        except bizhawk.RequestFailedError:
+            # If we don't swallow this exception, we get an ugly exit when BizHawk disconnects from the client
+            # Mostly noticeable if we close BizHawk or the connector before the client. Yes, I'm not enthused about this
+            # No, I'm not dealing with bug reports from people if we do this the "proper way"
+            pass
 
         return
 
@@ -244,17 +242,26 @@ class SpyroClient(BizHawkClient):
         """
         logger.info("Spyro Client version %s loaded", CLIENT_VERSION)  # TODO: Remove this before PR to main
         if ctx.slot_data is not None:
+            slot_data: SlotDataTypes = {
+                "goal": "invalid",
+                "starting_world": -1,
+                "entrances": [],
+                "portal_shuffle": -1,
+                "spyro_color": 0xffffff00
+            }
+            for key, value in ctx.slot_data.items():
+                slot_data[key] = value
             # Read in Spyro color from slot data
             # TODO: Add in datastorage bit here so the color can be modified during gameplay
             color_value: int
-            color_value = cast(int, ctx.slot_data["spyro_color"])
+            color_value = slot_data["spyro_color"]
             self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
 
             # Read in goal from slot data
-            self.goal = cast(str, ctx.slot_data["goal"])
+            self.goal = slot_data["goal"]
 
             # If portal shuffle is on, read in entrance mappings from slot data and store locally
-            entrance_data: list[tuple[str, str]] = cast(list[tuple[str, str]], ctx.slot_data["entrances"])
+            entrance_data: list[tuple[str, str]] = slot_data["entrances"]
             if len(entrance_data) > 0:
                 self.portal_shuffle = True
 
@@ -265,7 +272,7 @@ class SpyroClient(BizHawkClient):
                 self.portal_shuffle = False
 
             # Read in starting homeworld from slot data
-            self.starting_world = cast(int, ctx.slot_data["starting_world"])
+            self.starting_world = slot_data["starting_world"]
 
         self.did_setup = True
         return
@@ -556,20 +563,20 @@ class SpyroClient(BizHawkClient):
             if game_state == RAM.GameStates.GAMEPLAY:
                 # Send location on defeating Gnasty
                 if self.env_by_id[cur_level_id].name == "Gnasty Gnorc":
-                    if self.gnasty_anim_flag == RAM.GNASTY_DEFEATED:
+                    if self.gnasty_anim_flag.value() == RAM.GNASTY_DEFEATED:
                         await self.send_location_once("Defeated Gnasty Gnorc", ctx)
 
                 # Send 1/4 gem threshold checks
-                for env in self.env_by_id.values():
+                for env_id, env in self.env_by_id.items():
                     quarter_count: int = int(env.total_gems / 4)
 
                     for index in range(1, 5):
-                        if self.gem_counts[env.internal_id] >= (quarter_count * index):
+                        if self.gem_counts[internal_id_to_offset(env_id)].value() >= (quarter_count * index):
                             await self.send_location_once(f"{env.name} {25 * index}% Gems", ctx)
 
                 # Send 500 increment total gem threhshold checks
                 for gem_threshold in range(500, total_treasure + 1, 500):
-                    if self.total_gems_collected >= gem_threshold:
+                    if self.total_gems_collected.value() >= gem_threshold:
                         await self.send_location_once(f"{gem_threshold} Gems", ctx)
 
         return

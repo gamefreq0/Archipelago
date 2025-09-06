@@ -1,17 +1,10 @@
 from BaseClasses import CollectionState
+from ..AutoWorld import World
 from .locations import total_treasure
 from .addresses import RAM
 
-try:
-    from typing import TYPE_CHECKING
-except ImportError:
-    from typing_extensions import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from .world import SpyroWorld
-
-
-def set_rules(world: "SpyroWorld"):
+def set_rules(world: World):
     world.multiworld.completion_condition[world.player] = lambda state: state.has("Victory", world.player, 1)
     for gem_threshold_count in range(500, total_treasure + 1, 500):
         gem_threshold_location = world.get_location(f"{gem_threshold_count} Gems")
@@ -20,7 +13,7 @@ def set_rules(world: "SpyroWorld"):
         )
 
 
-def can_reach_gems_minimum(world: "SpyroWorld", state: CollectionState, min_gems: int) -> bool:
+def can_reach_gems_minimum(world: World, state: CollectionState, min_gems: int) -> bool:
     """Returns whether the player can access enough gems to clear a given threshold
 
     Args:
@@ -34,7 +27,7 @@ def can_reach_gems_minimum(world: "SpyroWorld", state: CollectionState, min_gems
     return total_reachable_gems(world, state) >= min_gems
 
 
-def total_reachable_gems(world: "SpyroWorld", state: CollectionState) -> int:
+def total_reachable_gems(world: World, state: CollectionState) -> int:
     """Returns the total value of gems that can be reached for a given CollectionState
 
     Args:
