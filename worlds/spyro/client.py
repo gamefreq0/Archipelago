@@ -168,6 +168,7 @@ class SpyroClient(BizHawkClient):
         await self.process_received_items(ctx.items_received, ctx)
 
         try:
+            # Build up a list of RAM reads to request from BizHawk
             to_read_list: list[RamReads] = []
             to_read_list.append(self.recv_index)
             to_read_list.append(self.cur_game_state)
@@ -182,11 +183,15 @@ class SpyroClient(BizHawkClient):
             to_read_list.append(self.last_whirlwind_pointer)
             to_read_list.extend(self.gem_counts)
 
+            # Format the list in the way BizHawk expects
             for ram_item in to_read_list:
                 batched_reads.append((ram_item.address, ram_item.byte_count, "MainRAM"))
 
+            # Request the reads from BizHawk
             ram_data: list[bytes] = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
 
+            # Take the results from BizHawk and store them in their corresponding variables, in the order the list was
+            # initially built. No more being careful to modify two lists in sync, Python can just handle it for us.
             for ram_item in to_read_list:
                 ram_item.raw_data = ram_data.pop(0)
 
