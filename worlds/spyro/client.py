@@ -87,6 +87,12 @@ class SpyroClient(BizHawkClient):
     gem_counts: list[RamReads] = []
     """Keeps track of gem counts"""
 
+    dragons: dict[int, list[RamReads]] = {}
+    """Tracks rescued dragons, indexed by level ID"""
+
+    eggs: dict[int, list[RamReads]] = {}
+    """Tracks collected eggs, indexed by level ID"""
+
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
 
@@ -106,8 +112,18 @@ class SpyroClient(BizHawkClient):
     """Whether we've processed slot data"""
 
     def __init__(self) -> None:
-        for env in self.env_by_id.values():
+        for env_id, env in self.env_by_id.items():
             self.gem_counts.append(RamReads(env.gem_counter, 2))
+
+            self.dragons[env_id] = []
+            self.eggs[env_id] = []
+
+            for dragon_data in env.dragons.values():
+                self.dragons[env_id].append(RamReads(dragon_data[0], 1))
+
+            for egg_data in env.eggs.values():
+                self.eggs[env_id].append(RamReads(egg_data[0], 1))
+
             if not env.is_hub():
                 self.portal_accesses[env.name] = False
 
@@ -182,6 +198,12 @@ class SpyroClient(BizHawkClient):
             to_read_list.append(self.spyro_anim)
             to_read_list.append(self.last_whirlwind_pointer)
             to_read_list.extend(self.gem_counts)
+
+            for dragon_ramreads in self.dragons.values():
+                to_read_list.extend(dragon_ramreads)
+
+            for egg_ramreads in self.eggs.values():
+                to_read_list.extend(egg_ramreads)
 
             # Format the list in the way BizHawk expects
             for ram_item in to_read_list:
@@ -588,6 +610,21 @@ class SpyroClient(BizHawkClient):
                 for gem_threshold in range(500, total_treasure + 1, 500):
                     if self.total_gems_collected.value() >= gem_threshold:
                         await self.send_location_once(f"{gem_threshold} Gems", ctx)
+
+                # Send egg locations as needed
+                for egg in self.eggs[env.internal_id]:
+                    for egg_name in env.eggs:
+                        if egg.address == env.eggs[egg_name][0]:
+                            if egg.value() & env.eggs[egg_name][1]:
+                                await self.send_location_once(f"{env.name} {egg_name}", ctx)
+
+            elif game_state == RAM.GameStates.DRAGON_CUTSCENE:
+                # Send dragon locations as needed
+                for dragon in self.dragons[env.internal_id]:
+                    for dragon_name in env.dragons:
+                        if dragon.address == env.dragons[dragon_name][0]:
+                            if dragon.value() & env.dragons[dragon_name][1]:
+                                await self.send_location_once(f"{env.name} {dragon_name}", ctx)
 
         return
 
