@@ -4,12 +4,12 @@ import struct
 from typing import TYPE_CHECKING
 
 try:
-    from typing import override, ClassVar, cast
+    from typing import override, ClassVar
 except ImportError:
     if TYPE_CHECKING:
-        from typing import override, ClassVar, cast
+        from typing import override, ClassVar
     else:
-        from typing_extensions import override, ClassVar, cast
+        from typing_extensions import override, ClassVar
 
 from NetUtils import ClientStatus, NetworkItem
 import worlds._bizhawk as bizhawk
@@ -18,6 +18,7 @@ from worlds._bizhawk.client import BizHawkClient
 from .addresses import RAM, menu_lookup, Environment, internal_id_to_offset
 from .locations import location_name_to_id, total_treasure
 from .items import item_id_to_name, boss_items, homeworld_access, goal_item
+from .world import SlotDataTypes
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -250,17 +251,26 @@ class SpyroClient(BizHawkClient):
         """
         logger.info("Spyro Client version %s loaded", CLIENT_VERSION)  # TODO: Remove this before PR to main
         if ctx.slot_data is not None:
+            slot_data: SlotDataTypes = {
+                "goal": "invalid",
+                "starting_world": -1,
+                "entrances": [],
+                "portal_shuffle": -1,
+                "spyro_color": 0xffffff00
+            }
+            for key, value in ctx.slot_data.items():
+                slot_data[key] = value
             # Read in Spyro color from slot data
             # TODO: Add in datastorage bit here so the color can be modified during gameplay
             color_value: int
-            color_value = cast(int, ctx.slot_data["spyro_color"])
+            color_value = slot_data["spyro_color"]
             self.slot_data_spyro_color = color_value.to_bytes(4, byteorder="big")
 
             # Read in goal from slot data
-            self.goal = cast(str, ctx.slot_data["goal"])
+            self.goal = slot_data["goal"]
 
             # If portal shuffle is on, read in entrance mappings from slot data and store locally
-            entrance_data: list[tuple[str, str]] = cast(list[tuple[str, str]], ctx.slot_data["entrances"])
+            entrance_data: list[tuple[str, str]] = slot_data["entrances"]
             if len(entrance_data) > 0:
                 self.portal_shuffle = True
 
@@ -271,7 +281,7 @@ class SpyroClient(BizHawkClient):
                 self.portal_shuffle = False
 
             # Read in starting homeworld from slot data
-            self.starting_world = cast(int, ctx.slot_data["starting_world"])
+            self.starting_world = slot_data["starting_world"]
 
         self.did_setup = True
         return
