@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 
 logger: logging.Logger = logging.getLogger("Client")
-CLIENT_VERSION: str = "v0.3.3"  # TODO: Remove before PR to main
+CLIENT_VERSION: str = "v0.3.5"  # TODO: Remove before PR to main
 
 
 class RamReads():
