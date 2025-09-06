@@ -569,7 +569,7 @@ class SpyroClient(BizHawkClient):
             ctx: BizHawkClientContext
         """
         if cur_level_id != 0:  # Hopefully prevents weirdness early in game load
-            if game_state == RAM.GameStates.GAMEPLAY:
+            if game_state in (RAM.GameStates.GAMEPLAY, RAM.GameStates.FLIGHT_MENU):
                 # Send location on defeating Gnasty
                 if self.env_by_id[cur_level_id].name == "Gnasty Gnorc":
                     if self.gnasty_anim_flag.value() == RAM.GNASTY_DEFEATED:
