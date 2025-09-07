@@ -134,6 +134,8 @@ class SpyroWorld(World):
         else:
             self._death_link = 0
 
+        return
+
     @property
     def starting_world(self) -> int:
         """Which world the player starts in
