@@ -27,8 +27,9 @@ logger: logging.Logger = logging.getLogger("Client")
 CLIENT_VERSION: str = "v0.4.0"  # TODO: Remove before PR to main
 
 
-class RamReads():
-    """Class for holding data related to reads from BizHawk memory
+class RamRead():
+    """Class for holding data related to reads from BizHawk memory. Tracks address, byte count, and the data at address
+    in BizHawk's memory.
     """
 
     def __init__(self, address: int, byte_count: int) -> None:
@@ -70,27 +71,27 @@ class SpyroClient(BizHawkClient):
     ap_unlocked_worlds: set[str] = set()
     boss_items: set[str] = set()
 
-    recv_index: RamReads = RamReads(RAM.last_received_archipelago_id, 4)
+    recv_index: RamRead = RamRead(RAM.last_received_archipelago_id, 4)
     """Index of last processed AP item"""
 
-    cur_game_state: RamReads = RamReads(RAM.cur_game_state, 1)
-    cur_level_id: RamReads = RamReads(RAM.cur_level_id, 1)
-    spyro_color: RamReads = RamReads(RAM.spyro_color_filter, 4)
-    gnasty_anim_flag: RamReads = RamReads(RAM.gnasty_anim_flag, 1)
-    unlocked_worlds: RamReads = RamReads(RAM.unlocked_worlds, 6)
-    balloonist_menu_choice: RamReads = RamReads(RAM.balloonist_menu_choice, 1)
-    total_gems_collected: RamReads = RamReads(RAM.total_gem_count, 4)
-    did_portal_switch: RamReads = RamReads(RAM.switched_portal_dest, 1)
-    spyro_anim: RamReads = RamReads(RAM.spyro_cur_animation, 1)
-    last_whirlwind_pointer: RamReads = RamReads(RAM.last_touched_whirlwind, 3)
+    cur_game_state: RamRead = RamRead(RAM.cur_game_state, 1)
+    cur_level_id: RamRead = RamRead(RAM.cur_level_id, 1)
+    spyro_color: RamRead = RamRead(RAM.spyro_color_filter, 4)
+    gnasty_anim_flag: RamRead = RamRead(RAM.gnasty_anim_flag, 1)
+    unlocked_worlds: RamRead = RamRead(RAM.unlocked_worlds, 6)
+    balloonist_menu_choice: RamRead = RamRead(RAM.balloonist_menu_choice, 1)
+    total_gems_collected: RamRead = RamRead(RAM.total_gem_count, 4)
+    did_portal_switch: RamRead = RamRead(RAM.switched_portal_dest, 1)
+    spyro_anim: RamRead = RamRead(RAM.spyro_cur_animation, 1)
+    last_whirlwind_pointer: RamRead = RamRead(RAM.last_touched_whirlwind, 3)
 
-    gem_counts: list[RamReads] = []
+    gem_counts: list[RamRead] = []
     """Keeps track of gem counts"""
 
-    dragons: dict[int, list[RamReads]] = {}
+    dragons: dict[int, list[RamRead]] = {}
     """Tracks rescued dragons, indexed by level ID"""
 
-    eggs: dict[int, list[RamReads]] = {}
+    eggs: dict[int, list[RamRead]] = {}
     """Tracks collected eggs, indexed by level ID"""
 
     portal_accesses: dict[str, bool] = {}
@@ -113,16 +114,16 @@ class SpyroClient(BizHawkClient):
 
     def __init__(self) -> None:
         for env_id, env in self.env_by_id.items():
-            self.gem_counts.append(RamReads(env.gem_counter, 2))
+            self.gem_counts.append(RamRead(env.gem_counter, 2))
 
             self.dragons[env_id] = []
             self.eggs[env_id] = []
 
             for dragon_data in env.dragons.values():
-                self.dragons[env_id].append(RamReads(dragon_data[0], 1))
+                self.dragons[env_id].append(RamRead(dragon_data[0], 1))
 
             for egg_data in env.eggs.values():
-                self.eggs[env_id].append(RamReads(egg_data[0], 1))
+                self.eggs[env_id].append(RamRead(egg_data[0], 1))
 
             if not env.is_hub():
                 self.portal_accesses[env.name] = False
@@ -184,7 +185,7 @@ class SpyroClient(BizHawkClient):
 
         try:
             # Build up a list of RAM reads to request from BizHawk
-            to_read_list: list[RamReads] = []
+            to_read_list: list[RamRead] = []
             to_read_list.append(self.recv_index)
             to_read_list.append(self.cur_game_state)
             to_read_list.append(self.cur_level_id)
