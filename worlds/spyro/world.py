@@ -201,6 +201,8 @@ class SpyroWorld(World):
         self.death_link = self.options.death_link.value == 1
         self.portal_shuffle = self.options.portal_shuffle.value == 1
 
+        return
+
     @override
     def create_regions(self) -> None:
         return create_regions(self, self.starting_world)
