@@ -409,8 +409,8 @@ class RAM:
     hub_environments[2].child_environments[2].dragons["Hexus"] = (0x77aef, 0x40)
     hub_environments[2].child_environments[2].dragons["Lucas"] = (0x77ae8, 0x01)
 
-    hub_environments[2].child_environments[2].eggs["Egg 1 (Tri-wizard Ramp)"] = (0x77af9, 0x08)
-    hub_environments[2].child_environments[2].eggs["Egg 2 (End Area Pool)"] = (0x77adb, 0x04)
+    hub_environments[2].child_environments[2].eggs["Egg 1 (Quad-wizard Ramp)"] = (0x77af9, 0x08)
+    hub_environments[2].child_environments[2].eggs["Egg 2 (End Area Pool)"] = (0x77aeb, 0x04)
 
     # Blowhard
     hub_environments[2].child_environments[3].dragons["Altair"] = (0x77b0b, 0x04)
@@ -450,7 +450,7 @@ class RAM:
     hub_environments[4].child_environments[0].dragons["Obasi"] = (0x77c36, 0x01)
 
     # Lofty Castle
-    hub_environments[4].child_environments[1].dragons["Mudara"] = (0x77c4f, 0x01)
+    hub_environments[4].child_environments[1].dragons["Mudada"] = (0x77c4f, 0x01)
     hub_environments[4].child_environments[1].dragons["Baruti"] = (0x77c49, 0x04)
     hub_environments[4].child_environments[1].dragons["Useni"] = (0x77c49, 0x01)
 
