@@ -211,12 +211,12 @@ class SpyroClient(BizHawkClient):
                 batched_reads.append((ram_item.address, ram_item.byte_count, "MainRAM"))
 
             # Request the reads from BizHawk
-            ram_data: list[bytes] = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
+            bizhawk_peek_bytes: list[bytes] = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
 
             # Take the results from BizHawk and store them in their corresponding variables, in the order the list was
             # initially built. No more being careful to modify two lists in sync, Python can just handle it for us.
-            for ram_item in to_read_list:
-                ram_item.raw_data = ram_data.pop(0)
+            for ram_read, bizhawk_peek_byte in zip(to_read_list, bizhawk_peek_bytes):
+                ram_read.raw_data = bizhawk_peek_byte
 
             await self.process_locations(self.cur_game_state.value(), self.cur_level_id.value(), ctx)
             self.update_spyro_color(self.spyro_color.value(), self.cur_game_state.value())
