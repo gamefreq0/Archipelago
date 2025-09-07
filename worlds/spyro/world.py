@@ -187,6 +187,8 @@ class SpyroWorld(World):
                 + f"with a value of {int(value)}."
             )
 
+        return
+
     @override
     def generate_early(self) -> None:
         self.goal = self.options.goal.get_option_name(self.options.goal.value).lower()
