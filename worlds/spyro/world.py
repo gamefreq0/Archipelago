@@ -19,8 +19,7 @@ from .web import SpyroWeb
 from .items import SpyroItem, filler_items, goal_item
 from .items import homeworld_access, level_access, boss_items, trap_items
 from .items import grouped_items, item_name_to_id
-from .locations import location_name_to_id
-from .locations import grouped_locations
+from .locations import static_locations, static_loc_groups, SpyroPlayerLocations
 from .options import SpyroOptions
 from .regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 from .rules import set_rules
@@ -52,11 +51,12 @@ class SpyroWorld(World):
     topology_present: bool = True
 
     item_name_to_id: ClassVar[dict[str, int]] = item_name_to_id
-
-    location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
+    location_name_to_id: ClassVar[dict[str, int]] = static_locations
 
     item_name_groups: ClassVar[dict[str, set[str]]] = grouped_items
-    location_name_groups: ClassVar[dict[str, set[str]]] = grouped_locations
+    location_name_groups: ClassVar[dict[str, set[str]]] = static_loc_groups
+
+    player_locations: SpyroPlayerLocations | None = None
 
     _goal: str
     _portal_shuffle: int
@@ -213,11 +213,16 @@ class SpyroWorld(World):
         self.portal_shuffle = self.options.portal_shuffle.value == 1
         self.gem_threshold_mult = self.options.global_gem_percent.value / 100.0
 
+        self.player_locations = SpyroPlayerLocations(list(self.env_by_id.values()), self.gem_threshold_mult)
+
         return
 
     @override
     def create_regions(self) -> None:
-        return create_regions(self, self.starting_world)
+        if (self.player_locations is not None) and (not hasattr(self.multiworld, "generation_is_fake")):
+            create_regions(self, self.starting_world, self.player_locations)
+
+        return
 
     @override
     def create_item(self, name: str) -> SpyroItem:
@@ -266,10 +271,12 @@ class SpyroWorld(World):
             random_filler: str = self.multiworld.random.choice(filler_items)
             itempool += [self.create_item(random_filler)]
 
-        if self.goal == "gnasty":
-            self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
-        elif self.goal == "loot":
-            self.get_location("Gnasty's Loot Vortex").place_locked_item(victory)
+        # Ensure we're not in UT gen, because we can't look up these by name until later
+        if not hasattr(self.multiworld, "generation_is_fake"):
+            if self.goal == "gnasty":
+                self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
+            elif self.goal == "loot":
+                self.get_location("Gnasty's Loot Vortex").place_locked_item(victory)
 
         self.multiworld.itempool += itempool
 
@@ -372,7 +379,8 @@ class SpyroWorld(World):
 
     @override
     def set_rules(self) -> None:
-        set_rules(self)
+        if not hasattr(self.multiworld, "generation_is_fake"):
+            set_rules(self, self.gem_threshold_mult, list(self.env_by_id.values()))
 
     @override
     def fill_slot_data(self) -> dict[str, int | list[tuple[str, str]] | str]:
@@ -396,7 +404,7 @@ class SpyroWorld(World):
         new_hint_data: dict[int, dict[int, str]] = hint_data
         if self.portal_shuffle:
             # Iterate locations for mapping their entrances as needed
-            for name, loc_id in location_name_to_id.items():
+            for name, loc_id in self.location_name_to_id.items():
                 location: Location = self.multiworld.get_location(name, self.player)
                 region_name: str = "No level should match this substring"
 
@@ -439,6 +447,11 @@ class SpyroWorld(World):
         Args:
             slot_data: Holds slot data, indexed by name of the piece of data
         """
+        self.starting_world = slot_data["starting_world"]
+        self.gem_threshold_mult = slot_data["global_gem_percent"] / 100.0
+        self.player_locations = SpyroPlayerLocations(list(self.env_by_id.values()), self.gem_threshold_mult)
+        create_regions(self, self.starting_world, self.player_locations)
+        set_rules(self, self.gem_threshold_mult, list(self.env_by_id.values()))
         # Connect starting homeworld to menu region
         regions: dict[str, Region] = self.multiworld.regions.region_cache[self.player]
         entrances: dict[str, Entrance] = self.multiworld.regions.entrance_cache[self.player]
@@ -449,6 +462,9 @@ class SpyroWorld(World):
         menu: Region = regions["Menu"]
 
         _ = menu.connect(starting_region, "Starting Homeworld")
+
+        # Set local copy of gem threshold percentage
+        self.gem_threshold_mult = slot_data["global_gem_percent"] / 100.0
 
         # Connect entrances
         if slot_data["portal_shuffle"] == 1:

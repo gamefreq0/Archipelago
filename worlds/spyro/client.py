@@ -16,7 +16,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
 from .addresses import RAM, menu_lookup, Environment, internal_id_to_offset
-from .locations import location_name_to_id, total_treasure
+from .locations import static_locations
 from .items import item_id_to_name, boss_items, homeworld_access, goal_item
 from .world import SlotDataTypes
 
@@ -54,6 +54,9 @@ class SpyroClient(BizHawkClient):
     local_checked_locations: set[int] = set()
     slot_data_spyro_color: bytes = b''
     slot_data_mapped_entrances: list[tuple[str, str]] = []
+    slot_data_gem_threshold_mult: float = 1.0
+
+    location_name_to_id: dict[str, int]
 
     env_by_id: dict[int, Environment] = {}
     env_by_name: dict[str, Environment] = {}
@@ -280,7 +283,8 @@ class SpyroClient(BizHawkClient):
                 "starting_world": -1,
                 "entrances": [],
                 "portal_shuffle": -1,
-                "spyro_color": 0xffffff00
+                "spyro_color": 0xffffff00,
+                "global_gem_percent": 100,
             }
             for key, value in ctx.slot_data.items():
                 slot_data[key] = value
@@ -306,6 +310,12 @@ class SpyroClient(BizHawkClient):
 
             # Read in starting homeworld from slot data
             self.starting_world = slot_data["starting_world"]
+
+            # Read in gem threshold percentage from slot data, store as a multiplier
+            self.slot_data_gem_threshold_mult = slot_data["global_gem_percent"] / 100.0
+
+            # Create location lookup table
+            self.location_name_to_id = static_locations
 
         self.did_setup = True
         return
@@ -409,7 +419,7 @@ class SpyroClient(BizHawkClient):
             location_name: The name of the location to send
             ctx: BizhawkClientContext
         """
-        location_id: int = location_name_to_id[location_name]
+        location_id: int = self.location_name_to_id[location_name]
 
         if location_id not in ctx.checked_locations:
             await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [location_id]}])
@@ -512,7 +522,7 @@ class SpyroClient(BizHawkClient):
             if env.is_hub():
                 # Compile a list of unchecked locations for the current hub
                 env_locations = []
-                for name, loc_id in location_name_to_id.items():
+                for name, loc_id in self.location_name_to_id.items():
                     if (env.name in name) and (loc_id not in ctx.checked_locations):
                         env_locations.append(name)
 
@@ -540,7 +550,7 @@ class SpyroClient(BizHawkClient):
 
                 # Compile a list of unchecked locations behind the given portal
                 env_locations = []
-                for name, loc_id in location_name_to_id.items():
+                for name, loc_id in self.location_name_to_id.items():
                     if (level_name in name) and (loc_id not in ctx.checked_locations):
                         env_locations.append(name)
 
@@ -609,7 +619,7 @@ class SpyroClient(BizHawkClient):
                             await self.send_location_once(f"{env_gems.name} {25 * index}% Gems", ctx)
 
                 # Send 500 increment total gem threhshold checks
-                for gem_threshold in range(500, total_treasure + 1, 500):
+                for gem_threshold in range(500, int(RAM.TOTAL_TREASURE * self.slot_data_gem_threshold_mult) + 1, 500):
                     if self.total_gems_collected.value() >= gem_threshold:
                         await self.send_location_once(f"{gem_threshold} Gems", ctx)
 

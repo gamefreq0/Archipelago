@@ -1,6 +1,6 @@
 from BaseClasses import Location
 
-from .addresses import RAM
+from .addresses import RAM, Environment
 
 BASE_SPYRO_LOCATION_ID: int = 1000
 
@@ -9,139 +9,131 @@ class SpyroLocation(Location):
     game: str = "Spyro the Dragon"
 
 
-total_treasure: int = 0
+class SpyroPlayerLocations():
+    """Defines locations for a single player
+    """
 
-# TODO: Remove this in favor of dynamically calculating during gen, based on excluded levels/hubs
-for hub in RAM.hub_environments:
-    total_treasure += hub.total_gems
-
-    for level in hub.child_environments:
-        total_treasure += level.total_gems
+    def __init__(self, envs: list[Environment], total_gem_mult: float) -> None:
+        """Defines locations after logic changes due to options"""
+        self.included_locations: set[str] = set(create_locations_list(total_gem_mult, envs))
+        return
 
 
-level_gem_threshold_locations: list[str] = []
-dragon_locations: list[str] = []
-egg_locations: list[str] = []
+def get_all_envs() -> list[Environment]:
+    all_envs: list[Environment] = []
+    for hub in RAM.hub_environments:
+        all_envs.append(hub)
 
-for hub in RAM.hub_environments:
+        for level in hub.child_environments:
+            all_envs.append(level)
 
-    # Add locations for each 1/4 of a hub's total gems
+    return all_envs
+
+
+def create_location_groups(envs: list[Environment], location_name_to_id: dict[str, int]) -> dict[str, set[str]]:
+    loc_groups: dict[str, set[str]] = {}
+    location_list: list[str] = list(location_name_to_id.keys())
+
+    # Iterate through the levels, add matching locations to a group named for the level
+    for env in envs:
+        loc_groups[env.name] = set()
+        if not env.is_hub():
+            for location in location_list:
+                if env.name in location:
+                    loc_groups[env.name].add(location)
+
+    global_quarter_gems: dict[int, set[str]] = {}
+    # Initialize all the sets so we can add to them later
     for index in range(1, 5):
-        level_gem_threshold_locations.append(f"{hub.name} {index * 25}% Gems")
+        global_quarter_gems[index * 25] = set()
 
-    # Add locations for dragons as needed
-    for dragon_name in hub.dragons:
-        dragon_locations.append(f"{hub.name} {dragon_name}")
-
-    # Add locations for eggs as needed
-    for egg_name in hub.eggs:
-        egg_locations.append(f"{hub.name} {egg_name}")
-
-    for level in hub.child_environments:
-
-        # Add locations for each 1/4 of a level's total gems
+    for env in envs:
         for index in range(1, 5):
-            level_gem_threshold_locations.append(f"{level.name} {index * 25}% Gems")
+            global_quarter_gems[index * 25].add(f"{env.name} {index * 25}% Gems")
 
-        # Add locations for dragons as needed
-        for dragon_name in level.dragons:
-            dragon_locations.append(f"{level.name} {dragon_name}")
+    for index in range(1, 5):
+        loc_groups[f"{index * 25}% Gems"] = global_quarter_gems[index * 25]
 
-        # Add locations for eggs as needed
-        for egg_name in level.eggs:
-            egg_locations.append(f"{level.name} {egg_name}")
+    loc_groups["Flight Levels"] = set()
+    for flight_name_prefix in ("Sunny", "Night", "Crystal", "Wild", "Icy"):
+        loc_groups["Flight Levels"].update(loc_groups[f"{flight_name_prefix} Flight"])
 
-total_gem_threshold_locations: list[str] = []
+    loc_groups["Boss Levels"] = set()
+    for boss_level_name in ("Toasty", "Doctor Shemp", "Blowhard", "Metalhead", "Jacques", "Gnasty Gnorc"):
+        loc_groups["Boss Levels"].update(loc_groups[boss_level_name])
 
-for gem_count in range(500, total_treasure + 1, 500):
-    total_gem_threshold_locations.append(f"{gem_count} Gems")
+    return loc_groups
 
-vortex_locations: list[str] = []
 
-for hub in RAM.hub_environments:
-    for level in hub.child_environments:
-        if level.has_vortex:
-            vortex_locations.append(f"{level.name} Vortex")
+def create_locations_list(
+    gem_percent_mult: float,
+    envs: list[Environment]
+) -> list[str]:
+    locations_list: list[str] = []
+    locations_list.extend(create_total_treasure_locations(envs, gem_percent_mult))
+    locations_list.extend(create_per_env_gem_locations(envs))
+    locations_list.extend(create_dragon_locations(envs))
+    locations_list.extend(create_egg_locations(envs))
+    locations_list.extend(create_vortex_locations(envs))
+    locations_list.append("Defeated Gnasty Gnorc")
 
-misc_locations: list[str] = []
-misc_locations.append("Defeated Gnasty Gnorc")
+    return locations_list
 
-location_list: list[str] = []
 
-location_list.extend(level_gem_threshold_locations)
-location_list.extend(total_gem_threshold_locations)
-location_list.extend(dragon_locations)
-location_list.extend(egg_locations)
-location_list.extend(vortex_locations)
-location_list.extend(misc_locations)
+def create_total_treasure_locations(envs: list[Environment], gem_percent_mult: float) -> list[str]:
+    calculated_total_treasure: int = 0
 
-location_id_to_name: dict[int, str] = dict(enumerate(location_list, start=BASE_SPYRO_LOCATION_ID))
-location_name_to_id: dict[str, int] = {v: k for k, v in location_id_to_name.items()}
+    for env in envs:
+        calculated_total_treasure += int(env.total_gems * gem_percent_mult)
 
-flight_levels: set[str] = {
-    "Sunny Flight",
-    "Night Flight",
-    "Crystal Flight",
-    "Wild Flight",
-    "Icy Flight"
+    total_gem_threshold_locations: list[str] = []
+
+    for gem_count in range(500, calculated_total_treasure + 1, 500):
+        total_gem_threshold_locations.append(f"{gem_count} Gems")
+
+    return total_gem_threshold_locations
+
+
+def create_per_env_gem_locations(envs: list[Environment]) -> list[str]:
+    gem_locs: list[str] = []
+    for env in envs:
+        # Create locations for each 1/4 of an environment's total gems
+        for index in range(1, 5):
+            gem_locs.append(f"{env.name} {index * 25}% Gems")
+
+    return gem_locs
+
+
+def create_dragon_locations(envs: list[Environment]) -> list[str]:
+    dragon_locs: list[str] = []
+    for env in envs:
+        for dragon_name in env.dragons:
+            dragon_locs.append(f"{env.name} {dragon_name}")
+
+    return dragon_locs
+
+
+def create_egg_locations(envs: list[Environment]) -> list[str]:
+    egg_locs: list[str] = []
+    for env in envs:
+        for egg_name in env.eggs:
+            egg_locs.append(f"{env.name} {egg_name}")
+
+    return egg_locs
+
+
+def create_vortex_locations(envs: list[Environment]) -> list[str]:
+    vortex_locs: list[str] = []
+    for env in envs:
+        if env.has_vortex:
+            vortex_locs.append(f"{env.name} Vortex")
+
+    return vortex_locs
+
+
+static_locations: dict[str, int]
+static_loc_groups: dict[str, set[str]]
+static_locations = {
+    v: k for k, v in enumerate(create_locations_list(1.0, get_all_envs()), start=BASE_SPYRO_LOCATION_ID)
 }
-
-boss_levels: set[str] = {
-    "Toasty",
-    "Doctor Shemp",
-    "Blowhard",
-    "Metalhead",
-    "Jacques",
-    "Gnasty Gnorc"
-}
-
-gems_25: set[str] = set()
-gems_50: set[str] = set()
-gems_75: set[str] = set()
-gems_100: set[str] = set()
-
-for hub in RAM.hub_environments:
-    gems_25.add(f"{hub.name} 25% Gems")
-    gems_50.add(f"{hub.name} 50% Gems")
-    gems_75.add(f"{hub.name} 75% Gems")
-    gems_100.add(f"{hub.name} 100% Gems")
-
-    for level in hub.child_environments:
-        gems_25.add(f"{level.name} 25% Gems")
-        gems_50.add(f"{level.name} 50% Gems")
-        gems_75.add(f"{level.name} 75% Gems")
-        gems_100.add(f"{level.name} 100% Gems")
-
-meta_groups: dict[str, set[str]] = {
-    "Flight Levels": set(flight_levels),
-    "Boss Levels": set(boss_levels),
-}
-
-level_groups: dict[str, set[str]] = {}
-grouped_locations: dict[str, set[str]] = {}
-
-for meta_group in meta_groups:
-    # Initialize these so we can just .update() them later
-    grouped_locations[meta_group] = set()
-
-for hub in RAM.hub_environments:
-    for level in hub.child_environments:
-        cur_level_set: set[str] = set()
-
-        for location in location_list:
-            if level.name in location:
-                cur_level_set.add(location)
-
-        level_groups[level.name] = cur_level_set
-
-for level, locations in level_groups.items():
-    for meta_group, level_group in meta_groups.items():
-        if level in level_group:
-            grouped_locations[meta_group].update(locations)
-
-    grouped_locations[level] = locations
-
-grouped_locations["25% Gems"] = gems_25
-grouped_locations["50% Gems"] = gems_50
-grouped_locations["75% Gems"] = gems_75
-grouped_locations["100% Gems"] = gems_100
+static_loc_groups = create_location_groups(get_all_envs(), static_locations)
