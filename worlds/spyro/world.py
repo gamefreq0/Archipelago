@@ -371,6 +371,7 @@ class SpyroWorld(World):
             "portal_shuffle": 1 if self.portal_shuffle else 0,
             "entrances": self.shuffled_entrance_pairings,
             "spyro_color": self.spyro_color,
+            "global_gem_percent": int(self.gem_threshold_mult * 100.0),
         }
 
     @override
