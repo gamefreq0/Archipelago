@@ -117,6 +117,8 @@ class SpyroWorld(World):
         else:
             self._portal_shuffle = 0
 
+        return
+
     @property
     def death_link(self) -> bool:
         """Whether death link is on
