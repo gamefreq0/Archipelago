@@ -33,6 +33,7 @@ class SlotDataTypes(TypedDict):
     portal_shuffle: int
     entrances: list[tuple[str, str]]
     spyro_color: int
+    global_gem_percent: int
 
 
 class SpyroWorld(World):
