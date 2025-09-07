@@ -153,6 +153,8 @@ class SpyroWorld(World):
                 f"{self.game} know that starting_homeworld broke!"
             )
 
+        return
+
     @property
     def spyro_color(self) -> int:
         """Spyro's RGBA color"""
