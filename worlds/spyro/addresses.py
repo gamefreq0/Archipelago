@@ -57,6 +57,8 @@ class Environment():
 class RAM:
     """A handy collection of memory values and addresses for Spyro"""
 
+    TOTAL_TREASURE: int = 14000  # Handy constant for doing calcs elsewhere
+
     unused_space: int = 0x0f000  # At least, it seems unused. Test...
 
     last_received_archipelago_id: int = unused_space + 4
