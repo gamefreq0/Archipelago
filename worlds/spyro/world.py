@@ -101,6 +101,8 @@ class SpyroWorld(World):
         else:
             raise OptionError(f"Invalid value {value} for goal for player {self.player_name}")
 
+        return
+
     @property
     def portal_shuffle(self) -> bool:
         """Whether portals are shuffled
