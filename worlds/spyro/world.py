@@ -178,7 +178,7 @@ class SpyroWorld(World):
 
     @gem_threshold_mult.setter
     def gem_threshold_mult(self, value: float) -> None:
-        if (value >= 1.0) and (value <= 100.0):
+        if (value >= 0.01) and (value <= 1.0):
             self._gem_threshold_mult = value
         else:
             raise OptionError(
