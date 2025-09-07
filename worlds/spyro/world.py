@@ -168,6 +168,8 @@ class SpyroWorld(World):
             ) from exc
         self._spyro_color = color
 
+        return
+
     @property
     def gem_threshold_mult(self) -> float:
         """Multiplier for total gem threshold locations
