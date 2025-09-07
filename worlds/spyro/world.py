@@ -62,6 +62,7 @@ class SpyroWorld(World):
     _death_link: int
     _starting_world: int
     _spyro_color: int
+    _gem_threshold_mult: float
 
     def __init__(self, multiworld: "MultiWorld", player: int):
         super().__init__(multiworld, player)
@@ -70,6 +71,7 @@ class SpyroWorld(World):
         self._death_link = 0
         self._starting_world = 0
         self._spyro_color = -1
+        self._gem_threshold_mult = 1.0
         self.shuffled_entrance_pairings: list[tuple[str, str]] = []
         self.env_by_id: dict[int, Environment] = {}
         self.env_by_name: dict[str, Environment] = {}
@@ -164,6 +166,25 @@ class SpyroWorld(World):
                 f"{self.player_name}'s spyro_color value of " + f'"{value}" is not a valid RGBA color.'
             ) from exc
         self._spyro_color = color
+
+    @property
+    def gem_threshold_mult(self) -> float:
+        """Multiplier for total gem threshold locations
+
+        Returns:
+            float
+        """
+        return self._gem_threshold_mult
+
+    @gem_threshold_mult.setter
+    def gem_threshold_mult(self, value: float) -> None:
+        if (value >= 1.0) and (value <= 100.0):
+            self._gem_threshold_mult = value
+        else:
+            raise OptionError(
+                f"Somehow, {self.player} managed to break their yaml with the global_gem_percent option "
+                + f"with a value of {int(value)}."
+            )
 
     @override
     def generate_early(self) -> None:
