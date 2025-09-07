@@ -200,6 +200,7 @@ class SpyroWorld(World):
             self.spyro_color = self.options.spyro_color.value
         self.death_link = self.options.death_link.value == 1
         self.portal_shuffle = self.options.portal_shuffle.value == 1
+        self.gem_threshold_mult = self.options.global_gem_percent.value / 100.0
 
         return
 
