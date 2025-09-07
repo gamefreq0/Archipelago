@@ -163,7 +163,6 @@ class SpyroClient(BizHawkClient):
 
     @override
     async def game_watcher(self, ctx: "BizHawkClientContext") -> None:
-        batched_reads: list[tuple[int, int, str]] = []
         # Detect if AP connection made, bail early if not
         if (
             (ctx.server is None) or (ctx.server.socket.closed)
@@ -204,6 +203,8 @@ class SpyroClient(BizHawkClient):
 
             for egg_ramreads in self.eggs.values():
                 to_read_list.extend(egg_ramreads)
+
+            batched_reads: list[tuple[int, int, str]] = []
 
             # Format the list in the way BizHawk expects
             for ram_item in to_read_list:
