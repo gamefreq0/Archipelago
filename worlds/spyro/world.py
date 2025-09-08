@@ -33,6 +33,7 @@ class SlotDataTypes(TypedDict):
     entrances: list[tuple[str, str]]
     spyro_color: int
     global_gem_percent: int
+    max_per_env_threshold: int
 
 
 class SpyroWorld(World):
@@ -64,6 +65,7 @@ class SpyroWorld(World):
     _starting_world: int
     _spyro_color: int
     _gem_threshold_mult: float
+    _per_env_threshold: int
 
     def __init__(self, multiworld: "MultiWorld", player: int):
         super().__init__(multiworld, player)
@@ -73,6 +75,7 @@ class SpyroWorld(World):
         self._starting_world = 0
         self._spyro_color = -1
         self._gem_threshold_mult = 1.0
+        self._per_env_threshold = 100
         self.shuffled_entrance_pairings: list[tuple[str, str]] = []
         self.env_by_id: dict[int, Environment] = {}
         self.env_by_name: dict[str, Environment] = {}
@@ -199,6 +202,22 @@ class SpyroWorld(World):
 
         return
 
+    @property
+    def per_env_max_gem_threshold(self) -> int:
+        """Max percentage threshold for per-area gem locations.
+
+        Returns:
+            int
+        """
+        return self._per_env_threshold
+
+    @per_env_max_gem_threshold.setter
+    def per_env_max_gem_threshold(self, amount: int) -> None:
+        if amount % 25 == 0:
+            self._per_env_threshold = amount
+        else:
+            raise OptionError(f"Invalid value {amount} for option max_level_gem_threshold for player {self.player}")
+
     @override
     def generate_early(self) -> None:
         self.goal = self.options.goal.get_option_name(self.options.goal.value).lower()
@@ -212,8 +231,13 @@ class SpyroWorld(World):
         self.death_link = self.options.death_link.value == 1
         self.portal_shuffle = self.options.portal_shuffle.value == 1
         self.gem_threshold_mult = self.options.global_gem_percent.value / 100.0
+        self.per_env_max_gem_threshold = self.options.max_level_gem_threshold.value
 
-        self.player_locations = SpyroPlayerLocations(list(self.env_by_id.values()), self.gem_threshold_mult)
+        self.player_locations = SpyroPlayerLocations(
+            list(self.env_by_id.values()),
+            self.gem_threshold_mult,
+            self.per_env_max_gem_threshold,
+        )
 
         return
 
@@ -391,6 +415,7 @@ class SpyroWorld(World):
             "entrances": self.shuffled_entrance_pairings,
             "spyro_color": self.spyro_color,
             "global_gem_percent": int(self.gem_threshold_mult * 100.0),
+            "max_per_env_threshold": self.per_env_max_gem_threshold
         }
 
     @override
@@ -449,7 +474,12 @@ class SpyroWorld(World):
         """
         self.starting_world = slot_data["starting_world"]
         self.gem_threshold_mult = slot_data["global_gem_percent"] / 100.0
-        self.player_locations = SpyroPlayerLocations(list(self.env_by_id.values()), self.gem_threshold_mult)
+        self.per_env_max_gem_threshold = slot_data["max_per_env_threshold"]
+        self.player_locations = SpyroPlayerLocations(
+            list(self.env_by_id.values()),
+            self.gem_threshold_mult,
+            self.per_env_max_gem_threshold,
+        )
         create_regions(self, self.starting_world, self.player_locations)
         set_rules(self, self.gem_threshold_mult, list(self.env_by_id.values()))
         # Connect starting homeworld to menu region

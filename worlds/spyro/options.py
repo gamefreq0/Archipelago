@@ -66,6 +66,19 @@ class GlobalGemThresholdOption(Range):
     range_start: int = 1
 
 
+class MaxLevelGemThresholdOption(Choice):
+    """The maximum gem threshold locations to include for each level/hub. Corresponds to the maximum percentage of gems
+    per area to create locations for. Useful for reducing amount of filler relative to useful items for this game.
+    """
+    display_name: str = "Maximum Per-Area Gem Threshold"
+    option_0: int = 0
+    option_25: int = 25
+    option_50: int = 50
+    option_75: int = 75
+    option_100: int = 100
+    default: int = option_100
+
+
 @dataclass
 class SpyroOptions(PerGameCommonOptions):
     goal: GoalOption
@@ -73,4 +86,5 @@ class SpyroOptions(PerGameCommonOptions):
     portal_shuffle: PortalShuffleOption
     spyro_color: SpyroColorOption
     global_gem_percent: GlobalGemThresholdOption
+    max_level_gem_threshold: MaxLevelGemThresholdOption
     death_link: DeathLink

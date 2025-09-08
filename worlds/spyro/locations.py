@@ -13,9 +13,9 @@ class SpyroPlayerLocations():
     """Defines locations for a single player
     """
 
-    def __init__(self, envs: list[Environment], total_gem_mult: float) -> None:
+    def __init__(self, envs: list[Environment], total_gem_mult: float, max_per_env_threshold: int) -> None:
         """Defines locations after logic changes due to options"""
-        self.included_locations: set[str] = set(create_locations_list(total_gem_mult, envs))
+        self.included_locations: set[str] = set(create_locations_list(total_gem_mult, envs, max_per_env_threshold))
         return
 
 
@@ -67,11 +67,12 @@ def create_location_groups(envs: list[Environment], location_name_to_id: dict[st
 
 def create_locations_list(
     gem_percent_mult: float,
-    envs: list[Environment]
+    envs: list[Environment],
+    max_per_env_threshold: int,
 ) -> list[str]:
     locations_list: list[str] = []
     locations_list.extend(create_total_treasure_locations(envs, gem_percent_mult))
-    locations_list.extend(create_per_env_gem_locations(envs))
+    locations_list.extend(create_per_env_gem_locations(envs, max_per_env_threshold))
     locations_list.extend(create_dragon_locations(envs))
     locations_list.extend(create_egg_locations(envs))
     locations_list.extend(create_vortex_locations(envs))
@@ -94,12 +95,13 @@ def create_total_treasure_locations(envs: list[Environment], gem_percent_mult: f
     return total_gem_threshold_locations
 
 
-def create_per_env_gem_locations(envs: list[Environment]) -> list[str]:
+def create_per_env_gem_locations(envs: list[Environment], max_threshold: int) -> list[str]:
     gem_locs: list[str] = []
     for env in envs:
         # Create locations for each 1/4 of an environment's total gems
         for index in range(1, 5):
-            gem_locs.append(f"{env.name} {index * 25}% Gems")
+            if (index * 25) <= max_threshold:
+                gem_locs.append(f"{env.name} {index * 25}% Gems")
 
     return gem_locs
 
@@ -134,6 +136,6 @@ def create_vortex_locations(envs: list[Environment]) -> list[str]:
 static_locations: dict[str, int]
 static_loc_groups: dict[str, set[str]]
 static_locations = {
-    v: k for k, v in enumerate(create_locations_list(1.0, get_all_envs()), start=BASE_SPYRO_LOCATION_ID)
+    v: k for k, v in enumerate(create_locations_list(1.0, get_all_envs(), 100), start=BASE_SPYRO_LOCATION_ID)
 }
 static_loc_groups = create_location_groups(get_all_envs(), static_locations)

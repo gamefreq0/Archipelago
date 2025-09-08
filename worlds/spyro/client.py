@@ -55,6 +55,7 @@ class SpyroClient(BizHawkClient):
     slot_data_spyro_color: bytes = b''
     slot_data_mapped_entrances: list[tuple[str, str]] = []
     slot_data_gem_threshold_mult: float = 1.0
+    slot_data_max_per_env_threshold: int = 100
 
     location_name_to_id: dict[str, int]
 
@@ -285,6 +286,7 @@ class SpyroClient(BizHawkClient):
                 "portal_shuffle": -1,
                 "spyro_color": 0xffffff00,
                 "global_gem_percent": 100,
+                "max_per_env_threshold": 100,
             }
             for key, value in ctx.slot_data.items():
                 slot_data[key] = value
@@ -313,6 +315,8 @@ class SpyroClient(BizHawkClient):
 
             # Read in gem threshold percentage from slot data, store as a multiplier
             self.slot_data_gem_threshold_mult = slot_data["global_gem_percent"] / 100.0
+
+            self.slot_data_max_per_env_threshold = slot_data["max_per_env_threshold"]
 
             # Create location lookup table
             self.location_name_to_id = static_locations
@@ -615,8 +619,9 @@ class SpyroClient(BizHawkClient):
                     quarter_count: int = int(env_gems.total_gems / 4)
 
                     for index in range(1, 5):
-                        if self.gem_counts[internal_id_to_offset(env_id)].value() >= (quarter_count * index):
-                            await self.send_location_once(f"{env_gems.name} {25 * index}% Gems", ctx)
+                        if (index * 25) <= self.slot_data_max_per_env_threshold:
+                            if self.gem_counts[internal_id_to_offset(env_id)].value() >= (quarter_count * index):
+                                await self.send_location_once(f"{env_gems.name} {25 * index}% Gems", ctx)
 
                 # Send 500 increment total gem threhshold checks
                 for gem_threshold in range(500, int(RAM.TOTAL_TREASURE * self.slot_data_gem_threshold_mult) + 1, 500):
