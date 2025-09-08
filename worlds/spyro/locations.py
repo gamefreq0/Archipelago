@@ -34,13 +34,12 @@ def create_location_groups(envs: list[Environment], location_name_to_id: dict[st
     loc_groups: dict[str, set[str]] = {}
     location_list: list[str] = list(location_name_to_id.keys())
 
-    # Iterate through the levels, add matching locations to a group named for the level
+    # Iterate through the environments, add matching locations to a group named for the environment
     for env in envs:
         loc_groups[env.name] = set()
-        if not env.is_hub():
-            for location in location_list:
-                if env.name in location:
-                    loc_groups[env.name].add(location)
+        for location in location_list:
+            if env.name in location:
+                loc_groups[env.name].add(location)
 
     global_quarter_gems: dict[int, set[str]] = {}
     # Initialize all the sets so we can add to them later
