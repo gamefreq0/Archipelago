@@ -4,14 +4,14 @@ from BaseClasses import MultiWorld, Region, Entrance, EntranceType
 from ..AutoWorld import World
 from .items import boss_items
 
-from .locations import SpyroLocation, location_name_to_id
+from .locations import SpyroLocation, SpyroPlayerLocations
 from .addresses import RAM, Environment
 
 ENTRANCE_IN: int = 0x0
 ENTRANCE_OUT: int = 0x1
 
 
-def create_regions(world: World, starting_homeworld: int) -> None:
+def create_regions(world: World, starting_homeworld: int, player_locations: SpyroPlayerLocations) -> None:
     """Create regions, connect static regions, create dangling entrances for generic ER
     Mutates multiworld data to add regions
 
@@ -56,11 +56,12 @@ def create_regions(world: World, starting_homeworld: int) -> None:
     # accessible from the start of the level. Oh, joy.
     for region in regions:
         if region != menu:
-            for location_name, location_id in location_name_to_id.items():
-                if region.name in location_name:
-                    region.locations.append(SpyroLocation(player, location_name, location_id, region))
-                elif (region == main_world) and ("00 Gems" in location_name):
-                    region.locations.append(SpyroLocation(player, location_name, location_id, region))
+            for location_name, location_id in world.location_name_to_id.items():
+                if location_name in player_locations.included_locations:
+                    if region.name in location_name:
+                        region.locations.append(SpyroLocation(player, location_name, location_id, region))
+                    elif (region == main_world) and ("00 Gems" in location_name):
+                        region.locations.append(SpyroLocation(player, location_name, location_id, region))
 
     world.get_location("Defeated Gnasty Gnorc").parent_region = level_regions["Gnasty Gnorc"]
 

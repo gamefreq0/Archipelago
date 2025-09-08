@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from Options import Choice, DeathLink, PerGameCommonOptions, FreeText, Toggle
+from Options import Choice, DeathLink, PerGameCommonOptions, FreeText, Toggle, Range
 
 
 class GoalOption(Choice):
@@ -54,10 +54,37 @@ class SpyroColorOption(FreeText):
     default: str = "FFFFFF00"
 
 
+class GlobalGemThresholdOption(Range):
+    """A percentage multiplier for the every 500 gem total threshold locations. 50, for example, will mean that getting
+    50% of the gems in every accessible level will logically be expected at any given point. Accepts a range between
+    1 and 100.
+    """
+
+    display_name: str = "Global Gem Threshold Percentage"
+    default: int = 100
+    range_end: int = 100
+    range_start: int = 1
+
+
+class MaxLevelGemThresholdOption(Choice):
+    """The maximum gem threshold locations to include for each level/hub. Corresponds to the maximum percentage of gems
+    per area to create locations for. Useful for reducing amount of filler relative to useful items for this game.
+    """
+    display_name: str = "Maximum Per-Area Gem Threshold"
+    option_0: int = 0
+    option_25: int = 25
+    option_50: int = 50
+    option_75: int = 75
+    option_100: int = 100
+    default: int = option_100
+
+
 @dataclass
 class SpyroOptions(PerGameCommonOptions):
     goal: GoalOption
     starting_world: StartingHomeworldOption
     portal_shuffle: PortalShuffleOption
     spyro_color: SpyroColorOption
+    global_gem_percent: GlobalGemThresholdOption
+    max_level_gem_threshold: MaxLevelGemThresholdOption
     death_link: DeathLink

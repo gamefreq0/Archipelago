@@ -19,8 +19,7 @@ from .web import SpyroWeb
 from .items import SpyroItem, filler_items, goal_item
 from .items import homeworld_access, level_access, boss_items, trap_items
 from .items import grouped_items, item_name_to_id
-from .locations import location_name_to_id
-from .locations import grouped_locations
+from .locations import static_locations, static_loc_groups, SpyroPlayerLocations
 from .options import SpyroOptions
 from .regions import create_regions, ENTRANCE_OUT, ENTRANCE_IN
 from .rules import set_rules
@@ -33,6 +32,8 @@ class SlotDataTypes(TypedDict):
     portal_shuffle: int
     entrances: list[tuple[str, str]]
     spyro_color: int
+    global_gem_percent: int
+    max_per_env_threshold: int
 
 
 class SpyroWorld(World):
@@ -51,17 +52,20 @@ class SpyroWorld(World):
     topology_present: bool = True
 
     item_name_to_id: ClassVar[dict[str, int]] = item_name_to_id
-
-    location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
+    location_name_to_id: ClassVar[dict[str, int]] = static_locations
 
     item_name_groups: ClassVar[dict[str, set[str]]] = grouped_items
-    location_name_groups: ClassVar[dict[str, set[str]]] = grouped_locations
+    location_name_groups: ClassVar[dict[str, set[str]]] = static_loc_groups
+
+    player_locations: SpyroPlayerLocations | None = None
 
     _goal: str
     _portal_shuffle: int
     _death_link: int
     _starting_world: int
     _spyro_color: int
+    _gem_threshold_mult: float
+    _per_env_threshold: int
 
     def __init__(self, multiworld: "MultiWorld", player: int):
         super().__init__(multiworld, player)
@@ -70,6 +74,8 @@ class SpyroWorld(World):
         self._death_link = 0
         self._starting_world = 0
         self._spyro_color = -1
+        self._gem_threshold_mult = 1.0
+        self._per_env_threshold = 100
         self.shuffled_entrance_pairings: list[tuple[str, str]] = []
         self.env_by_id: dict[int, Environment] = {}
         self.env_by_name: dict[str, Environment] = {}
@@ -98,6 +104,8 @@ class SpyroWorld(World):
         else:
             raise OptionError(f"Invalid value {value} for goal for player {self.player_name}")
 
+        return
+
     @property
     def portal_shuffle(self) -> bool:
         """Whether portals are shuffled
@@ -113,6 +121,8 @@ class SpyroWorld(World):
             self._portal_shuffle = 1
         else:
             self._portal_shuffle = 0
+
+        return
 
     @property
     def death_link(self) -> bool:
@@ -130,6 +140,8 @@ class SpyroWorld(World):
             self._death_link = 1
         else:
             self._death_link = 0
+
+        return
 
     @property
     def starting_world(self) -> int:
@@ -150,6 +162,8 @@ class SpyroWorld(World):
                 f"{self.game} know that starting_homeworld broke!"
             )
 
+        return
+
     @property
     def spyro_color(self) -> int:
         """Spyro's RGBA color"""
@@ -165,6 +179,45 @@ class SpyroWorld(World):
             ) from exc
         self._spyro_color = color
 
+        return
+
+    @property
+    def gem_threshold_mult(self) -> float:
+        """Multiplier for total gem threshold locations
+
+        Returns:
+            float
+        """
+        return self._gem_threshold_mult
+
+    @gem_threshold_mult.setter
+    def gem_threshold_mult(self, value: float) -> None:
+        if (value >= 0.01) and (value <= 1.0):
+            self._gem_threshold_mult = value
+        else:
+            raise OptionError(
+                f"Somehow, {self.player} managed to break their yaml with the global_gem_percent option "
+                + f"with a value of {int(value)}."
+            )
+
+        return
+
+    @property
+    def per_env_max_gem_threshold(self) -> int:
+        """Max percentage threshold for per-area gem locations.
+
+        Returns:
+            int
+        """
+        return self._per_env_threshold
+
+    @per_env_max_gem_threshold.setter
+    def per_env_max_gem_threshold(self, amount: int) -> None:
+        if amount % 25 == 0:
+            self._per_env_threshold = amount
+        else:
+            raise OptionError(f"Invalid value {amount} for option max_level_gem_threshold for player {self.player}")
+
     @override
     def generate_early(self) -> None:
         self.goal = self.options.goal.get_option_name(self.options.goal.value).lower()
@@ -173,16 +226,27 @@ class SpyroWorld(World):
             random_rgb: bytes = self.random.randbytes(3)
             temp_color: str = random_rgb.hex() + "ff"  # Ensure full alpha
             self.spyro_color = temp_color
-            print(temp_color)
-            print(self.spyro_color)
         else:
             self.spyro_color = self.options.spyro_color.value
         self.death_link = self.options.death_link.value == 1
         self.portal_shuffle = self.options.portal_shuffle.value == 1
+        self.gem_threshold_mult = self.options.global_gem_percent.value / 100.0
+        self.per_env_max_gem_threshold = self.options.max_level_gem_threshold.value
+
+        self.player_locations = SpyroPlayerLocations(
+            list(self.env_by_id.values()),
+            self.gem_threshold_mult,
+            self.per_env_max_gem_threshold,
+        )
+
+        return
 
     @override
     def create_regions(self) -> None:
-        return create_regions(self, self.starting_world)
+        if (self.player_locations is not None) and (not hasattr(self.multiworld, "generation_is_fake")):
+            create_regions(self, self.starting_world, self.player_locations)
+
+        return
 
     @override
     def create_item(self, name: str) -> SpyroItem:
@@ -231,10 +295,12 @@ class SpyroWorld(World):
             random_filler: str = self.multiworld.random.choice(filler_items)
             itempool += [self.create_item(random_filler)]
 
-        if self.goal == "gnasty":
-            self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
-        elif self.goal == "loot":
-            self.get_location("Gnasty's Loot Vortex").place_locked_item(victory)
+        # Ensure we're not in UT gen, because we can't look up these by name until later
+        if not hasattr(self.multiworld, "generation_is_fake"):
+            if self.goal == "gnasty":
+                self.get_location("Defeated Gnasty Gnorc").place_locked_item(victory)
+            elif self.goal == "loot":
+                self.get_location("Gnasty's Loot Vortex").place_locked_item(victory)
 
         self.multiworld.itempool += itempool
 
@@ -337,7 +403,8 @@ class SpyroWorld(World):
 
     @override
     def set_rules(self) -> None:
-        set_rules(self)
+        if not hasattr(self.multiworld, "generation_is_fake"):
+            set_rules(self, self.gem_threshold_mult, list(self.env_by_id.values()))
 
     @override
     def fill_slot_data(self) -> dict[str, int | list[tuple[str, str]] | str]:
@@ -347,6 +414,8 @@ class SpyroWorld(World):
             "portal_shuffle": 1 if self.portal_shuffle else 0,
             "entrances": self.shuffled_entrance_pairings,
             "spyro_color": self.spyro_color,
+            "global_gem_percent": int(self.gem_threshold_mult * 100.0),
+            "max_per_env_threshold": self.per_env_max_gem_threshold
         }
 
     @override
@@ -360,7 +429,7 @@ class SpyroWorld(World):
         new_hint_data: dict[int, dict[int, str]] = hint_data
         if self.portal_shuffle:
             # Iterate locations for mapping their entrances as needed
-            for name, loc_id in location_name_to_id.items():
+            for name, loc_id in self.location_name_to_id.items():
                 location: Location = self.multiworld.get_location(name, self.player)
                 region_name: str = "No level should match this substring"
 
@@ -403,6 +472,16 @@ class SpyroWorld(World):
         Args:
             slot_data: Holds slot data, indexed by name of the piece of data
         """
+        self.starting_world = slot_data["starting_world"]
+        self.gem_threshold_mult = slot_data["global_gem_percent"] / 100.0
+        self.per_env_max_gem_threshold = slot_data["max_per_env_threshold"]
+        self.player_locations = SpyroPlayerLocations(
+            list(self.env_by_id.values()),
+            self.gem_threshold_mult,
+            self.per_env_max_gem_threshold,
+        )
+        create_regions(self, self.starting_world, self.player_locations)
+        set_rules(self, self.gem_threshold_mult, list(self.env_by_id.values()))
         # Connect starting homeworld to menu region
         regions: dict[str, Region] = self.multiworld.regions.region_cache[self.player]
         entrances: dict[str, Entrance] = self.multiworld.regions.entrance_cache[self.player]
@@ -413,6 +492,9 @@ class SpyroWorld(World):
         menu: Region = regions["Menu"]
 
         _ = menu.connect(starting_region, "Starting Homeworld")
+
+        # Set local copy of gem threshold percentage
+        self.gem_threshold_mult = slot_data["global_gem_percent"] / 100.0
 
         # Connect entrances
         if slot_data["portal_shuffle"] == 1:

@@ -15,8 +15,13 @@ class Environment():
     internal_id: int
     text_offset: int
     has_vortex: bool
-    dragons: dict[str, tuple[int, int]]  # dragons[name] = (address, flag)
-    eggs: dict[str, tuple[int, int]]  # eggs[name] = (address, flag)
+
+    dragons: dict[str, tuple[int, int]]
+    """dragons[name] = (address, flag)"""
+
+    eggs: dict[str, tuple[int, int]]
+    """eggs[name] = (address, flag)"""
+
     gem_counter: int
     total_gems: int
     statue_head_checks: list[int]
@@ -51,6 +56,8 @@ class Environment():
 
 class RAM:
     """A handy collection of memory values and addresses for Spyro"""
+
+    TOTAL_TREASURE: int = 14000  # Handy constant for doing calcs elsewhere
 
     unused_space: int = 0x0f000  # At least, it seems unused. Test...
 
@@ -311,6 +318,163 @@ class RAM:
     hub_environments[5].child_environments[1].vortex_moby_pointer = 0x17c298
     # Gnasty Gnorc has no vortex, skip
     hub_environments[5].child_environments[3].vortex_moby_pointer = 0x14da14
+
+    # Collectibles stuff
+    # Artisans
+    hub_environments[0].dragons["Nestor"] = (0x77913, 0x01)
+    hub_environments[0].dragons["Argus"] = (0x77913, 0x08)
+    hub_environments[0].dragons["Delbin"] = (0x77919, 0x80)
+    hub_environments[0].dragons["Tomas"] = (0x77913, 0x20)
+
+    # Stone Hill
+    hub_environments[0].child_environments[0].dragons["Lindar"] = (0x77932, 0x40)
+    hub_environments[0].child_environments[0].dragons["Gavin"] = (0x7793d, 0x04)
+    hub_environments[0].child_environments[0].dragons["Astor"] = (0x7793a, 0x01)
+    hub_environments[0].child_environments[0].dragons["Gildas"] = (0x77939, 0x20)
+
+    hub_environments[0].child_environments[0].eggs["Egg 1 (Upper Area)"] = (0x7793c, 0x40)
+
+    # Dark Hollow
+    hub_environments[0].child_environments[1].dragons["Alban"] = (0x77950, 0x02)
+    hub_environments[0].child_environments[1].dragons["Oswin"] = (0x77953, 0x80)
+    hub_environments[0].child_environments[1].dragons["Darius"] = (0x77955, 0x80)
+
+    # Town Square
+    hub_environments[0].child_environments[2].dragons["Nils"] = (0x77969, 0x10)
+    hub_environments[0].child_environments[2].dragons["Thor"] = (0x77974, 0x20)
+    hub_environments[0].child_environments[2].dragons["Alvar"] = (0x7796e, 0x02)
+    hub_environments[0].child_environments[2].dragons["Devlin"] = (0x77969, 0x20)
+
+    hub_environments[0].child_environments[2].eggs["Egg 1 (Upper Area)"] = (0x77973, 0x01)
+
+    # Toasty
+    hub_environments[0].child_environments[3].dragons["Nevin"] = (0x7798b, 0x01)
+
+    # Peace Keepers
+    hub_environments[1].dragons["Titan"] = (0x779cf, 0x02)
+    hub_environments[1].dragons["Magnus"] = (0x779cf, 0x20)
+    hub_environments[1].dragons["Gunnar"] = (0x779cf, 0x08)
+
+    hub_environments[1].eggs["Egg 1 (Pool)"] = (0x779cd, 0x10)
+
+    # Dry Canyon
+    hub_environments[1].child_environments[0].dragons["Conan"] = (0x779fc, 0x20)
+    hub_environments[1].child_environments[0].dragons["Boris"] = (0x779f2, 0x01)
+    hub_environments[1].child_environments[0].dragons["Maximos"] = (0x779f2, 0x20)
+    hub_environments[1].child_environments[0].dragons["Ivor"] = (0x779f2, 0x04)
+
+    hub_environments[1].child_environments[0].eggs["Egg 1 (Starting Area)"] = (0x779f2, 0x80)
+
+    # Cliff Town
+    hub_environments[1].child_environments[1].dragons["Halvor"] = (0x77a1b, 0x80)
+    hub_environments[1].child_environments[1].dragons["Enzo"] = (0x77a0f, 0x08)
+    hub_environments[1].child_environments[1].dragons["Marco"] = (0x77a0f, 0x02)
+
+    hub_environments[1].child_environments[1].eggs["Egg 1 (Square Building Past Bridge)"] = (0x77a1a, 0x04)
+
+    # Ice Cavern
+    hub_environments[1].child_environments[2].dragons["Ulric"] = (0x77a37, 0x08)
+    hub_environments[1].child_environments[2].dragons["Todor"] = (0x77a41, 0x04)
+    hub_environments[1].child_environments[2].dragons["Andor"] = (0x77a2b, 0x40)
+    hub_environments[1].child_environments[2].dragons["Asher"] = (0x77a42, 0x08)
+    hub_environments[1].child_environments[2].dragons["Ragnar"] = (0x77a30, 0x40)
+
+    # Doctor Shemp
+    hub_environments[1].child_environments[3].dragons["Trondo"] = (0x77a50, 0x08)
+
+    # Magic Crafters
+    hub_environments[2].dragons["Cosmos"] = (0x77a88, 0x40)
+    hub_environments[2].dragons["Zantor"] = (0x77a8a, 0x40)
+    hub_environments[2].dragons["Boldar"] = (0x77a8b, 0x01)
+
+    hub_environments[2].eggs["Egg 1 (Entry)"] = (0x77a88, 0x01)
+    hub_environments[2].eggs["Egg 2 (Courtyard)"] = (0x77a89, 0x40)
+
+    # Alpine Ridge
+    hub_environments[2].child_environments[0].dragons["Zane"] = (0x77aa9, 0x02)
+    hub_environments[2].child_environments[0].dragons["Eldrid"] = (0x77aaa, 0x20)
+    hub_environments[2].child_environments[0].dragons["Zander"] = (0x77abd, 0x10)
+    hub_environments[2].child_environments[0].dragons["Kelvin"] = (0x77aac, 0x01)
+
+    hub_environments[2].child_environments[0].eggs["Egg 1 (Distant Cave)"] = (0x77aad, 0x08)
+
+    # High Caves
+    hub_environments[2].child_environments[1].dragons["Cyrus"] = (0x77acf, 0x08)
+    hub_environments[2].child_environments[1].dragons["Cedric"] = (0x77ad9, 0x80)
+    hub_environments[2].child_environments[1].dragons["Ajax"] = (0x77ad1, 0x04)
+
+    hub_environments[2].child_environments[1].eggs["Egg 1 (Distant Pool)"] = (0x77ad8, 0x40)
+    hub_environments[2].child_environments[1].eggs["Egg 2 (Cave)"] = (0x77aca, 0x02)
+
+    # Wizard Peak
+    hub_environments[2].child_environments[2].dragons["Jarvis"] = (0x77aef, 0x80)
+    hub_environments[2].child_environments[2].dragons["Hexus"] = (0x77aef, 0x40)
+    hub_environments[2].child_environments[2].dragons["Lucas"] = (0x77ae8, 0x01)
+
+    hub_environments[2].child_environments[2].eggs["Egg 1 (Quad-wizard Ramp)"] = (0x77af9, 0x08)
+    hub_environments[2].child_environments[2].eggs["Egg 2 (End Area Pool)"] = (0x77aeb, 0x04)
+
+    # Blowhard
+    hub_environments[2].child_environments[3].dragons["Altair"] = (0x77b0b, 0x04)
+
+    # Beast Makers
+    hub_environments[3].dragons["Bruno"] = (0x77b48, 0x40)
+    hub_environments[3].dragons["Cleetus"] = (0x77b49, 0x20)
+
+    # Terrace Village
+    hub_environments[3].child_environments[0].dragons["Claude"] = (0x77b6d, 0x20)
+    hub_environments[3].child_environments[0].dragons["Cyprin"] = (0x77b6d, 0x80)
+
+    # Misty Bog
+    hub_environments[3].child_environments[1].dragons["Rosco"] = (0x77b93, 0x04)
+    hub_environments[3].child_environments[1].dragons["Damon"] = (0x77b93, 0x10)
+    hub_environments[3].child_environments[1].dragons["Zeke"] = (0x77b97, 0x08)
+    hub_environments[3].child_environments[1].dragons["Bubba"] = (0x77b93, 0x40)
+
+    # Tree Tops
+    hub_environments[3].child_environments[2].dragons["Lyle"] = (0x77bb6, 0x80)
+    hub_environments[3].child_environments[2].dragons["Jed"] = (0x77bb7, 0x02)
+    hub_environments[3].child_environments[2].dragons["Isaak"] = (0x77bb6, 0x20)
+
+    # Metalhead
+    hub_environments[3].child_environments[3].dragons["Sadiki"] = (0x77bcc, 0x08)
+
+    # Dream Weavers
+    hub_environments[4].dragons["Mazi"] = (0x77c08, 0x80)
+    hub_environments[4].dragons["Lateef"] = (0x77c19, 0x02)
+    hub_environments[4].dragons["Zikomo"] = (0x77c08, 0x20)
+
+    # Dark Passage
+    hub_environments[4].child_environments[0].dragons["Kasiya"] = (0x77c28, 0x04)
+    hub_environments[4].child_environments[0].dragons["Azizi"] = (0x77c28, 0x20)
+    hub_environments[4].child_environments[0].dragons["Bakari"] = (0x77c28, 0x40)
+    hub_environments[4].child_environments[0].dragons["Apara"] = (0x77c30, 0x20)
+    hub_environments[4].child_environments[0].dragons["Obasi"] = (0x77c36, 0x01)
+
+    # Lofty Castle
+    hub_environments[4].child_environments[1].dragons["Mudada"] = (0x77c4f, 0x01)
+    hub_environments[4].child_environments[1].dragons["Baruti"] = (0x77c49, 0x04)
+    hub_environments[4].child_environments[1].dragons["Useni"] = (0x77c49, 0x01)
+
+    # Haunted Towers
+    hub_environments[4].child_environments[2].dragons["Kosoko"] = (0x77c6f, 0x20)
+    hub_environments[4].child_environments[2].dragons["Lutalo"] = (0x77c70, 0x02)
+    hub_environments[4].child_environments[2].dragons["Copano"] = (0x77c6f, 0x80)
+
+    # Jacques
+    hub_environments[4].child_environments[3].dragons["Unika"] = (0x77c8b, 0x80)
+    hub_environments[4].child_environments[3].dragons["Revilo"] = (0x77c8d, 0x80)
+
+    # Gnasty's World
+    hub_environments[5].dragons["Delbin/Magnus"] = (0x77cc8, 0x01)
+
+    # Gnorc Cove
+    hub_environments[5].child_environments[0].dragons["Lateef"] = (0x77cf0, 0x20)
+    hub_environments[5].child_environments[0].dragons["Tomas"] = (0x77ce8, 0x40)
+
+    # Twilight Harbor
+    hub_environments[5].child_environments[1].dragons["Cosmos"] = (0x77d09, 0x04)
+    hub_environments[5].child_environments[1].dragons["Cleetus"] = (0x77d16, 0x10)
 
     cur_level_id: int = 0x7596c
     dest_level_id: int = 0x758b4

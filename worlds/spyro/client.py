@@ -16,7 +16,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
 from .addresses import RAM, menu_lookup, Environment, internal_id_to_offset
-from .locations import location_name_to_id, total_treasure
+from .locations import static_locations
 from .items import item_id_to_name, boss_items, homeworld_access, goal_item
 from .world import SlotDataTypes
 
@@ -24,11 +24,12 @@ if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
 
 logger: logging.Logger = logging.getLogger("Client")
-CLIENT_VERSION: str = "v0.3.5"  # TODO: Remove before PR to main
+CLIENT_VERSION: str = "v0.4.0"  # TODO: Remove before PR to main
 
 
-class RamReads():
-    """Class for holding data related to reads from BizHawk memory
+class RamRead():
+    """Class for holding data related to reads from BizHawk memory. Tracks address, byte count, and the data at address
+    in BizHawk's memory.
     """
 
     def __init__(self, address: int, byte_count: int) -> None:
@@ -53,6 +54,10 @@ class SpyroClient(BizHawkClient):
     local_checked_locations: set[int] = set()
     slot_data_spyro_color: bytes = b''
     slot_data_mapped_entrances: list[tuple[str, str]] = []
+    slot_data_gem_threshold_mult: float = 1.0
+    slot_data_max_per_env_threshold: int = 100
+
+    location_name_to_id: dict[str, int]
 
     env_by_id: dict[int, Environment] = {}
     env_by_name: dict[str, Environment] = {}
@@ -70,22 +75,28 @@ class SpyroClient(BizHawkClient):
     ap_unlocked_worlds: set[str] = set()
     boss_items: set[str] = set()
 
-    recv_index: RamReads = RamReads(RAM.last_received_archipelago_id, 4)
+    recv_index: RamRead = RamRead(RAM.last_received_archipelago_id, 4)
     """Index of last processed AP item"""
 
-    cur_game_state: RamReads = RamReads(RAM.cur_game_state, 1)
-    cur_level_id: RamReads = RamReads(RAM.cur_level_id, 1)
-    spyro_color: RamReads = RamReads(RAM.spyro_color_filter, 4)
-    gnasty_anim_flag: RamReads = RamReads(RAM.gnasty_anim_flag, 1)
-    unlocked_worlds: RamReads = RamReads(RAM.unlocked_worlds, 6)
-    balloonist_menu_choice: RamReads = RamReads(RAM.balloonist_menu_choice, 1)
-    total_gems_collected: RamReads = RamReads(RAM.total_gem_count, 4)
-    did_portal_switch: RamReads = RamReads(RAM.switched_portal_dest, 1)
-    spyro_anim: RamReads = RamReads(RAM.spyro_cur_animation, 1)
-    last_whirlwind_pointer: RamReads = RamReads(RAM.last_touched_whirlwind, 3)
+    cur_game_state: RamRead = RamRead(RAM.cur_game_state, 1)
+    cur_level_id: RamRead = RamRead(RAM.cur_level_id, 1)
+    spyro_color: RamRead = RamRead(RAM.spyro_color_filter, 4)
+    gnasty_anim_flag: RamRead = RamRead(RAM.gnasty_anim_flag, 1)
+    unlocked_worlds: RamRead = RamRead(RAM.unlocked_worlds, 6)
+    balloonist_menu_choice: RamRead = RamRead(RAM.balloonist_menu_choice, 1)
+    total_gems_collected: RamRead = RamRead(RAM.total_gem_count, 4)
+    did_portal_switch: RamRead = RamRead(RAM.switched_portal_dest, 1)
+    spyro_anim: RamRead = RamRead(RAM.spyro_cur_animation, 1)
+    last_whirlwind_pointer: RamRead = RamRead(RAM.last_touched_whirlwind, 3)
 
-    gem_counts: list[RamReads] = []
+    gem_counts: list[RamRead] = []
     """Keeps track of gem counts"""
+
+    dragons: dict[int, list[RamRead]] = {}
+    """Tracks rescued dragons, indexed by level ID"""
+
+    eggs: dict[int, list[RamRead]] = {}
+    """Tracks collected eggs, indexed by level ID"""
 
     portal_accesses: dict[str, bool] = {}
     """Keeps track of portal access, indexed by level name"""
@@ -106,8 +117,18 @@ class SpyroClient(BizHawkClient):
     """Whether we've processed slot data"""
 
     def __init__(self) -> None:
-        for env in self.env_by_id.values():
-            self.gem_counts.append(RamReads(env.gem_counter, 2))
+        for env_id, env in self.env_by_id.items():
+            self.gem_counts.append(RamRead(env.gem_counter, 2))
+
+            self.dragons[env_id] = []
+            self.eggs[env_id] = []
+
+            for dragon_data in env.dragons.values():
+                self.dragons[env_id].append(RamRead(dragon_data[0], 1))
+
+            for egg_data in env.eggs.values():
+                self.eggs[env_id].append(RamRead(egg_data[0], 1))
+
             if not env.is_hub():
                 self.portal_accesses[env.name] = False
 
@@ -147,7 +168,6 @@ class SpyroClient(BizHawkClient):
 
     @override
     async def game_watcher(self, ctx: "BizHawkClientContext") -> None:
-        batched_reads: list[tuple[int, int, str]] = []
         # Detect if AP connection made, bail early if not
         if (
             (ctx.server is None) or (ctx.server.socket.closed)
@@ -168,7 +188,8 @@ class SpyroClient(BizHawkClient):
         await self.process_received_items(ctx.items_received, ctx)
 
         try:
-            to_read_list: list[RamReads] = []
+            # Build up a list of RAM reads to request from BizHawk
+            to_read_list: list[RamRead] = []
             to_read_list.append(self.recv_index)
             to_read_list.append(self.cur_game_state)
             to_read_list.append(self.cur_level_id)
@@ -182,13 +203,25 @@ class SpyroClient(BizHawkClient):
             to_read_list.append(self.last_whirlwind_pointer)
             to_read_list.extend(self.gem_counts)
 
+            for dragon_ramreads in self.dragons.values():
+                to_read_list.extend(dragon_ramreads)
+
+            for egg_ramreads in self.eggs.values():
+                to_read_list.extend(egg_ramreads)
+
+            batched_reads: list[tuple[int, int, str]] = []
+
+            # Format the list in the way BizHawk expects
             for ram_item in to_read_list:
                 batched_reads.append((ram_item.address, ram_item.byte_count, "MainRAM"))
 
-            ram_data: list[bytes] = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
+            # Request the reads from BizHawk
+            bizhawk_peek_bytes: list[bytes] = await bizhawk.read(ctx.bizhawk_ctx, batched_reads)
 
-            for ram_item in to_read_list:
-                ram_item.raw_data = ram_data.pop(0)
+            # Take the results from BizHawk and store them in their corresponding variables, in the order the list was
+            # initially built. No more being careful to modify two lists in sync, Python can just handle it for us.
+            for ram_read, bizhawk_peek_byte in zip(to_read_list, bizhawk_peek_bytes):
+                ram_read.raw_data = bizhawk_peek_byte
 
             await self.process_locations(self.cur_game_state.value(), self.cur_level_id.value(), ctx)
             self.update_spyro_color(self.spyro_color.value(), self.cur_game_state.value())
@@ -199,6 +232,10 @@ class SpyroClient(BizHawkClient):
             if self.cur_level_id.value() == 0:  # We're on the title screen or in early load
                 self.set_starting_world()
             else:  # We're hopefully in a valid level here
+
+                if self.cur_game_state.value() == RAM.GameStates.TITLE_SCREEN:
+                    # We're on the title screen after quitting to menu? Seems cur_level_id doesn't change when doing so
+                    self.set_starting_world()
 
                 await self.do_portal_shuffle_changes(
                     self.did_portal_switch.value(),
@@ -247,7 +284,9 @@ class SpyroClient(BizHawkClient):
                 "starting_world": -1,
                 "entrances": [],
                 "portal_shuffle": -1,
-                "spyro_color": 0xffffff00
+                "spyro_color": 0xffffff00,
+                "global_gem_percent": 100,
+                "max_per_env_threshold": 100,
             }
             for key, value in ctx.slot_data.items():
                 slot_data[key] = value
@@ -273,6 +312,14 @@ class SpyroClient(BizHawkClient):
 
             # Read in starting homeworld from slot data
             self.starting_world = slot_data["starting_world"]
+
+            # Read in gem threshold percentage from slot data, store as a multiplier
+            self.slot_data_gem_threshold_mult = slot_data["global_gem_percent"] / 100.0
+
+            self.slot_data_max_per_env_threshold = slot_data["max_per_env_threshold"]
+
+            # Create location lookup table
+            self.location_name_to_id = static_locations
 
         self.did_setup = True
         return
@@ -376,7 +423,7 @@ class SpyroClient(BizHawkClient):
             location_name: The name of the location to send
             ctx: BizhawkClientContext
         """
-        location_id: int = location_name_to_id[location_name]
+        location_id: int = self.location_name_to_id[location_name]
 
         if location_id not in ctx.checked_locations:
             await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [location_id]}])
@@ -479,7 +526,7 @@ class SpyroClient(BizHawkClient):
             if env.is_hub():
                 # Compile a list of unchecked locations for the current hub
                 env_locations = []
-                for name, loc_id in location_name_to_id.items():
+                for name, loc_id in self.location_name_to_id.items():
                     if (env.name in name) and (loc_id not in ctx.checked_locations):
                         env_locations.append(name)
 
@@ -507,7 +554,7 @@ class SpyroClient(BizHawkClient):
 
                 # Compile a list of unchecked locations behind the given portal
                 env_locations = []
-                for name, loc_id in location_name_to_id.items():
+                for name, loc_id in self.location_name_to_id.items():
                     if (level_name in name) and (loc_id not in ctx.checked_locations):
                         env_locations.append(name)
 
@@ -560,24 +607,41 @@ class SpyroClient(BizHawkClient):
             ctx: BizHawkClientContext
         """
         if cur_level_id != 0:  # Hopefully prevents weirdness early in game load
+            env: Environment = self.env_by_id[cur_level_id]
             if game_state == RAM.GameStates.GAMEPLAY:
                 # Send location on defeating Gnasty
-                if self.env_by_id[cur_level_id].name == "Gnasty Gnorc":
+                if env.name == "Gnasty Gnorc":
                     if self.gnasty_anim_flag.value() == RAM.GNASTY_DEFEATED:
                         await self.send_location_once("Defeated Gnasty Gnorc", ctx)
 
                 # Send 1/4 gem threshold checks
-                for env_id, env in self.env_by_id.items():
-                    quarter_count: int = int(env.total_gems / 4)
+                for env_id, env_gems in self.env_by_id.items():
+                    quarter_count: int = int(env_gems.total_gems / 4)
 
                     for index in range(1, 5):
-                        if self.gem_counts[internal_id_to_offset(env_id)].value() >= (quarter_count * index):
-                            await self.send_location_once(f"{env.name} {25 * index}% Gems", ctx)
+                        if (index * 25) <= self.slot_data_max_per_env_threshold:
+                            if self.gem_counts[internal_id_to_offset(env_id)].value() >= (quarter_count * index):
+                                await self.send_location_once(f"{env_gems.name} {25 * index}% Gems", ctx)
 
                 # Send 500 increment total gem threhshold checks
-                for gem_threshold in range(500, total_treasure + 1, 500):
+                for gem_threshold in range(500, int(RAM.TOTAL_TREASURE * self.slot_data_gem_threshold_mult) + 1, 500):
                     if self.total_gems_collected.value() >= gem_threshold:
                         await self.send_location_once(f"{gem_threshold} Gems", ctx)
+
+                # Send egg locations as needed
+                for egg in self.eggs[env.internal_id]:
+                    for egg_name in env.eggs:
+                        if egg.address == env.eggs[egg_name][0]:
+                            if egg.value() & env.eggs[egg_name][1]:
+                                await self.send_location_once(f"{env.name} {egg_name}", ctx)
+
+            elif game_state == RAM.GameStates.DRAGON_CUTSCENE:
+                # Send dragon locations as needed
+                for dragon in self.dragons[env.internal_id]:
+                    for dragon_name in env.dragons:
+                        if dragon.address == env.dragons[dragon_name][0]:
+                            if dragon.value() & env.dragons[dragon_name][1]:
+                                await self.send_location_once(f"{env.name} {dragon_name}", ctx)
 
         return
 
