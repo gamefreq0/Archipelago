@@ -503,14 +503,16 @@ class SpyroClient(BizHawkClient):
 
     def env_has_unchecked_locations(self, env_name: str, checked_locations: set[int]) -> bool:
         found_unchecked: bool = False
-        for name, loc_id in self.location_name_to_id.items():
-            if (
-                (not found_unchecked)
-                and (env_name in name)
-                and (name in self.player_locations.included_locations)
-                and (loc_id not in checked_locations)
-            ):
-                found_unchecked = True
+
+        checked_loc_names: set[str] = set()
+        loc_id_to_name: dict[int, str] = {v: k for k, v in self.location_name_to_id.items()}
+
+        for loc_id in checked_locations:
+            checked_loc_names.add(loc_id_to_name[loc_id])
+
+        unchecked_locs: set[str] = self.player_locations.included_locations.difference(checked_loc_names)
+
+        found_unchecked = any(map(lambda x: env_name in x, unchecked_locs))
 
         return found_unchecked
 
@@ -545,6 +547,7 @@ class SpyroClient(BizHawkClient):
             first_char = b'.'  # Default this to locked, override further in as needed
             has_unchecked_locations: bool = False
             is_accessible: bool = False
+            locs_checked: set[int] = ctx.checked_locations
 
             if env.is_hub():
                 is_accessible = self.is_hub_accessible(env.name)
@@ -553,7 +556,7 @@ class SpyroClient(BizHawkClient):
 
             if is_accessible:
                 if env.is_hub():
-                    if self.env_has_unchecked_locations(env.name, ctx.checked_locations):
+                    if self.env_has_unchecked_locations(env.name, locs_checked):
                         has_unchecked_locations = True
                     else:
                         # Check to see if any of the levels accessible from this hub have unchecked locations
