@@ -513,6 +513,29 @@ class SpyroClient(BizHawkClient):
 
         return stripped_portal_name
 
+    def env_has_unchecked_locations(self, env_name: str, checked_locations: set[int]) -> bool:
+        found_unchecked: bool = True
+        for name, loc_id in self.location_name_to_id.items():
+            if (
+                (name in self.player_locations.included_locations)
+                and (env_name in name)
+                and (loc_id not in checked_locations)
+            ):
+                break
+        else:
+            found_unchecked = False
+
+        return found_unchecked
+
+    def is_hub_accessible(self, hub_name: str) -> bool:
+        is_accessible: bool = False
+        if (hub_name == "Gnasty's World") and (len(self.boss_items) == 5):
+            is_accessible = True
+        elif hub_name in self.ap_unlocked_worlds:
+            is_accessible = True
+
+        return is_accessible
+
     def show_access(self, game_state: int, ctx: "BizHawkClientContext") -> list[tuple[int, bytes]]:
         """Returns a list of writes to be performed to edit level/hub names to show on portals or in the inventory
         screen that they are accessible and whether they have unchecked locations within
