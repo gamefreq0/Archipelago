@@ -379,22 +379,10 @@ class SpyroClient(BizHawkClient):
 
         if hub_name == "Stay Here":
             should_allow_choice = True
-            last_selected_valid_choice = stay_here
         else:
-            if hub_name == "Gnasty's World":
-                if len(self.boss_items) == 5:
-                    should_allow_choice = True
-                    last_selected_valid_choice = raw_choice
-                else:
-                    should_allow_choice = False
-                    last_selected_valid_choice = stay_here
-            else:
-                if hub_name in self.ap_unlocked_worlds:
-                    should_allow_choice = True
-                    last_selected_valid_choice = raw_choice
-                else:
-                    should_allow_choice = False
-                    last_selected_valid_choice = stay_here
+            should_allow_choice = self.is_hub_accessible(hub_name)
+
+        last_selected_valid_choice = raw_choice if should_allow_choice else stay_here
 
         for item in self.balloonist_helper(should_allow_choice, last_selected_valid_choice):
             result.append(item)
