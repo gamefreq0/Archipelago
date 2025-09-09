@@ -523,6 +523,9 @@ class SpyroClient(BizHawkClient):
 
         return is_accessible
 
+    def is_portal_accessible(self, portal_name: str) -> bool:
+        return (portal_name in self.portal_accesses) and (self.portal_accesses[portal_name])
+
     def show_access(self, game_state: int, ctx: "BizHawkClientContext") -> list[tuple[int, bytes]]:
         """Returns a list of writes to be performed to edit level/hub names to show on portals or in the inventory
         screen that they are accessible and whether they have unchecked locations within
