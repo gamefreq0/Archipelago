@@ -549,7 +549,7 @@ class SpyroClient(BizHawkClient):
             if env.is_hub():
                 is_accessible = self.is_hub_accessible(env.name)
             else:
-                is_accessible = (env.name in self.portal_accesses) and (self.portal_accesses[env.name])
+                is_accessible = self.is_portal_accessible(env.name)
 
             if is_accessible:
                 if env.is_hub():
@@ -559,11 +559,10 @@ class SpyroClient(BizHawkClient):
                         # Check to see if any of the levels accessible from this hub have unchecked locations
                         has_unchecked_locations = False
                         for portal in env.child_environments:
-                            if (
-                                (not has_unchecked_locations)
-                                and (portal.name in self.portal_accesses)
-                                and (self.portal_accesses[portal.name])
-                            ):
+                            if has_unchecked_locations:
+                                continue
+
+                            if self.is_portal_accessible(portal.name):
                                 dest_level_name: str = portal.name
                                 if self.portal_shuffle:
                                     dest_level_name = self.lookup_portal_leads_to(portal.name)
