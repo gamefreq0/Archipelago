@@ -502,16 +502,15 @@ class SpyroClient(BizHawkClient):
         return stripped_portal_name
 
     def env_has_unchecked_locations(self, env_name: str, checked_locations: set[int]) -> bool:
-        found_unchecked: bool = True
+        found_unchecked: bool = False
         for name, loc_id in self.location_name_to_id.items():
             if (
-                (name in self.player_locations.included_locations)
+                (not found_unchecked)
                 and (env_name in name)
+                and (name in self.player_locations.included_locations)
                 and (loc_id not in checked_locations)
             ):
-                break
-        else:
-            found_unchecked = False
+                found_unchecked = True
 
         return found_unchecked
 
