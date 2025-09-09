@@ -16,7 +16,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
 from .addresses import RAM, menu_lookup, Environment, internal_id_to_offset
-from .locations import static_locations
+from .locations import SpyroPlayerLocations, static_locations
 from .items import item_id_to_name, boss_items, homeworld_access, goal_item
 from .world import SlotDataTypes
 
@@ -61,6 +61,8 @@ class SpyroClient(BizHawkClient):
 
     env_by_id: dict[int, Environment] = {}
     env_by_name: dict[str, Environment] = {}
+
+    player_locations: SpyroPlayerLocations
 
     hub: Environment
     level: Environment
@@ -320,6 +322,13 @@ class SpyroClient(BizHawkClient):
 
             # Create location lookup table
             self.location_name_to_id = static_locations
+
+            # Create list of locations for the current player
+            self.player_locations = SpyroPlayerLocations(
+                list(self.env_by_id.values()),
+                self.slot_data_gem_threshold_mult,
+                self.slot_data_max_per_env_threshold,
+            )
 
         self.did_setup = True
         return
