@@ -553,54 +553,43 @@ class SpyroClient(BizHawkClient):
 
         for env in self.env_by_id.values():
             first_char = b'.'  # Default this to locked, override further in as needed
-            env_locations: list[str] = []
+            has_unchecked_locations: bool = False
+            is_accessible: bool = False
 
             if env.is_hub():
-                # Compile a list of unchecked locations for the current hub
-                env_locations = []
-                for name, loc_id in self.location_name_to_id.items():
-                    if (env.name in name) and (loc_id not in ctx.checked_locations):
-                        env_locations.append(name)
+                is_accessible = self.is_hub_accessible(env.name)
+            else:
+                is_accessible = (env.name in self.portal_accesses) and (self.portal_accesses[env.name])
 
-                if env.name == "Gnasty's World":
-                    if len(self.boss_items) == 5:
-                        if len(env_locations) > 0:
-                            first_char = b'!'
-                        else:
-                            first_char = env.name[:1].encode("ASCII")
-                else:
-                    if env.name in self.ap_unlocked_worlds:
-                        if len(env_locations) > 0:
-                            first_char = b'!'
-                        else:
-                            first_char = env.name[:1].encode("ASCII")
-
-                write_list.append((env.text_offset, first_char))
-
-            else:  # This is a level
-                level_name: str = env.name
-
-                # If portal shuffle is on, replace level name with the level the portal leads to
-                if len(self.slot_data_mapped_entrances) > 0:
-                    level_name = self.lookup_portal_leads_to(level_name)
-
-                # Compile a list of unchecked locations behind the given portal
-                env_locations = []
-                for name, loc_id in self.location_name_to_id.items():
-                    if (level_name in name) and (loc_id not in ctx.checked_locations):
-                        env_locations.append(name)
-
-                if self.portal_accesses[env.name]:
-                    if len(env_locations) > 0:
-                        first_char = b'!'
+            if is_accessible:
+                if env.is_hub():
+                    if self.env_has_unchecked_locations(env.name, ctx.checked_locations):
+                        has_unchecked_locations = True
                     else:
-                        first_char = env.name[:1].encode("ASCII")
+                        # Check to see if any of the levels accessible from this hub have unchecked locations
+                        has_unchecked_locations = True
+                        for portal in env.child_environments:
+                            if (portal.name in self.portal_accesses) and (self.portal_accesses[portal.name]):
+                                dest_level_name: str = (
+                                    portal.name if not self.portal_shuffle else self.lookup_portal_leads_to(portal.name)
+                                )
+                                if self.env_has_unchecked_locations(dest_level_name, ctx.checked_locations):
+                                    break
+                        else:
+                            # If none of the accessible levels had unchecked locations, we end up here
+                            has_unchecked_locations = False
 
-                # Ensure vanilla name in loading screens
-                if game_state == RAM.GameStates.LOADING:
-                    first_char = env.name[:1].encode("ASCII")
+                else:
+                    level_name: str = env.name if not self.portal_shuffle else self.lookup_portal_leads_to(env.name)
+                    has_unchecked_locations = self.env_has_unchecked_locations(level_name, ctx.checked_locations)
 
-                write_list.append((env.text_offset, first_char))
+                first_char = b'!' if has_unchecked_locations else env.name[:1].encode("ASCII")
+
+            # Ensure level name is right during loads
+            if game_state == RAM.GameStates.LOADING:
+                first_char = env.name[:1].encode("ASCII")
+
+            write_list.append((env.text_offset, first_char))
 
         return write_list
 
